@@ -218,21 +218,33 @@ export default function BattleScreen() {
 
       {phase === "dice" && (
         <div className="dice-overlay">
-          <h2 className="dice-title">Role o dado</h2>
-          <DiceRoll value={dieValue} rolling={rolling} />
-          {rolled && <p className="luck-label">Sorte: {playerLuck}</p>}
-          {!rolled ? (
-            <button className="btn-roll" onClick={handleRoll} disabled={rolling}>
-              Rolar
-            </button>
-          ) : (
-            <button
-              className="btn-roll primary"
-              onClick={() => setPhase("player")}
-            >
-              Começar batalha
-            </button>
-          )}
+          <div className="dice-header">
+            <h2 className="dice-title">Role o dado</h2>
+            <p className="dice-subtitle">A sorte define sua chance de errar</p>
+          </div>
+
+          <div className="dice-stage">
+            <DiceRoll value={dieValue} rolling={rolling} />
+            <div className={"dice-shadow" + (rolling ? " animating" : "")} />
+          </div>
+
+          <div className="dice-footer">
+            <div className="luck-slot">
+              {rolled && <span className="luck-label">Sorte: {playerLuck}</span>}
+            </div>
+            {!rolled ? (
+              <button className="btn-roll" onClick={handleRoll} disabled={rolling}>
+                Rolar
+              </button>
+            ) : (
+              <button
+                className="btn-roll primary"
+                onClick={() => setPhase("player")}
+              >
+                Começar batalha
+              </button>
+            )}
+          </div>
         </div>
       )}
 

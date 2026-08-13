@@ -234,44 +234,143 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 20px;
-  background: radial-gradient(circle at 50% 40%, #1e2a4a 0%, #0b1020 100%);
+  justify-content: space-between;
+  padding: 40px 20px 32px;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.08) 1px, transparent 1px),
+    radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.09) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 130%, rgba(0, 0, 0, 0.6) 0%, transparent 62%),
+    linear-gradient(180deg, #15502f 0%, #0e3d24 45%, #082b1a 100%);
+  background-size: 5px 5px, auto, auto, auto;
   z-index: 10;
   animation: resultFadeIn 0.25s ease;
 }
 
+.dice-header {
+  text-align: center;
+}
+
 .dice-title {
-  font-size: 26px;
+  font-size: 30px;
   font-weight: 800;
-  color: var(--text);
+  letter-spacing: 2px;
+  color: #f2ead8;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.dice-subtitle {
+  margin-top: 6px;
+  font-size: 13px;
+  color: rgba(242, 234, 216, 0.55);
+}
+
+.dice-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.dice-shadow {
+  width: 90px;
+  height: 20px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.5) 0%,
+    transparent 70%
+  );
+  filter: blur(3px);
+}
+
+.dice-shadow.animating {
+  animation: shadowPulse 2.4s cubic-bezier(0.25, 0.8, 0.4, 1);
+}
+
+.dice-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.luck-slot {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .luck-label {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--gold);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #f2ead8;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(242, 234, 216, 0.25);
+  padding: 4px 16px;
+  border-radius: 999px;
 }
 
 .btn-roll {
-  padding: 14px 40px;
+  padding: 14px 48px;
   font-size: 17px;
   font-weight: 700;
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  color: #fff;
-  background: #2b3550;
+  color: #0e3d24;
+  background: linear-gradient(180deg, #f2ead8, #d8cfb6);
+  box-shadow: 0 4px 0 #8f8263, 0 8px 20px rgba(0, 0, 0, 0.35);
+  transition: transform 0.06s ease, box-shadow 0.06s ease;
 }
 
 .btn-roll.primary {
-  background: linear-gradient(180deg, var(--gold-2), var(--gold));
-  color: #3a2a00;
+  background: linear-gradient(180deg, #f2ead8, #d8cfb6);
+  color: #0e3d24;
 }
 
 .btn-roll:disabled {
-  opacity: 0.5;
+  opacity: 0.55;
   cursor: default;
+}
+
+.btn-roll:not(:disabled):active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #8f8263, 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes shadowPulse {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.5;
+  }
+  22% {
+    transform: scale(0.3);
+    opacity: 0.35;
+  }
+  40% {
+    transform: scale(0.95);
+    opacity: 0.85;
+  }
+  58% {
+    transform: scale(0.45);
+    opacity: 0.5;
+  }
+  76% {
+    transform: scale(0.85);
+    opacity: 0.8;
+  }
+  90% {
+    transform: scale(0.6);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
 }
 
 .miss-flash {
