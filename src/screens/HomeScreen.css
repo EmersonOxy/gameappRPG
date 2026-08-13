@@ -1,0 +1,99 @@
+.home-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: linear-gradient(180deg, #1a2440, var(--bg-dark));
+  border-bottom: 1px solid var(--border);
+}
+
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--blue), #2b3d66);
+  border: 2px solid var(--gold);
+}
+
+.player-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.player-name {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.player-level {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.currency {
+  display: flex;
+  gap: 8px;
+}
+
+.currency-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--bg-card);
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.gold-dot {
+  background: radial-gradient(circle at 35% 35%, #ffe08a, #e0a800);
+}
+
+.gem-dot {
+  background: radial-gradient(circle at 35% 35%, #9be1ff, #2f9bff);
+}
+
+.home-content {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.placeholder {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text-dim);
+  padding: 20px;
+  text-align: center;
+}
+
+.placeholder h2 {
+  color: var(--text);
+  font-size: 22px;
+}
