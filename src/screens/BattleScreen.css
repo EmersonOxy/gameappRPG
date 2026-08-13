@@ -39,7 +39,7 @@
   align-items: center;
   gap: 6px;
   z-index: 2;
-  transition: top 1s ease;
+  transition: top 0.9s ease;
 }
 
 .enemy-wrap.attacking {
@@ -53,6 +53,7 @@
 }
 
 .enemy-sprite {
+  position: relative;
   width: 96px;
   height: 96px;
   border-radius: 50%;
@@ -63,6 +64,7 @@
 }
 
 .player-sprite {
+  position: relative;
   width: 80px;
   height: 80px;
   border-radius: 50%;
@@ -70,7 +72,7 @@
   border: 3px solid #4a90d9;
   color: #dce8ff;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-  transition: transform 0.5s ease;
+  transition: transform 0.9s ease;
 }
 
 .player-sprite.attacking {
@@ -90,17 +92,30 @@
   padding: 0 20px;
 }
 
-.defending-badge {
-  display: inline-flex;
+.block-flash {
+  position: absolute;
+  inset: 0;
+  display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--gold);
-  background: rgba(245, 185, 33, 0.12);
-  border: 1px solid rgba(245, 185, 33, 0.4);
-  padding: 4px 10px;
-  border-radius: 999px;
+  justify-content: center;
+  color: #ffe08a;
+  filter: drop-shadow(0 0 10px rgba(245, 185, 33, 0.9));
+  animation: blockPop 0.4s ease;
+}
+
+@keyframes blockPop {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .battle-actions {

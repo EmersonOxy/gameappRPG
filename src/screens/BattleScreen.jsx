@@ -8,100 +8,83 @@ const MAX_HP = 10;
 const PLAYER = { hp: MAX_HP, atk: 2, def: 2 };
 const ENEMY = { hp: MAX_HP, atk: 2, def: 2 };
 
-const PLAYER_LUNGE = 500;
-const PLAYER_RETURN = 500;
-const ENEMY_PAUSE = 600;
-const ENEMY_LUNGE = 1000;
-const ENEMY_HOLD = 700;
-const ENEMY_RETURN = 1000;
-const ENEMY_DEFEND_DELAY = 900;
+const LUNGE = 900;
+const HOLD = 400;
+const RETURN = 900;
 
 export default function BattleScreen() {
   const navigate = useNavigate();
   const [playerHp, setPlayerHp] = useState(PLAYER.hp);
   const [enemyHp, setEnemyHp] = useState(ENEMY.hp);
-  const [defending, setDefending] = useState(false);
-  const [enemyDefending, setEnemyDefending] = useState(false);
   const [phase, setPhase] = useState("player");
   const [playerMoving, setPlayerMoving] = useState(false);
   const [enemyMoving, setEnemyMoving] = useState(false);
+  const [playerBlocking, setPlayerBlocking] = useState(false);
+  const [enemyBlocking, setEnemyBlocking] = useState(false);
   const [playerHit, setPlayerHit] = useState(0);
   const [enemyHit, setEnemyHit] = useState(0);
 
-  function handleAttack() {
+  function handleAction(action) {
     if (phase !== "player") return;
-    setPhase("playerAttack");
-    setPlayerMoving(true);
+
+    const enemyAction = Math.random() < 0.3 ? "defend" : "attack";
+    setPhase("resolve");
+    setPlayerMoving(action === "attack");
+    setEnemyMoving(enemyAction === "attack");
+
+    const delay = action === "attack" || enemyAction === "attack" ? LUNGE : 300;
 
     setTimeout(() => {
-      let dmg = Math.max(1, PLAYER.atk - ENEMY.def);
-      if (enemyDefending) dmg = Math.max(0, Math.floor(dmg / 2));
-      const newEnemyHp = enemyHp - dmg;
-      setEnemyHp(Math.max(0, newEnemyHp));
-      if (dmg > 0) setEnemyHit(Date.now());
-      setEnemyDefending(false);
+      let playerDmg = 0;
+      let enemyDmg = 0;
+
+      if (action === "attack") {
+        let d = Math.max(1, PLAYER.atk - ENEMY.def);
+        if (enemyAction === "defend") d = Math.max(0, Math.floor(d / 2));
+        enemyDmg = d;
+      }
+      if (enemyAction === "attack") {
+        let d = Math.max(1, ENEMY.atk - PLAYER.def);
+        if (action === "defend") d = Math.max(0, Math.floor(d / 2));
+        playerDmg = d;
+      }
+
+      const newEnemyHp = Math.max(0, enemyHp - enemyDmg);
+      const newPlayerHp = Math.max(0, playerHp - playerDmg);
+      setEnemyHp(newEnemyHp);
+      setPlayerHp(newPlayerHp);
+      if (enemyDmg > 0) setEnemyHit(Date.now());
+      if (playerDmg > 0) setPlayerHit(Date.now());
+
+      setPlayerBlocking(action === "defend");
+      setEnemyBlocking(enemyAction === "defend");
 
       setTimeout(() => {
+        setPlayerBlocking(false);
+        setEnemyBlocking(false);
         setPlayerMoving(false);
-        if (newEnemyHp <= 0) {
-          setPhase("victory");
-        } else {
-          runEnemyTurn(false);
-        }
-      }, PLAYER_RETURN);
-    }, PLAYER_LUNGE);
-  }
-
-  function handleDefend() {
-    if (phase !== "player") return;
-    runEnemyTurn(true);
-  }
-
-  function runEnemyTurn(willDefend) {
-    setDefending(willDefend);
-    setPhase("enemy");
-
-    if (Math.random() < 0.3) {
-      setEnemyDefending(true);
-      setTimeout(() => {
-        setDefending(false);
-        setPhase("player");
-      }, ENEMY_DEFEND_DELAY);
-      return;
-    }
-
-    setTimeout(() => {
-      setEnemyMoving(true);
-
-      setTimeout(() => {
-        let dmg = Math.max(1, ENEMY.atk - PLAYER.def);
-        if (willDefend) dmg = Math.max(0, Math.floor(dmg / 2));
-        const newPlayerHp = Math.max(0, playerHp - dmg);
-        setPlayerHp(newPlayerHp);
-        if (dmg > 0) setPlayerHit(Date.now());
+        setEnemyMoving(false);
 
         setTimeout(() => {
-          setEnemyMoving(false);
-          setTimeout(() => {
-            setDefending(false);
-            if (newPlayerHp <= 0) {
-              setPhase("defeat");
-            } else {
-              setPhase("player");
-            }
-          }, ENEMY_RETURN);
-        }, ENEMY_HOLD);
-      }, ENEMY_LUNGE);
-    }, ENEMY_PAUSE);
+          if (newEnemyHp <= 0) {
+            setPhase("victory");
+          } else if (newPlayerHp <= 0) {
+            setPhase("defeat");
+          } else {
+            setPhase("player");
+          }
+        }, RETURN);
+      }, HOLD);
+    }, delay);
   }
 
   function nextBattle() {
     setPlayerHp(MAX_HP);
     setEnemyHp(MAX_HP);
-    setDefending(false);
-    setEnemyDefending(false);
     setPlayerMoving(false);
     setEnemyMoving(false);
+    setPlayerBlocking(false);
+    setEnemyBlocking(false);
     setPhase("player");
   }
 
@@ -115,12 +98,12 @@ export default function BattleScreen() {
         </div>
         <div className="sprite enemy-sprite">
           <Skull size={64} />
+          {enemyBlocking && (
+            <div className="block-flash">
+              <Shield size={32} />
+            </div>
+          )}
         </div>
-        {enemyDefending && (
-          <div className="defending-badge">
-            <Shield size={14} /> Defendendo
-          </div>
-        )}
       </div>
 
       <div className="player-wrap">
@@ -128,24 +111,24 @@ export default function BattleScreen() {
           className={"sprite player-sprite" + (playerMoving ? " attacking" : "")}
         >
           <User size={56} />
+          {playerBlocking && (
+            <div className="block-flash">
+              <Shield size={30} />
+            </div>
+          )}
         </div>
-        {defending && (
-          <div className="defending-badge">
-            <Shield size={14} /> Defendendo
-          </div>
-        )}
         <HealthBar hp={playerHp} max={MAX_HP} hitKey={playerHit} />
         <div className="battle-actions">
           <button
             className="btn-action attack"
-            onClick={handleAttack}
+            onClick={() => handleAction("attack")}
             disabled={disabled}
           >
             <Swords size={20} /> Atacar
           </button>
           <button
             className="btn-action defend"
-            onClick={handleDefend}
+            onClick={() => handleAction("defend")}
             disabled={disabled}
           >
             <Shield size={20} /> Defender
