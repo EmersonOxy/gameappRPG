@@ -25,31 +25,39 @@ export default function HealthBar({ hp, max, hitKey }) {
     if (!hitKey) return;
     if (prevHp == null || hp >= prevHp) return;
     setRecentHp(prevHp);
-    const t = setTimeout(() => setRecentHp(null), 900);
-    return () => clearTimeout(t);
+    const t1 = setTimeout(() => setRecentHp(hp), 800);
+    const t2 = setTimeout(() => setRecentHp(null), 1600);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
   }, [hitKey]);
 
   const fillPct = (hp / max) * 100;
-  const recentLeft = fillPct;
-  const recentWidth = recentHp != null ? ((recentHp - hp) / max) * 100 : 0;
+  const recentWidth =
+    recentHp != null ? Math.max(0, ((recentHp - hp) / max) * 100) : 0;
 
   const ticks = [];
-  for (let i = 1; i < max; i++) {
+  for (let i = 0; i < max; i++) {
     ticks.push(
-      <span key={i} className="tick" style={{ left: (i / max) * 100 + "%" }} />
+      <span
+        key={i}
+        className={"tick " + (i < hp ? "filled" : "empty")}
+        style={{ left: (i / max) * 100 + "%" }}
+      />
     );
   }
 
   return (
     <div className={"health-shake" + (shaking ? " shake" : "")}>
       <div className="health-bar">
-        <div className="health-fill" style={{ width: fillPct + "%" }} />
-        {recentHp != null && recentWidth > 0 && (
+        {recentHp != null && (
           <div
             className="health-recent"
-            style={{ left: recentLeft + "%", width: recentWidth + "%" }}
+            style={{ left: fillPct + "%", width: recentWidth + "%" }}
           />
         )}
+        <div className="health-fill" style={{ width: fillPct + "%" }} />
         {ticks}
       </div>
     </div>

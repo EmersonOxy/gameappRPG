@@ -43,7 +43,7 @@
 }
 
 .enemy-wrap.attacking {
-  top: calc(50% - 80px);
+  top: calc(50% - 126px);
 }
 
 .sprite {
@@ -84,7 +84,7 @@
 }
 
 .player-sprite-holder.attacking {
-  bottom: calc(50% - 40px);
+  bottom: calc(50% - 88px);
 }
 
 .player-wrap {
