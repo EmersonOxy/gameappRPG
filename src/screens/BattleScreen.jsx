@@ -39,25 +39,28 @@ export default function BattleScreen() {
   function runEnemyTurn(willDefend) {
     setDefending(willDefend);
     setPhase("enemy");
-    setEnemyMoving(true);
 
     setTimeout(() => {
-      let dmg = Math.max(1, ENEMY.atk - PLAYER.def);
-      if (willDefend) dmg = Math.max(0, Math.floor(dmg / 2));
-      const newPlayerHp = Math.max(0, playerHp - dmg);
-      setPlayerHp(newPlayerHp);
-      setPlayerHit(Date.now());
+      setEnemyMoving(true);
 
       setTimeout(() => {
-        setEnemyMoving(false);
-        setDefending(false);
-        if (newPlayerHp <= 0) {
-          setPhase("defeat");
-        } else {
-          setPhase("player");
-        }
-      }, 400);
-    }, 650);
+        let dmg = Math.max(1, ENEMY.atk - PLAYER.def);
+        if (willDefend) dmg = Math.max(0, Math.floor(dmg / 2));
+        const newPlayerHp = Math.max(0, playerHp - dmg);
+        setPlayerHp(newPlayerHp);
+        setPlayerHit(Date.now());
+
+        setTimeout(() => {
+          setEnemyMoving(false);
+          setDefending(false);
+          if (newPlayerHp <= 0) {
+            setPhase("defeat");
+          } else {
+            setPhase("player");
+          }
+        }, 450);
+      }, 700);
+    }, 350);
   }
 
   function nextBattle() {
