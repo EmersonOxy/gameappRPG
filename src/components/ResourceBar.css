@@ -1,0 +1,22 @@
+.resource-bar {
+  position: relative;
+  width: 260px;
+  background: #3f4759;
+  transform: skewX(-12deg);
+  overflow: hidden;
+}
+
+.resource-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  transition: width 0.4s ease;
+}
+
+.resource-tick {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+}
