@@ -62,21 +62,16 @@ export default function BattleScreen() {
 
   function handleRoll() {
     if (phase !== "dice" || rolling) return;
+    const result = rollDie();
+    setDieValue(result);
+    setPlayerLuck(result);
+    setEnemyLuck(rollDie());
     setRolling(true);
-    let count = 0;
-    const interval = setInterval(() => {
-      setDieValue(rollDie());
-      count += 1;
-      if (count >= 8) {
-        clearInterval(interval);
-        const result = rollDie();
-        setDieValue(result);
-        setPlayerLuck(result);
-        setEnemyLuck(rollDie());
-        setRolling(false);
-        setRolled(true);
-      }
-    }, 90);
+    setRolled(false);
+    setTimeout(() => {
+      setRolling(false);
+      setRolled(true);
+    }, 1200);
   }
 
   function handleAction(action) {
