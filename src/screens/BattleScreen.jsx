@@ -7,12 +7,24 @@ import "./BattleScreen.css";
 
 const MAX_HP = 5;
 const PLAYER = { hp: MAX_HP, atk: 2, def: 2 };
-const ENEMY = { hp: MAX_HP, atk: 2, def: 2 };
+const ENEMY = {
+  hp: MAX_HP,
+  atk: 2,
+  def: 2,
+  goldBase: 1,
+  goldExtra: 2,
+  xpBase: 1,
+  xpExtra: 2,
+};
 
 function rollDamage(atk, def) {
   const baseDamage = Math.max(1, atk - def);
   const multiplier = 0.8 + Math.random() * 0.3;
   return baseDamage * multiplier;
+}
+
+function rollReward(base, extra) {
+  return base + Math.floor(Math.random() * (extra + 1));
 }
 
 const LUNGE = 900;
@@ -75,7 +87,10 @@ export default function BattleScreen() {
 
         setTimeout(() => {
           if (newEnemyHp <= 0) {
-            addReward(1, 1);
+            addReward(
+              rollReward(ENEMY.goldBase, ENEMY.goldExtra),
+              rollReward(ENEMY.xpBase, ENEMY.xpExtra)
+            );
             setPhase("victory");
           } else if (newPlayerHp <= 0) {
             setPhase("defeat");
