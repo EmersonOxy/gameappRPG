@@ -52,6 +52,11 @@
   border: 3px solid #4a90d9;
   color: #dce8ff;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  transition: transform 0.5s ease;
+}
+
+.player-sprite.attacking {
+  transform: translateY(-400px);
 }
 
 .player-wrap {
