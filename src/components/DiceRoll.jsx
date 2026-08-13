@@ -19,6 +19,9 @@ const FACE_ROTATION = {
   6: { x: 0, y: 180 },
 };
 
+const TILT_X = -22;
+const TILT_Y = 28;
+
 const FACES = [
   { name: "front", value: 1 },
   { name: "back", value: 6 },
@@ -44,8 +47,8 @@ export default function DiceRoll({ value, rolling }) {
     cube.style.transform = `rotateX(${startX}deg) rotateY(${startY}deg)`;
     void cube.offsetHeight;
 
-    cube.style.transition = "transform 1.2s cubic-bezier(0.15, 0.75, 0.3, 1)";
-    cube.style.transform = `rotateX(${rot.x + 1080}deg) rotateY(${rot.y + 720}deg)`;
+    cube.style.transition = "transform 2.4s cubic-bezier(0.15, 0.75, 0.3, 1)";
+    cube.style.transform = `rotateX(${rot.x + TILT_X + 1080}deg) rotateY(${rot.y + TILT_Y + 720}deg)`;
   }, [rolling, value]);
 
   return (

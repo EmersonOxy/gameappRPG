@@ -71,7 +71,7 @@ export default function BattleScreen() {
     setTimeout(() => {
       setRolling(false);
       setRolled(true);
-    }, 1200);
+    }, 2400);
   }
 
   function handleAction(action) {
