@@ -1,22 +1,42 @@
 .health-bar {
-  width: 150px;
-  height: 15px;
-  background: #4a5266;
-  border-radius: 999px;
-  overflow: hidden;
+  display: flex;
+  gap: 4px;
+  width: 280px;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.35);
   border: 2px solid rgba(0, 0, 0, 0.45);
-  position: relative;
-}
-
-.health-fill {
-  height: 100%;
-  background: linear-gradient(180deg, #ff6b5a 0%, #d32f2f 100%);
-  border-radius: 999px;
-  transition: width 0.4s ease;
+  border-radius: 8px;
 }
 
 .health-bar.shake {
   animation: healthShake 0.4s ease;
+}
+
+.cell {
+  flex: 1;
+  height: 14px;
+  border-radius: 3px;
+}
+
+.cell.filled {
+  background: linear-gradient(180deg, #ff6b5a, #d32f2f);
+}
+
+.cell.empty {
+  background: #4a5266;
+}
+
+.cell.recent {
+  animation: drainCell 0.7s ease forwards;
+}
+
+@keyframes drainCell {
+  from {
+    background: #ffffff;
+  }
+  to {
+    background: #4a5266;
+  }
 }
 
 @keyframes healthShake {

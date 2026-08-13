@@ -110,7 +110,7 @@ export default function BattleScreen() {
   return (
     <div className="battle-screen">
       <div className={"enemy-wrap" + (enemyMoving ? " attacking" : "")}>
-        <div className="enemy-bar-diagonal">
+        <div className="enemy-bar">
           <HealthBar hp={enemyHp} max={MAX_HP} hitKey={enemyHit} />
         </div>
         <div className="sprite enemy-sprite">
