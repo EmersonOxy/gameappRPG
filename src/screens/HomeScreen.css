@@ -6,12 +6,27 @@
 }
 
 .top-bar {
+  background: linear-gradient(180deg, #1a2440, var(--bg-dark));
+  border-bottom: 1px solid var(--border);
+}
+
+.top-bar-main {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 10px 14px;
-  background: linear-gradient(180deg, #1a2440, var(--bg-dark));
-  border-bottom: 1px solid var(--border);
+}
+
+.xp-track {
+  height: 5px;
+  background: rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.xp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8a4dff, #c9a6ff);
+  transition: width 0.4s ease;
 }
 
 .player-info {
@@ -68,10 +83,6 @@
 
 .gold-dot {
   background: radial-gradient(circle at 35% 35%, #ffe08a, #e0a800);
-}
-
-.xp-dot {
-  background: radial-gradient(circle at 35% 35%, #c9a6ff, #8a4dff);
 }
 
 .home-content {

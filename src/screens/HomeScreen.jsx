@@ -6,25 +6,30 @@ import { useGame } from "../context/GameContext.jsx";
 import "./HomeScreen.css";
 
 export default function HomeScreen() {
-  const { gold, xp } = useGame();
+  const { gold, xp, level, xpPerLevel } = useGame();
 
   return (
     <div className="home-screen">
       <header className="top-bar">
-        <div className="player-info">
-          <div className="avatar" />
-          <div className="player-text">
-            <span className="player-name">Aventureiro</span>
-            <span className="player-level">Nível 1</span>
+        <div className="top-bar-main">
+          <div className="player-info">
+            <div className="avatar" />
+            <div className="player-text">
+              <span className="player-name">Aventureiro</span>
+              <span className="player-level">Nível {level}</span>
+            </div>
+          </div>
+          <div className="currency">
+            <span className="currency-item gold">
+              <span className="dot gold-dot" /> {gold}
+            </span>
           </div>
         </div>
-        <div className="currency">
-          <span className="currency-item gold">
-            <span className="dot gold-dot" /> {gold}
-          </span>
-          <span className="currency-item xp">
-            <span className="dot xp-dot" /> {xp} XP
-          </span>
+        <div className="xp-track">
+          <div
+            className="xp-fill"
+            style={{ width: `${(xp / xpPerLevel) * 100}%` }}
+          />
         </div>
       </header>
 
