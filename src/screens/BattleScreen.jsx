@@ -58,9 +58,9 @@ export default function BattleScreen() {
           } else {
             setPhase("player");
           }
-        }, 450);
-      }, 700);
-    }, 350);
+        }, 700);
+      }, 1000);
+    }, 600);
   }
 
   function nextBattle() {
