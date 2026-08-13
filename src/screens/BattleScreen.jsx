@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Skull, User, Swords, Shield } from "lucide-react";
 import HealthBar from "../components/HealthBar.jsx";
+import DiceRoll from "../components/DiceRoll.jsx";
 import { useGame } from "../context/GameContext.jsx";
 import "./BattleScreen.css";
 
@@ -27,6 +28,14 @@ function rollReward(base, extra) {
   return base + Math.floor(Math.random() * (extra + 1));
 }
 
+function rollDie() {
+  return 1 + Math.floor(Math.random() * 6);
+}
+
+function missChance(luck) {
+  return (6 - luck) * 0.05;
+}
+
 const LUNGE = 900;
 const HOLD = 400;
 const RETURN = 900;
@@ -36,13 +45,39 @@ export default function BattleScreen() {
   const { addReward } = useGame();
   const [playerHp, setPlayerHp] = useState(PLAYER.hp);
   const [enemyHp, setEnemyHp] = useState(ENEMY.hp);
-  const [phase, setPhase] = useState("player");
+  const [phase, setPhase] = useState("dice");
   const [playerMoving, setPlayerMoving] = useState(false);
   const [enemyMoving, setEnemyMoving] = useState(false);
   const [playerBlocking, setPlayerBlocking] = useState(false);
   const [enemyBlocking, setEnemyBlocking] = useState(false);
+  const [playerMissed, setPlayerMissed] = useState(false);
+  const [enemyMissed, setEnemyMissed] = useState(false);
   const [playerHit, setPlayerHit] = useState(0);
   const [enemyHit, setEnemyHit] = useState(0);
+  const [playerLuck, setPlayerLuck] = useState(null);
+  const [enemyLuck, setEnemyLuck] = useState(null);
+  const [dieValue, setDieValue] = useState(1);
+  const [rolling, setRolling] = useState(false);
+  const [rolled, setRolled] = useState(false);
+
+  function handleRoll() {
+    if (phase !== "dice" || rolling) return;
+    setRolling(true);
+    let count = 0;
+    const interval = setInterval(() => {
+      setDieValue(rollDie());
+      count += 1;
+      if (count >= 8) {
+        clearInterval(interval);
+        const result = rollDie();
+        setDieValue(result);
+        setPlayerLuck(result);
+        setEnemyLuck(rollDie());
+        setRolling(false);
+        setRolled(true);
+      }
+    }, 90);
+  }
 
   function handleAction(action) {
     if (phase !== "player") return;
@@ -57,16 +92,26 @@ export default function BattleScreen() {
     setTimeout(() => {
       let playerDmg = 0;
       let enemyDmg = 0;
+      let playerMiss = false;
+      let enemyMiss = false;
 
       if (action === "attack") {
-        let d = rollDamage(PLAYER.atk, ENEMY.def);
-        if (enemyAction === "defend") d = d / 2;
-        enemyDmg = d;
+        if (Math.random() < missChance(playerLuck)) {
+          playerMiss = true;
+        } else {
+          let d = rollDamage(PLAYER.atk, ENEMY.def);
+          if (enemyAction === "defend") d = d / 2;
+          enemyDmg = d;
+        }
       }
       if (enemyAction === "attack") {
-        let d = rollDamage(ENEMY.atk, PLAYER.def);
-        if (action === "defend") d = d / 2;
-        playerDmg = d;
+        if (Math.random() < missChance(enemyLuck)) {
+          enemyMiss = true;
+        } else {
+          let d = rollDamage(ENEMY.atk, PLAYER.def);
+          if (action === "defend") d = d / 2;
+          playerDmg = d;
+        }
       }
 
       const newEnemyHp = Math.max(0, enemyHp - enemyDmg);
@@ -78,10 +123,14 @@ export default function BattleScreen() {
 
       setPlayerBlocking(action === "defend");
       setEnemyBlocking(enemyAction === "defend");
+      setPlayerMissed(playerMiss);
+      setEnemyMissed(enemyMiss);
 
       setTimeout(() => {
         setPlayerBlocking(false);
         setEnemyBlocking(false);
+        setPlayerMissed(false);
+        setEnemyMissed(false);
         setPlayerMoving(false);
         setEnemyMoving(false);
 
@@ -109,7 +158,14 @@ export default function BattleScreen() {
     setEnemyMoving(false);
     setPlayerBlocking(false);
     setEnemyBlocking(false);
-    setPhase("player");
+    setPlayerMissed(false);
+    setEnemyMissed(false);
+    setRolled(false);
+    setRolling(false);
+    setDieValue(1);
+    setPlayerLuck(null);
+    setEnemyLuck(null);
+    setPhase("dice");
   }
 
   const disabled = phase !== "player";
@@ -127,6 +183,7 @@ export default function BattleScreen() {
               <Shield size={52} />
             </div>
           )}
+          {enemyMissed && <div className="miss-flash">Errou!</div>}
         </div>
       </div>
 
@@ -140,6 +197,7 @@ export default function BattleScreen() {
               <Shield size={52} />
             </div>
           )}
+          {playerMissed && <div className="miss-flash">Errou!</div>}
         </div>
       </div>
 
@@ -162,6 +220,26 @@ export default function BattleScreen() {
           </button>
         </div>
       </div>
+
+      {phase === "dice" && (
+        <div className="dice-overlay">
+          <h2 className="dice-title">Role o dado</h2>
+          <DiceRoll value={dieValue} rolling={rolling} />
+          {rolled && <p className="luck-label">Sorte: {playerLuck}</p>}
+          {!rolled ? (
+            <button className="btn-roll" onClick={handleRoll} disabled={rolling}>
+              Rolar
+            </button>
+          ) : (
+            <button
+              className="btn-roll primary"
+              onClick={() => setPhase("player")}
+            >
+              Começar batalha
+            </button>
+          )}
+        </div>
+      )}
 
       {phase === "victory" && (
         <div className="result-overlay">
