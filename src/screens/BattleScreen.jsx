@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Skull, User, Swords, Shield } from "lucide-react";
 import HealthBar from "../components/HealthBar.jsx";
+import { useGame } from "../context/GameContext.jsx";
 import "./BattleScreen.css";
 
 const MAX_HP = 10;
@@ -14,6 +15,7 @@ const RETURN = 900;
 
 export default function BattleScreen() {
   const navigate = useNavigate();
+  const { addReward } = useGame();
   const [playerHp, setPlayerHp] = useState(PLAYER.hp);
   const [enemyHp, setEnemyHp] = useState(ENEMY.hp);
   const [phase, setPhase] = useState("player");
@@ -67,6 +69,7 @@ export default function BattleScreen() {
 
         setTimeout(() => {
           if (newEnemyHp <= 0) {
+            addReward(1, 1);
             setPhase("victory");
           } else if (newPlayerHp <= 0) {
             setPhase("defeat");

@@ -2,9 +2,12 @@ import { Routes, Route } from "react-router-dom";
 import BottomNav from "../components/BottomNav.jsx";
 import Placeholder from "../components/Placeholder.jsx";
 import InicioView from "./InicioView.jsx";
+import { useGame } from "../context/GameContext.jsx";
 import "./HomeScreen.css";
 
 export default function HomeScreen() {
+  const { gold, xp } = useGame();
+
   return (
     <div className="home-screen">
       <header className="top-bar">
@@ -17,10 +20,10 @@ export default function HomeScreen() {
         </div>
         <div className="currency">
           <span className="currency-item gold">
-            <span className="dot gold-dot" /> 0
+            <span className="dot gold-dot" /> {gold}
           </span>
-          <span className="currency-item gems">
-            <span className="dot gem-dot" /> 0
+          <span className="currency-item xp">
+            <span className="dot xp-dot" /> {xp} XP
           </span>
         </div>
       </header>
