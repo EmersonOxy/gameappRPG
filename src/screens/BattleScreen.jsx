@@ -12,7 +12,7 @@ const ENEMY = { hp: MAX_HP, atk: 2, def: 2 };
 function rollDamage(atk, def) {
   const baseDamage = Math.max(1, atk - def);
   const multiplier = 0.8 + Math.random() * 0.3;
-  return Math.max(1, Math.round(baseDamage * multiplier));
+  return baseDamage * multiplier;
 }
 
 const LUNGE = 900;
@@ -48,12 +48,12 @@ export default function BattleScreen() {
 
       if (action === "attack") {
         let d = rollDamage(PLAYER.atk, ENEMY.def);
-        if (enemyAction === "defend") d = Math.max(0, Math.floor(d / 2));
+        if (enemyAction === "defend") d = d / 2;
         enemyDmg = d;
       }
       if (enemyAction === "attack") {
         let d = rollDamage(ENEMY.atk, PLAYER.def);
-        if (action === "defend") d = Math.max(0, Math.floor(d / 2));
+        if (action === "defend") d = d / 2;
         playerDmg = d;
       }
 
