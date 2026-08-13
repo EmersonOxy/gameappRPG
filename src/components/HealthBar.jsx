@@ -11,7 +11,7 @@ function usePrevious(value) {
 
 export default function HealthBar({ hp, max, hitKey }) {
   const [shaking, setShaking] = useState(false);
-  const [recentCells, setRecentCells] = useState([]);
+  const [recentHp, setRecentHp] = useState(null);
   const prevHp = usePrevious(hp);
 
   useEffect(() => {
@@ -24,20 +24,34 @@ export default function HealthBar({ hp, max, hitKey }) {
   useEffect(() => {
     if (!hitKey) return;
     if (prevHp == null || hp >= prevHp) return;
-    const lost = [];
-    for (let i = hp; i < prevHp; i++) lost.push(i);
-    setRecentCells(lost);
-    const t = setTimeout(() => setRecentCells([]), 700);
+    setRecentHp(prevHp);
+    const t = setTimeout(() => setRecentHp(null), 900);
     return () => clearTimeout(t);
   }, [hitKey]);
 
-  const cells = Array.from({ length: max }, (_, i) => {
-    let cls = "cell";
-    if (i < hp) cls += " filled";
-    else if (recentCells.includes(i)) cls += " recent";
-    else cls += " empty";
-    return <div key={i} className={cls} />;
-  });
+  const fillPct = (hp / max) * 100;
+  const recentLeft = fillPct;
+  const recentWidth = recentHp != null ? ((recentHp - hp) / max) * 100 : 0;
 
-  return <div className={"health-bar" + (shaking ? " shake" : "")}>{cells}</div>;
+  const ticks = [];
+  for (let i = 1; i < max; i++) {
+    ticks.push(
+      <span key={i} className="tick" style={{ left: (i / max) * 100 + "%" }} />
+    );
+  }
+
+  return (
+    <div className={"health-shake" + (shaking ? " shake" : "")}>
+      <div className="health-bar">
+        <div className="health-fill" style={{ width: fillPct + "%" }} />
+        {recentHp != null && recentWidth > 0 && (
+          <div
+            className="health-recent"
+            style={{ left: recentLeft + "%", width: recentWidth + "%" }}
+          />
+        )}
+        {ticks}
+      </div>
+    </div>
+  );
 }

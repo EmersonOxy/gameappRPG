@@ -100,23 +100,26 @@ export default function BattleScreen() {
           <Skull size={64} />
           {enemyBlocking && (
             <div className="block-flash">
-              <Shield size={32} />
+              <Shield size={52} />
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div
+        className={"player-sprite-holder" + (playerMoving ? " attacking" : "")}
+      >
+        <div className="sprite player-sprite">
+          <User size={56} />
+          {playerBlocking && (
+            <div className="block-flash">
+              <Shield size={52} />
             </div>
           )}
         </div>
       </div>
 
       <div className="player-wrap">
-        <div
-          className={"sprite player-sprite" + (playerMoving ? " attacking" : "")}
-        >
-          <User size={56} />
-          {playerBlocking && (
-            <div className="block-flash">
-              <Shield size={30} />
-            </div>
-          )}
-        </div>
         <HealthBar hp={playerHp} max={MAX_HP} hitKey={playerHit} />
         <div className="battle-actions">
           <button

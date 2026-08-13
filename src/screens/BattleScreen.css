@@ -31,7 +31,7 @@
 
 .enemy-wrap {
   position: absolute;
-  top: 30px;
+  top: 40px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -43,7 +43,7 @@
 }
 
 .enemy-wrap.attacking {
-  top: calc(50% - 30px);
+  top: calc(50% - 80px);
 }
 
 .sprite {
@@ -72,11 +72,19 @@
   border: 3px solid #4a90d9;
   color: #dce8ff;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-  transition: transform 0.9s ease;
 }
 
-.player-sprite.attacking {
-  transform: translateY(-400px);
+.player-sprite-holder {
+  position: absolute;
+  left: 50%;
+  bottom: 100px;
+  transform: translateX(-50%);
+  z-index: 1;
+  transition: bottom 0.9s ease;
+}
+
+.player-sprite-holder.attacking {
+  bottom: calc(50% - 40px);
 }
 
 .player-wrap {
