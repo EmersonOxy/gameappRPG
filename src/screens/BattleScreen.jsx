@@ -224,7 +224,9 @@ export default function BattleScreen() {
           </div>
 
           <div className="dice-stage">
-            <DiceRoll value={dieValue} rolling={rolling} />
+            <div className="dice-holder">
+              <DiceRoll value={dieValue} rolling={rolling} />
+            </div>
             <div className={"dice-shadow" + (rolling ? " animating" : "")} />
           </div>
 

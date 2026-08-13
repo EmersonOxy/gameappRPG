@@ -273,7 +273,14 @@
   width: 100%;
 }
 
+.dice-holder {
+  position: relative;
+  z-index: 2;
+}
+
 .dice-shadow {
+  position: relative;
+  z-index: 1;
   width: 130px;
   height: 30px;
   border-radius: 50%;
