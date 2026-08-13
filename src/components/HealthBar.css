@@ -1,0 +1,39 @@
+.health-bar {
+  width: 150px;
+  height: 15px;
+  background: #4a5266;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 2px solid rgba(0, 0, 0, 0.45);
+  position: relative;
+}
+
+.health-fill {
+  height: 100%;
+  background: linear-gradient(180deg, #ff6b5a 0%, #d32f2f 100%);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.health-bar.shake {
+  animation: healthShake 0.4s ease;
+}
+
+@keyframes healthShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-5px);
+  }
+  40% {
+    transform: translateX(5px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+}

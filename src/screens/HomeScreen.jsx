@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import BottomNav from "../components/BottomNav.jsx";
 import Placeholder from "../components/Placeholder.jsx";
+import InicioView from "./InicioView.jsx";
 import "./HomeScreen.css";
 
 export default function HomeScreen() {
@@ -26,16 +27,7 @@ export default function HomeScreen() {
 
       <main className="home-content">
         <Routes>
-          <Route
-            index
-            element={
-              <Placeholder
-                title="Início"
-                description="Escolha uma opção abaixo para começar."
-              />
-            }
-          />
-          <Route path="battle" element={<Placeholder title="Batalha" />} />
+          <Route index element={<InicioView />} />
           <Route path="cards" element={<Placeholder title="Cartas" />} />
           <Route path="shop" element={<Placeholder title="Loja" />} />
           <Route path="profile" element={<Placeholder title="Perfil" />} />
