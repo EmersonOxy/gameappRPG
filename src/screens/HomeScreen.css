@@ -25,7 +25,7 @@
 
 .xp-fill {
   height: 100%;
-  background: linear-gradient(90deg, #8a4dff, #c9a6ff);
+  background: linear-gradient(90deg, var(--gold), var(--gold-2));
   transition: width 0.4s ease;
 }
 
