@@ -233,6 +233,33 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
+/* Distribute points button — secondary gold outline */
+.btn-points {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 22px;
+  height: 44px;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold-2);
+  background: linear-gradient(180deg, rgba(200,153,58,0.1), rgba(200,153,58,0.03));
+  border: 1px solid rgba(200, 153, 58, 0.4);
+  border-radius: 3px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5), 0 0 18px rgba(200, 153, 58, 0.15);
+  transition: transform 0.06s ease, box-shadow 0.06s ease;
+}
+
+.btn-points:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+}
+
 /* Threat level label */
 .inicio-threat {
   font-size: 10px;

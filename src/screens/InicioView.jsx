@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { Swords } from "lucide-react";
+import { Swords, Sparkles } from "lucide-react";
 import { useGame } from "../context/GameContext.jsx";
 import "./InicioView.css";
 
 export default function InicioView() {
   const navigate = useNavigate();
-  const { gold, xp, level, playerAtk, playerDef, difficulty } = useGame();
+  const { gold, xp, level, playerAtk, playerDef, difficulty, statPoints } =
+    useGame();
 
   return (
     <div className="inicio-view">
@@ -55,6 +56,16 @@ export default function InicioView() {
           <Swords size={22} />
           Batalhar
         </button>
+
+        {statPoints > 0 && (
+          <button
+            className="btn-points"
+            onClick={() => navigate("/levelup")}
+          >
+            <Sparkles size={16} />
+            Distribuir pontos ({statPoints})
+          </button>
+        )}
 
         <span className="inicio-threat">Ameaça · Nível {difficulty}</span>
       </div>

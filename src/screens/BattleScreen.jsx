@@ -11,6 +11,7 @@ import {
   Sparkles,
   RotateCw,
   LogOut,
+  Droplets,
 } from "lucide-react";
 import HealthBar from "../components/HealthBar.jsx";
 import ResourceBar from "../components/ResourceBar.jsx";
@@ -20,14 +21,13 @@ import "./BattleScreen.css";
 
 const FURY_MAX = 5;
 const FURY_GAIN = 2;
-const STAMINA_MAX = 10;
-const STAMINA_REGEN = 2;
+const ENEMY_STAMINA_MAX = 10;
+const ENEMY_STAMINA_REGEN = 2;
 const REGEN_BASE_INTERVAL = 4000;
 const REGEN_TICK = 1;
-const REGEN_INTERVAL = REGEN_BASE_INTERVAL / STAMINA_REGEN;
 const ATK_COST = 3;
 const DEF_COST = 2;
-const SPECIAL_MULT = 2;
+const ENEMY_SPECIAL_MULT = 2;
 const MATCH_TIME = 30;
 const DEFEAT_XP = 1;
 
@@ -35,6 +35,8 @@ const STAMINA_FILL = "linear-gradient(180deg, #6fb1ff, #357abd)";
 const STAMINA_TICK = "#245a8f";
 const FURY_FILL = "linear-gradient(180deg, #ffa94d, #f0751f)";
 const FURY_TICK = "#8f4700";
+const MANA_FILL = "linear-gradient(180deg, #4dd0c1, #15858a)";
+const MANA_TICK = "#0f5c60";
 
 function rollDamage(atk, def) {
   const baseDamage = Math.max(1, atk - def);
@@ -66,9 +68,14 @@ export default function BattleScreen() {
     playerMaxHp,
     playerAtk,
     playerDef,
+    playerStaminaMax,
+    playerStaminaRegen,
+    playerFuryMult,
+    playerMana,
     enemyMaxHp,
     enemyAtk,
     enemyDef,
+    enemyMana,
     goldBase,
     goldExtra,
     xpBase,
@@ -78,8 +85,8 @@ export default function BattleScreen() {
   const [enemyHp, setEnemyHp] = useState(enemyMaxHp);
   const [playerFury, setPlayerFury] = useState(0);
   const [enemyFury, setEnemyFury] = useState(0);
-  const [playerStamina, setPlayerStamina] = useState(STAMINA_MAX);
-  const [enemyStamina, setEnemyStamina] = useState(STAMINA_MAX);
+  const [playerStamina, setPlayerStamina] = useState(playerStaminaMax);
+  const [enemyStamina, setEnemyStamina] = useState(ENEMY_STAMINA_MAX);
   const [phase, setPhase] = useState("dice");
   const [playerMoving, setPlayerMoving] = useState(false);
   const [enemyMoving, setEnemyMoving] = useState(false);
@@ -99,6 +106,7 @@ export default function BattleScreen() {
   const [timeLeft, setTimeLeft] = useState(MATCH_TIME);
   const [defeatReason, setDefeatReason] = useState("defeated");
   const [reward, setReward] = useState({ gold: 0, xp: 0 });
+  const [leveledUp, setLeveledUp] = useState(false);
 
   function handleRoll() {
     if (phase !== "dice" || rolling) return;
@@ -151,7 +159,7 @@ export default function BattleScreen() {
           enemyDmg = d;
         }
       } else if (playerSpecial) {
-        let d = rollDamage(playerAtk, enemyDef) * SPECIAL_MULT;
+        let d = rollDamage(playerAtk, enemyDef) * playerFuryMult;
         if (enemyAction === "defend") d = d / 2;
         enemyDmg = d;
       }
@@ -165,7 +173,7 @@ export default function BattleScreen() {
           playerDmg = d;
         }
       } else if (enemySpecial) {
-        let d = rollDamage(enemyAtk, playerDef) * SPECIAL_MULT;
+        let d = rollDamage(enemyAtk, playerDef) * ENEMY_SPECIAL_MULT;
         if (playerAction === "defend") d = d / 2;
         playerDmg = d;
       }
@@ -222,13 +230,15 @@ export default function BattleScreen() {
           if (newEnemyHp <= 0) {
             const goldGain = rollReward(goldBase, goldExtra);
             const xpGain = rollReward(xpBase, xpExtra);
-            addReward(goldGain, xpGain);
+            const gained = addReward(goldGain, xpGain);
             setReward({ gold: goldGain, xp: xpGain });
+            setLeveledUp(gained > 0);
             setPhase("victory");
           } else if (newPlayerHp <= 0) {
             setDefeatReason("defeated");
-            addReward(0, DEFEAT_XP);
+            const gained = addReward(0, DEFEAT_XP);
             setReward({ gold: 0, xp: DEFEAT_XP });
+            setLeveledUp(gained > 0);
             setPhase("defeat");
           } else {
             setPhase("player");
@@ -247,12 +257,17 @@ export default function BattleScreen() {
   }
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setPlayerStamina((s) => Math.min(STAMINA_MAX, s + REGEN_TICK));
-      setEnemyStamina((s) => Math.min(STAMINA_MAX, s + REGEN_TICK));
-    }, REGEN_INTERVAL);
-    return () => clearInterval(id);
-  }, []);
+    const playerId = setInterval(() => {
+      setPlayerStamina((s) => Math.min(playerStaminaMax, s + REGEN_TICK));
+    }, REGEN_BASE_INTERVAL / playerStaminaRegen);
+    const enemyId = setInterval(() => {
+      setEnemyStamina((s) => Math.min(ENEMY_STAMINA_MAX, s + REGEN_TICK));
+    }, REGEN_BASE_INTERVAL / ENEMY_STAMINA_REGEN);
+    return () => {
+      clearInterval(playerId);
+      clearInterval(enemyId);
+    };
+  }, [playerStaminaMax, playerStaminaRegen]);
 
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
@@ -274,8 +289,9 @@ export default function BattleScreen() {
   useEffect(() => {
     if (phase === "player" && timeLeft <= 0) {
       setDefeatReason("timeout");
-      addReward(0, DEFEAT_XP);
+      const gained = addReward(0, DEFEAT_XP);
       setReward({ gold: 0, xp: DEFEAT_XP });
+      setLeveledUp(gained > 0);
       setPhase("defeat");
     }
   }, [phase, timeLeft]);
@@ -296,8 +312,8 @@ export default function BattleScreen() {
     setEnemyHp(enemyMaxHp);
     setPlayerFury(0);
     setEnemyFury(0);
-    setPlayerStamina(STAMINA_MAX);
-    setEnemyStamina(STAMINA_MAX);
+    setPlayerStamina(playerStaminaMax);
+    setEnemyStamina(ENEMY_STAMINA_MAX);
     setPlayerMoving(false);
     setEnemyMoving(false);
     setPlayerBlocking(false);
@@ -314,6 +330,7 @@ export default function BattleScreen() {
     setTimeLeft(MATCH_TIME);
     setDefeatReason("defeated");
     setReward({ gold: 0, xp: 0 });
+    setLeveledUp(false);
     setPhase("dice");
   }
 
@@ -338,25 +355,90 @@ export default function BattleScreen() {
         />
       </div>
       <div className="battle-divider" />
+
+      {/* Vertical bars — enemy (top half, mirrored) */}
+      <div className="arena-stack left enemy">
+        <div className="vbar furia">
+          <ResourceBar
+            value={enemyFury}
+            max={FURY_MAX}
+            fill={FURY_FILL}
+            tick={FURY_TICK}
+            vertical
+            reverse
+          />
+        </div>
+        <div className="vbar mana">
+          <ResourceBar
+            value={enemyMana}
+            max={enemyMana}
+            fill={MANA_FILL}
+            tick={MANA_TICK}
+            vertical
+            reverse
+          />
+        </div>
+      </div>
+      <div className="arena-stack right enemy">
+        <div className="vbar vida">
+          <HealthBar
+            hp={enemyHp}
+            max={enemyMaxHp}
+            hitKey={enemyHit}
+            vertical
+            reverse
+          />
+        </div>
+        <div className="vbar estamina">
+          <ResourceBar
+            value={enemyStamina}
+            max={ENEMY_STAMINA_MAX}
+            fill={STAMINA_FILL}
+            tick={STAMINA_TICK}
+            vertical
+            reverse
+          />
+        </div>
+      </div>
+
+      {/* Vertical bars — player (bottom half) */}
+      <div className="arena-stack left player">
+        <div className="vbar vida">
+          <HealthBar hp={playerHp} max={playerMaxHp} hitKey={playerHit} vertical />
+        </div>
+        <div className="vbar estamina">
+          <ResourceBar
+            value={playerStamina}
+            max={playerStaminaMax}
+            fill={STAMINA_FILL}
+            tick={STAMINA_TICK}
+            vertical
+          />
+        </div>
+      </div>
+      <div className="arena-stack right player">
+        <div className="vbar furia">
+          <ResourceBar
+            value={playerFury}
+            max={FURY_MAX}
+            fill={FURY_FILL}
+            tick={FURY_TICK}
+            vertical
+          />
+        </div>
+        <div className="vbar mana">
+          <ResourceBar
+            value={playerMana}
+            max={playerMana}
+            fill={MANA_FILL}
+            tick={MANA_TICK}
+            vertical
+          />
+        </div>
+      </div>
+
       <div className={"enemy-wrap" + (enemyMoving ? " attacking" : "")}>
         <div className="threat-badge">Ameaça Nível {difficulty}</div>
-        <div className="enemy-bar">
-          <HealthBar hp={enemyHp} max={enemyMaxHp} hitKey={enemyHit} />
-        </div>
-        <ResourceBar
-          value={enemyStamina}
-          max={STAMINA_MAX}
-          fill={STAMINA_FILL}
-          tick={STAMINA_TICK}
-          height={10}
-        />
-        <ResourceBar
-          value={enemyFury}
-          max={FURY_MAX}
-          fill={FURY_FILL}
-          tick={FURY_TICK}
-          height={16}
-        />
         <div className="sprite enemy-sprite">
           <Skull size={64} />
           {enemyBlocking && (
@@ -385,21 +467,6 @@ export default function BattleScreen() {
       </div>
 
       <div className="player-wrap">
-        <HealthBar hp={playerHp} max={playerMaxHp} hitKey={playerHit} />
-        <ResourceBar
-          value={playerStamina}
-          max={STAMINA_MAX}
-          fill={STAMINA_FILL}
-          tick={STAMINA_TICK}
-          height={10}
-        />
-        <ResourceBar
-          value={playerFury}
-          max={FURY_MAX}
-          fill={FURY_FILL}
-          tick={FURY_TICK}
-          height={16}
-        />
         <div className="battle-actions">
           <button
             className="btn-action attack"
@@ -421,6 +488,9 @@ export default function BattleScreen() {
             disabled={disabled || !canSpecial}
           >
             <Zap size={20} /> Especial
+          </button>
+          <button className="btn-action mana" disabled>
+            <Droplets size={20} /> Mana
           </button>
         </div>
       </div>
@@ -503,12 +573,28 @@ export default function BattleScreen() {
                 <span>+{reward.xp} XP</span>
               </div>
             </div>
+            {leveledUp && (
+              <div className="levelup-chip">
+                <Sparkles size={16} /> Novo nível! Pontos de status disponíveis
+              </div>
+            )}
             <div className="result-actions">
               <button className="btn-result" onClick={() => navigate("/home")}>
                 <LogOut size={18} /> Sair
               </button>
-              <button className="btn-result primary" onClick={nextBattle}>
-                <Swords size={18} /> Próximo combate
+              <button
+                className="btn-result primary"
+                onClick={leveledUp ? () => navigate("/levelup") : nextBattle}
+              >
+                {leveledUp ? (
+                  <>
+                    <Sparkles size={18} /> Distribuir pontos
+                  </>
+                ) : (
+                  <>
+                    <Swords size={18} /> Próximo combate
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -544,12 +630,28 @@ export default function BattleScreen() {
                 <span>+{reward.xp} XP</span>
               </div>
             </div>
+            {leveledUp && (
+              <div className="levelup-chip">
+                <Sparkles size={16} /> Novo nível! Pontos de status disponíveis
+              </div>
+            )}
             <div className="result-actions">
               <button className="btn-result" onClick={() => navigate("/home")}>
                 <LogOut size={18} /> Sair
               </button>
-              <button className="btn-result primary" onClick={nextBattle}>
-                <RotateCw size={18} /> Jogar novamente
+              <button
+                className="btn-result primary"
+                onClick={leveledUp ? () => navigate("/levelup") : nextBattle}
+              >
+                {leveledUp ? (
+                  <>
+                    <Sparkles size={18} /> Distribuir pontos
+                  </>
+                ) : (
+                  <>
+                    <RotateCw size={18} /> Jogar novamente
+                  </>
+                )}
               </button>
             </div>
           </div>

@@ -1,7 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import "./ResourceBar.css";
 
-export default function ResourceBar({ value, max, fill, tick, height = 16 }) {
+export default function ResourceBar({
+  value,
+  max,
+  fill,
+  tick,
+  height = 16,
+  vertical = false,
+  reverse = false,
+}) {
   const pct = Math.max(0, Math.min(100, (value / max) * 100));
   const prevValue = useRef(value);
   const [solid, setSolid] = useState(pct);
@@ -34,24 +42,40 @@ export default function ResourceBar({ value, max, fill, tick, height = 16 }) {
     ticks.push(
       <span
         key={i}
-        className="resource-tick"
+        className={"resource-tick" + (vertical ? " v" : "")}
         style={{
-          left: (i / max) * 100 + "%",
+          ...(vertical
+            ? { [reverse ? "top" : "bottom"]: (i / max) * 100 + "%" }
+            : { left: (i / max) * 100 + "%" }),
           background: i < solidValue ? tick : "#2a3038",
         }}
       />
     );
   }
 
+  const barClass =
+    "resource-bar" +
+    (vertical ? " vertical" : "") +
+    (reverse ? " reverse" : "");
+
   return (
-    <div className="resource-bar" style={{ height: height + "px" }}>
+    <div
+      className={barClass}
+      style={vertical ? undefined : { height: height + "px" }}
+    >
       <div
         className={"resource-ghost" + (ghostOn ? " on" : "")}
-        style={{ width: ghost + "%", background: fill }}
+        style={{
+          [vertical ? "height" : "width"]: ghost + "%",
+          background: fill,
+        }}
       />
       <div
         className="resource-fill"
-        style={{ width: solid + "%", background: fill }}
+        style={{
+          [vertical ? "height" : "width"]: solid + "%",
+          background: fill,
+        }}
       />
       {ticks}
     </div>

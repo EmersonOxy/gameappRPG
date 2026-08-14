@@ -9,7 +9,7 @@ function usePrevious(value) {
   return ref.current;
 }
 
-export default function HealthBar({ hp, max, hitKey }) {
+export default function HealthBar({ hp, max, hitKey, vertical = false, reverse = false }) {
   const [shaking, setShaking] = useState(false);
   const [recentHp, setRecentHp] = useState(null);
   const prevHp = usePrevious(hp);
@@ -42,22 +42,45 @@ export default function HealthBar({ hp, max, hitKey }) {
     ticks.push(
       <span
         key={i}
-        className={"tick " + (i < hp ? "filled" : "empty")}
-        style={{ left: (i / max) * 100 + "%" }}
+        className={"tick " + (i < hp ? "filled" : "empty") + (vertical ? " v" : "")}
+        style={
+          vertical
+            ? { [reverse ? "top" : "bottom"]: (i / max) * 100 + "%" }
+            : { left: (i / max) * 100 + "%" }
+        }
       />
     );
   }
 
+  const barClass =
+    "health-bar" + (vertical ? " vertical" : "") + (reverse ? " reverse" : "");
+
   return (
-    <div className={"health-shake" + (shaking ? " shake" : "")}>
-      <div className="health-bar">
+    <div
+      className={
+        "health-shake" +
+        (vertical ? " vertical" : "") +
+        (shaking ? " shake" : "")
+      }
+    >
+      <div className={barClass}>
         {recentHp != null && (
           <div
             className="health-recent"
-            style={{ left: fillPct + "%", width: recentWidth + "%" }}
+            style={
+              vertical
+                ? {
+                    [reverse ? "top" : "bottom"]: fillPct + "%",
+                    height: recentWidth + "%",
+                  }
+                : { left: fillPct + "%", width: recentWidth + "%" }
+            }
           />
         )}
-        <div className="health-fill" style={{ width: fillPct + "%" }} />
+        <div
+          className="health-fill"
+          style={vertical ? { height: fillPct + "%" } : { width: fillPct + "%" }}
+        />
         {ticks}
       </div>
     </div>
