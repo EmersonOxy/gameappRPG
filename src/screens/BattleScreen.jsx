@@ -76,6 +76,7 @@ export default function BattleScreen() {
     enemyAtk,
     enemyDef,
     enemyMana,
+    equippedSkill,
     goldBase,
     goldExtra,
     xpBase,
@@ -87,6 +88,11 @@ export default function BattleScreen() {
   const [enemyFury, setEnemyFury] = useState(0);
   const [playerStamina, setPlayerStamina] = useState(playerStaminaMax);
   const [enemyStamina, setEnemyStamina] = useState(ENEMY_STAMINA_MAX);
+  const [playerManaCurrent, setPlayerManaCurrent] = useState(playerMana);
+  const [playerShield, setPlayerShield] = useState(0);
+  const [enemyStunned, setEnemyStunned] = useState(false);
+  const [enemyStunFlash, setEnemyStunFlash] = useState(false);
+  const [skillFlash, setSkillFlash] = useState(null);
   const [phase, setPhase] = useState("dice");
   const [playerMoving, setPlayerMoving] = useState(false);
   const [enemyMoving, setEnemyMoving] = useState(false);
@@ -122,7 +128,8 @@ export default function BattleScreen() {
     }, 2400);
   }
 
-  function chooseEnemyAction() {
+  function chooseEnemyAction(stunned) {
+    if (stunned) return "stunned";
     if (enemyFury >= FURY_MAX) return "special";
     const canAttack = enemyStamina >= ATK_COST;
     const canDefend = enemyStamina >= DEF_COST;
@@ -133,22 +140,60 @@ export default function BattleScreen() {
   }
 
   function resolveTurn(playerAction) {
-    const enemyAction = chooseEnemyAction();
+    const stunned = enemyStunned;
+    const enemyAction = chooseEnemyAction(stunned);
     setPhase("resolve");
-    const playerAttacks = playerAction === "attack" || playerAction === "special";
+    if (stunned) setEnemyStunned(false);
+    const playerAttacks =
+      playerAction === "attack" ||
+      playerAction === "special" ||
+      playerAction === "skill";
     const enemyAttacks = enemyAction === "attack" || enemyAction === "special";
     setPlayerMoving(playerAttacks);
     setEnemyMoving(enemyAttacks);
+    setEnemyStunFlash(enemyAction === "stunned");
 
     const delay = playerAttacks || enemyAttacks ? LUNGE : 300;
 
     setTimeout(() => {
+      const skill = playerAction === "skill" ? equippedSkill : null;
       let playerDmg = 0;
       let enemyDmg = 0;
       let playerMiss = false;
       let enemyMiss = false;
+      let skillMiss = false;
+      let skillHeal = 0;
+      let skillShield = 0;
+      let skillStun = false;
+      let skillDrainStamina = 0;
+      let skillDrainFury = 0;
       const playerSpecial = playerAction === "special";
       const enemySpecial = enemyAction === "special";
+
+      if (skill) {
+        const fx = skill.effect;
+        if (fx.type === "damage") {
+          if (Math.random() < missChance(playerLuck)) {
+            skillMiss = true;
+          } else {
+            let d = rollDamage(playerAtk, enemyDef) * fx.mult;
+            if (enemyAction === "defend") d = d / 2;
+            enemyDmg = d;
+          }
+          if (fx.drainStamina) skillDrainStamina = fx.drainStamina;
+          if (fx.drainFury) skillDrainFury = fx.drainFury;
+          if (fx.stun) skillStun = true;
+        } else if (fx.type === "heal") {
+          skillHeal = fx.full
+            ? playerMaxHp
+            : fx.base + Math.floor(playerMaxHp * fx.pct);
+        } else if (fx.type === "shield") {
+          skillShield = fx.base + Math.floor(playerDef * fx.defFactor);
+          if (fx.healFlat) skillHeal = fx.healFlat;
+        } else if (fx.type === "stun") {
+          skillStun = true;
+        }
+      }
 
       if (playerAction === "attack") {
         if (Math.random() < missChance(playerLuck)) {
@@ -178,8 +223,20 @@ export default function BattleScreen() {
         playerDmg = d;
       }
 
+      let shieldLeft = playerShield;
+      if (skill && skill.effect.type === "shield") shieldLeft = skillShield;
+      if (playerDmg > 0 && shieldLeft > 0) {
+        const absorbed = Math.min(shieldLeft, playerDmg);
+        playerDmg -= absorbed;
+        shieldLeft -= absorbed;
+      }
+      setPlayerShield(shieldLeft);
+
       const newEnemyHp = Math.max(0, enemyHp - enemyDmg);
-      const newPlayerHp = Math.max(0, playerHp - playerDmg);
+      const newPlayerHp = Math.max(
+        0,
+        Math.min(playerMaxHp, playerHp + skillHeal) - playerDmg
+      );
       setEnemyHp(newEnemyHp);
       setPlayerHp(newPlayerHp);
       if (enemyDmg > 0) setEnemyHit(Date.now());
@@ -190,7 +247,10 @@ export default function BattleScreen() {
         : Math.min(FURY_MAX, playerFury + playerDmg * FURY_GAIN);
       const newEnemyFury = enemySpecial
         ? 0
-        : Math.min(FURY_MAX, enemyFury + enemyDmg * FURY_GAIN);
+        : Math.min(
+            FURY_MAX,
+            Math.max(0, enemyFury + enemyDmg * FURY_GAIN - skillDrainFury)
+          );
       setPlayerFury(newPlayerFury);
       setEnemyFury(newEnemyFury);
 
@@ -207,14 +267,22 @@ export default function BattleScreen() {
           ? DEF_COST
           : 0;
       setPlayerStamina((s) => Math.max(0, s - playerCost));
-      setEnemyStamina((s) => Math.max(0, s - enemyCost));
+      setEnemyStamina((s) =>
+        Math.max(0, s - enemyCost - skillDrainStamina)
+      );
+
+      if (skill) {
+        setPlayerManaCurrent(Math.max(0, playerManaCurrent - skill.manaCost));
+      }
 
       setPlayerBlocking(playerAction === "defend");
       setEnemyBlocking(enemyAction === "defend");
-      setPlayerMissed(playerMiss);
+      setPlayerMissed(playerMiss || skillMiss);
       setEnemyMissed(enemyMiss);
       setPlayerCrit(enemySpecial);
       setEnemyCrit(playerSpecial);
+      setSkillFlash(skill && !skillMiss ? skill.name : null);
+      if (skillStun) setEnemyStunned(true);
 
       setTimeout(() => {
         setPlayerBlocking(false);
@@ -225,6 +293,8 @@ export default function BattleScreen() {
         setEnemyCrit(false);
         setPlayerMoving(false);
         setEnemyMoving(false);
+        setEnemyStunFlash(false);
+        setSkillFlash(null);
 
         setTimeout(() => {
           if (newEnemyHp <= 0) {
@@ -253,6 +323,12 @@ export default function BattleScreen() {
     if (action === "attack" && playerStamina < ATK_COST) return;
     if (action === "defend" && playerStamina < DEF_COST) return;
     if (action === "special" && playerFury < FURY_MAX) return;
+    if (
+      action === "skill" &&
+      (!equippedSkill || playerManaCurrent < equippedSkill.manaCost)
+    ) {
+      return;
+    }
     resolveTurn(action);
   }
 
@@ -301,11 +377,14 @@ export default function BattleScreen() {
     const canAttack = playerStamina >= ATK_COST;
     const canDefend = playerStamina >= DEF_COST;
     const canSpecial = playerFury >= FURY_MAX;
-    if (!canAttack && !canDefend && !canSpecial) {
+    const canSkill = Boolean(
+      equippedSkill && playerManaCurrent >= equippedSkill.manaCost
+    );
+    if (!canAttack && !canDefend && !canSpecial && !canSkill) {
       const t = setTimeout(() => resolveTurn("skip"), 800);
       return () => clearTimeout(t);
     }
-  }, [phase, playerStamina, playerFury]);
+  }, [phase, playerStamina, playerFury, playerManaCurrent, equippedSkill]);
 
   function nextBattle() {
     setPlayerHp(playerMaxHp);
@@ -314,6 +393,11 @@ export default function BattleScreen() {
     setEnemyFury(0);
     setPlayerStamina(playerStaminaMax);
     setEnemyStamina(ENEMY_STAMINA_MAX);
+    setPlayerManaCurrent(playerMana);
+    setPlayerShield(0);
+    setEnemyStunned(false);
+    setEnemyStunFlash(false);
+    setSkillFlash(null);
     setPlayerMoving(false);
     setEnemyMoving(false);
     setPlayerBlocking(false);
@@ -338,6 +422,10 @@ export default function BattleScreen() {
   const canAttack = playerStamina >= ATK_COST;
   const canDefend = playerStamina >= DEF_COST;
   const canSpecial = playerFury >= FURY_MAX;
+  const canSkill = Boolean(
+    equippedSkill && playerManaCurrent >= equippedSkill.manaCost
+  );
+  const SkillIcon = equippedSkill ? equippedSkill.icon : null;
   const timePct = (timeLeft / MATCH_TIME) * 100;
 
   return (
@@ -428,7 +516,7 @@ export default function BattleScreen() {
         </div>
         <div className="vbar mana">
           <ResourceBar
-            value={playerMana}
+            value={playerManaCurrent}
             max={playerMana}
             fill={MANA_FILL}
             tick={MANA_TICK}
@@ -448,6 +536,14 @@ export default function BattleScreen() {
           )}
           {enemyMissed && <div className="miss-flash left">Errou!</div>}
           {enemyCrit && <div className="crit-flash left">Crítico!</div>}
+          {enemyStunFlash && <div className="stun-flash left">Congelado!</div>}
+          {skillFlash && equippedSkill && (
+            <div
+              className={"skill-flash left branch-" + equippedSkill.branch}
+            >
+              {skillFlash}!
+            </div>
+          )}
         </div>
       </div>
 
@@ -456,6 +552,12 @@ export default function BattleScreen() {
       >
         <div className="sprite player-sprite">
           <User size={56} />
+          {playerShield > 0 && (
+            <div className="shield-badge">
+              <Shield size={13} />
+              {Math.ceil(playerShield)}
+            </div>
+          )}
           {playerBlocking && (
             <div className="block-flash">
               <Shield size={52} />
@@ -489,9 +591,24 @@ export default function BattleScreen() {
           >
             <Zap size={20} /> Especial
           </button>
-          <button className="btn-action mana" disabled>
-            <Droplets size={20} /> Mana
-          </button>
+          {SkillIcon && equippedSkill ? (
+            <button
+              className={"btn-action skill branch-" + equippedSkill.branch}
+              onClick={() => handleAction("skill")}
+              disabled={disabled || !canSkill}
+            >
+              <SkillIcon size={20} />
+              <span className="skill-btn-name">{equippedSkill.name}</span>
+              <span className="skill-cost">
+                <Droplets size={11} />
+                {equippedSkill.manaCost}
+              </span>
+            </button>
+          ) : (
+            <button className="btn-action mana" disabled>
+              <Droplets size={20} /> Mana
+            </button>
+          )}
         </div>
       </div>
 
