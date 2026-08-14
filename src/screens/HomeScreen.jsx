@@ -3,6 +3,7 @@ import BottomNav from "../components/BottomNav.jsx";
 import Placeholder from "../components/Placeholder.jsx";
 import InicioView from "./InicioView.jsx";
 import SkillTreeScreen from "./SkillTreeScreen.jsx";
+import ShopScreen from "./ShopScreen.jsx";
 import { useGame } from "../context/GameContext.jsx";
 import "./HomeScreen.css";
 
@@ -41,7 +42,7 @@ export default function HomeScreen() {
         <Routes>
           <Route index element={<InicioView />} />
           <Route path="skills" element={<SkillTreeScreen />} />
-          <Route path="shop" element={<Placeholder title="Loja" />} />
+          <Route path="shop" element={<ShopScreen />} />
           <Route path="profile" element={<Placeholder title="Perfil" />} />
         </Routes>
       </main>

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { STATS, INITIAL_STATS, POINTS_PER_LEVEL } from "../constants/stats.js";
 import { SKILLS, getSkill } from "../constants/skills.js";
+import { ITEMS } from "../constants/items.js";
 
 const STORAGE_KEY = "gameapprpg:progress";
 
@@ -25,6 +26,19 @@ function sanitizeSkills(list) {
   return list.filter((id) => VALID_SKILL_IDS.has(id));
 }
 
+function sanitizeItems(obj) {
+  const result = {};
+  if (obj && typeof obj === "object") {
+    for (const id of Object.keys(obj)) {
+      if (ITEMS.some((i) => i.id === id)) {
+        const n = Math.floor(Number(obj[id]));
+        if (n > 0) result[id] = n;
+      }
+    }
+  }
+  return result;
+}
+
 function loadProgress() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -36,6 +50,7 @@ function loadProgress() {
         statPoints: 0,
         skillsOwned: [],
         skillsEquipped: [],
+        itemsOwned: {},
       };
     }
     const data = JSON.parse(raw);
@@ -57,6 +72,7 @@ function loadProgress() {
       skillsEquipped = sanitizeSkills([data.skillEquipped]);
     }
     skillsEquipped = skillsEquipped.filter((id) => skillsOwned.includes(id));
+    const itemsOwned = sanitizeItems(data.itemsOwned);
     return {
       gold: Number(data.gold) || 0,
       totalXp,
@@ -64,6 +80,7 @@ function loadProgress() {
       statPoints,
       skillsOwned,
       skillsEquipped,
+      itemsOwned,
     };
   } catch {
     return {
@@ -73,6 +90,7 @@ function loadProgress() {
       statPoints: 0,
       skillsOwned: [],
       skillsEquipped: [],
+      itemsOwned: {},
     };
   }
 }
@@ -87,6 +105,7 @@ export function GameProvider({ children }) {
   const [statPoints, setStatPoints] = useState(initial.statPoints);
   const [skillsOwned, setSkillsOwned] = useState(initial.skillsOwned);
   const [skillsEquipped, setSkillsEquipped] = useState(initial.skillsEquipped);
+  const [itemsOwned, setItemsOwned] = useState(initial.itemsOwned);
 
   useEffect(() => {
     localStorage.setItem(
@@ -98,9 +117,10 @@ export function GameProvider({ children }) {
         statPoints,
         skillsOwned,
         skillsEquipped,
+        itemsOwned,
       })
     );
-  }, [gold, totalXp, stats, statPoints, skillsOwned, skillsEquipped]);
+  }, [gold, totalXp, stats, statPoints, skillsOwned, skillsEquipped, itemsOwned]);
 
   function addReward(goldGain, xpGain) {
     const nextTotalXp = totalXp + xpGain;
@@ -140,6 +160,27 @@ export function GameProvider({ children }) {
     setSkillsEquipped((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
+    return { ok: true };
+  }
+
+  function buyItem(id) {
+    const item = ITEMS.find((i) => i.id === id);
+    if (!item) return { ok: false, reason: "invalid" };
+    if (gold < item.price) return { ok: false, reason: "gold" };
+    setGold((g) => g - item.price);
+    setItemsOwned((o) => ({ ...o, [id]: (o[id] || 0) + 1 }));
+    return { ok: true };
+  }
+
+  function useItem(id) {
+    const count = itemsOwned[id] || 0;
+    if (count <= 0) return { ok: false };
+    setItemsOwned((o) => {
+      const next = { ...o };
+      if (next[id] <= 1) delete next[id];
+      else next[id] -= 1;
+      return next;
+    });
     return { ok: true };
   }
 
@@ -187,6 +228,9 @@ export function GameProvider({ children }) {
         equippedSkills,
         buySkill,
         toggleSkill,
+        itemsOwned,
+        buyItem,
+        useItem,
         difficulty: level,
         playerMaxHp,
         playerAtk,

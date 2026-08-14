@@ -12,11 +12,15 @@ import {
   RotateCw,
   LogOut,
   Droplets,
+  Package,
+  Gem,
+  X,
 } from "lucide-react";
 import HealthBar from "../components/HealthBar.jsx";
 import ResourceBar from "../components/ResourceBar.jsx";
 import DiceRoll from "../components/DiceRoll.jsx";
 import { useGame } from "../context/GameContext.jsx";
+import { ITEMS, getItem } from "../constants/items.js";
 import "./BattleScreen.css";
 
 const FURY_MAX = 5;
@@ -30,6 +34,8 @@ const DEF_COST = 2;
 const ENEMY_SPECIAL_MULT = 2;
 const MATCH_TIME = 30;
 const DEFEAT_XP = 1;
+const CRYSTAL_MAX = 5;
+const CRYSTAL_REFILL_TURNS = 2;
 
 const STAMINA_FILL = "linear-gradient(180deg, #6fb1ff, #357abd)";
 const STAMINA_TICK = "#245a8f";
@@ -78,6 +84,8 @@ export default function BattleScreen() {
     enemyDef,
     enemyMana,
     equippedSkills,
+    itemsOwned,
+    useItem,
     goldBase,
     goldExtra,
     xpBase,
@@ -114,6 +122,11 @@ export default function BattleScreen() {
   const [defeatReason, setDefeatReason] = useState("defeated");
   const [reward, setReward] = useState({ gold: 0, xp: 0 });
   const [leveledUp, setLeveledUp] = useState(false);
+  const [crystals, setCrystals] = useState(CRYSTAL_MAX);
+  const [turnCount, setTurnCount] = useState(0);
+  const [pendingItems, setPendingItems] = useState([]);
+  const [inventoryOpen, setInventoryOpen] = useState(false);
+  const [itemPopup, setItemPopup] = useState(null);
 
   const staminaRegenMs = REGEN_BASE_INTERVAL / playerStaminaRegen;
   const enemyStaminaRegenMs = REGEN_BASE_INTERVAL / ENEMY_STAMINA_REGEN;
@@ -305,14 +318,68 @@ export default function BattleScreen() {
         setSkillFlash(null);
 
         setTimeout(() => {
-          if (newEnemyHp <= 0) {
+          const nextTurn = turnCount + 1;
+          setTurnCount(nextTurn);
+          if (nextTurn > 0 && nextTurn % CRYSTAL_REFILL_TURNS === 0) {
+            setCrystals(CRYSTAL_MAX);
+          }
+
+          let eHp = newEnemyHp;
+          let pHp = newPlayerHp;
+          let popup = null;
+
+          const due = pendingItems.filter((p) => p.activatesAtTurn <= nextTurn);
+          const remaining = pendingItems.filter(
+            (p) => p.activatesAtTurn > nextTurn
+          );
+          setPendingItems(remaining);
+
+          due.forEach((p) => {
+            const item = getItem(p.itemId);
+            if (!item) return;
+            const fx = item.effect;
+            let text = "";
+            if (fx.type === "damage") {
+              const dmg = fx.base + Math.floor(difficulty / 2);
+              eHp = Math.max(0, eHp - dmg);
+              text = `${dmg} de dano`;
+            } else if (fx.type === "heal") {
+              const heal = Math.floor(playerMaxHp * fx.pct);
+              pHp = Math.min(playerMaxHp, pHp + heal);
+              text = `+${heal} de vida`;
+            } else if (fx.type === "mana") {
+              setPlayerManaCurrent((m) => Math.min(playerMana, m + fx.amount));
+              text = `+${fx.amount} de mana`;
+            } else if (fx.type === "stamina") {
+              setPlayerStamina((s) => Math.min(playerStaminaMax, s + fx.amount));
+              text = `+${fx.amount} de estamina`;
+            } else if (fx.type === "fury") {
+              setPlayerFury((f) => Math.min(FURY_MAX, f + fx.amount));
+              text = `+${fx.amount} de fúria`;
+            } else if (fx.type === "shield") {
+              setPlayerShield((sh) => sh + fx.amount);
+              text = `+${fx.amount} de escudo`;
+            }
+            popup = {
+              name: item.name,
+              icon: item.icon,
+              branch: item.branch,
+              text,
+            };
+          });
+
+          if (popup) setItemPopup(popup);
+          setEnemyHp(eHp);
+          setPlayerHp(pHp);
+
+          if (eHp <= 0) {
             const goldGain = rollReward(goldBase, goldExtra);
             const xpGain = rollReward(xpBase, xpExtra);
             const gained = addReward(goldGain, xpGain);
             setReward({ gold: goldGain, xp: xpGain });
             setLeveledUp(gained > 0);
             setPhase("victory");
-          } else if (newPlayerHp <= 0) {
+          } else if (pHp <= 0) {
             setDefeatReason("defeated");
             const gained = addReward(0, DEFEAT_XP);
             setReward({ gold: 0, xp: DEFEAT_XP });
@@ -337,8 +404,35 @@ export default function BattleScreen() {
     resolveTurn(action, skill);
   }
 
+  function useItemAction(item) {
+    if (phase !== "player") return;
+    if (!item) return;
+    if (crystals < item.crystalCost) return;
+    if ((itemsOwned[item.id] || 0) <= 0) return;
+    const res = useItem(item.id);
+    if (!res.ok) return;
+    setCrystals((c) => c - item.crystalCost);
+    setPendingItems((p) => [
+      ...p,
+      {
+        itemId: item.id,
+        name: item.name,
+        icon: item.icon,
+        branch: item.branch,
+        activatesAtTurn: turnCount + item.delay,
+      },
+    ]);
+    setInventoryOpen(false);
+  }
+
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
+
+  useEffect(() => {
+    if (!itemPopup) return;
+    const t = setTimeout(() => setItemPopup(null), 1800);
+    return () => clearTimeout(t);
+  }, [itemPopup]);
 
   useEffect(() => {
     const progress = { stamina: 0, enemy: 0, mana: 0 };
@@ -353,7 +447,7 @@ export default function BattleScreen() {
         setTimeLeft((t) => Math.max(0, t - dt));
       }
 
-      progress.stamina += dt / staminaRegenMs;
+      progress.stamina += (dt * 1000) / staminaRegenMs;
       let add = 0;
       while (progress.stamina >= 1) {
         progress.stamina -= 1;
@@ -364,7 +458,7 @@ export default function BattleScreen() {
       }
       setStaminaProgress(Math.min(1, progress.stamina));
 
-      progress.enemy += dt / enemyStaminaRegenMs;
+      progress.enemy += (dt * 1000) / enemyStaminaRegenMs;
       add = 0;
       while (progress.enemy >= 1) {
         progress.enemy -= 1;
@@ -375,7 +469,7 @@ export default function BattleScreen() {
       }
       setEnemyStaminaProgress(Math.min(1, progress.enemy));
 
-      progress.mana += dt / manaRegenMs;
+      progress.mana += (dt * 1000) / manaRegenMs;
       add = 0;
       while (progress.mana >= 1) {
         progress.mana -= 1;
@@ -430,6 +524,11 @@ export default function BattleScreen() {
     setStaminaProgress(0);
     setEnemyStaminaProgress(0);
     setManaProgress(0);
+    setCrystals(CRYSTAL_MAX);
+    setTurnCount(0);
+    setPendingItems([]);
+    setInventoryOpen(false);
+    setItemPopup(null);
     setPlayerShield(0);
     setEnemyStunned(false);
     setEnemyStunFlash(false);
@@ -459,6 +558,7 @@ export default function BattleScreen() {
   const canDefend = playerStamina >= DEF_COST;
   const canSpecial = playerFury >= FURY_MAX;
   const timePct = (timeLeft / MATCH_TIME) * 100;
+  const PopupIcon = itemPopup ? itemPopup.icon : null;
 
   return (
     <div className="battle-screen">
@@ -626,6 +726,17 @@ export default function BattleScreen() {
           >
             <Zap size={20} /> Especial
           </button>
+          <button
+            className="btn-action bag"
+            onClick={() => setInventoryOpen(true)}
+            disabled={disabled}
+          >
+            <Package size={16} /> Mochila
+            <span className="bag-crystals">
+              <Gem size={9} />
+              {crystals}
+            </span>
+          </button>
         </div>
         {equippedSkills.length > 0 ? (
           <div className="battle-skills">
@@ -660,6 +771,98 @@ export default function BattleScreen() {
           </div>
         )}
       </div>
+
+      {pendingItems.length > 0 && (
+        <div className="pending-items">
+          {pendingItems.map((p, i) => {
+            const PIcon = p.icon;
+            const turns = Math.max(0, p.activatesAtTurn - turnCount);
+            return (
+              <div className={"pending-chip branch-" + p.branch} key={i}>
+                <PIcon size={13} />
+                <span className="pending-name">{p.name}</span>
+                <span className="pending-count">{turns}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {itemPopup && PopupIcon && (
+        <div className={"item-popup branch-" + itemPopup.branch}>
+          <PopupIcon size={22} />
+          <div className="item-popup-text">
+            <span className="item-popup-name">{itemPopup.name}</span>
+            <span className="item-popup-effect">{itemPopup.text}</span>
+          </div>
+        </div>
+      )}
+
+      {inventoryOpen && (
+        <div className="bag-overlay">
+          <div className="bag-panel">
+            <div className="bag-head">
+              <h3 className="bag-title">Mochila</h3>
+              <button
+                className="bag-close"
+                onClick={() => setInventoryOpen(false)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="bag-crystals-row">
+              <div className="crystal-pips">
+                {Array.from({ length: CRYSTAL_MAX }).map((_, i) => (
+                  <Gem
+                    key={i}
+                    size={16}
+                    className={"pip" + (i < crystals ? " full" : "")}
+                  />
+                ))}
+              </div>
+              <span className="bag-crystals-note">recarrega a cada 2 turnos</span>
+            </div>
+
+            <div className="bag-list">
+              {ITEMS.map((item) => {
+                const qty = itemsOwned[item.id] || 0;
+                if (qty <= 0) return null;
+                const Icon = item.icon;
+                const canUse = crystals >= item.crystalCost;
+                return (
+                  <div className={"bag-item branch-" + item.branch} key={item.id}>
+                    <div className={"bag-item-icon branch-" + item.branch}>
+                      <Icon size={18} />
+                    </div>
+                    <div className="bag-item-info">
+                      <span className="bag-item-name">
+                        {item.name} <span className="bag-qty">x{qty}</span>
+                      </span>
+                      <span className="bag-item-desc">{item.description}</span>
+                      <span className="bag-item-delay">
+                        ativa em {item.delay} turno{item.delay > 1 ? "s" : ""}
+                      </span>
+                    </div>
+                    <button
+                      className="bag-use"
+                      onClick={() => useItemAction(item)}
+                      disabled={!canUse}
+                    >
+                      <Gem size={12} /> {item.crystalCost}
+                    </button>
+                  </div>
+                );
+              })}
+              {ITEMS.every((item) => (itemsOwned[item.id] || 0) <= 0) && (
+                <p className="bag-empty">
+                  Nenhum item na mochila. Compre na loja.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {phase === "dice" && (
         <div className="dice-overlay">
