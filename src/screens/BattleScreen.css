@@ -408,26 +408,33 @@
 /* ---- Action buttons ---- */
 .battle-actions {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
   width: 100%;
   max-width: 460px;
 }
 
 .battle-skills {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   max-width: 460px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 1px 1px 3px;
+  scrollbar-width: none;
+}
+
+.battle-skills::-webkit-scrollbar {
+  display: none;
 }
 
 .battle-skills .btn-action {
-  flex: 0 1 auto;
-  min-width: 108px;
-  padding: 0 12px;
+  flex: 0 0 auto;
+  min-width: 118px;
+  padding: 0 10px;
 }
 
 .btn-action {
@@ -435,17 +442,19 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 0;
+  gap: 5px;
+  padding: 0 4px;
   height: 52px;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   border: none;
   border-radius: 3px;
   cursor: pointer;
   color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
   /* 3D press feel like LoR attack button */
   transition: transform 0.06s ease, box-shadow 0.08s ease, opacity 0.15s ease;
 }
@@ -974,9 +983,9 @@
    INVENTORY / MOCHILA / ITEMS
    ======================================== */
 .btn-action.bag {
-  gap: 5px;
-  font-size: 11px;
-  letter-spacing: 0.4px;
+  gap: 3px;
+  font-size: 9.5px;
+  letter-spacing: 0.3px;
   background: linear-gradient(180deg, #7a5fd0 0%, #4a3480 100%);
   box-shadow:
     0 5px 0 #2a1a4a,
@@ -988,13 +997,13 @@
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  font-size: 9px;
+  font-size: 8.5px;
   font-weight: 900;
   color: #e6dbff;
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 999px;
-  padding: 1px 4px;
+  padding: 1px 2px;
   flex-shrink: 0;
 }
 

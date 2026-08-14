@@ -448,35 +448,35 @@ export default function BattleScreen() {
       }
 
       progress.stamina += (dt * 1000) / staminaRegenMs;
-      let add = 0;
+      let staminaAdd = 0;
       while (progress.stamina >= 1) {
         progress.stamina -= 1;
-        add += 1;
+        staminaAdd += 1;
       }
-      if (add > 0) {
-        setPlayerStamina((s) => Math.min(playerStaminaMax, s + add));
+      if (staminaAdd > 0) {
+        setPlayerStamina((s) => Math.min(playerStaminaMax, s + staminaAdd));
       }
       setStaminaProgress(Math.min(1, progress.stamina));
 
       progress.enemy += (dt * 1000) / enemyStaminaRegenMs;
-      add = 0;
+      let enemyAdd = 0;
       while (progress.enemy >= 1) {
         progress.enemy -= 1;
-        add += 1;
+        enemyAdd += 1;
       }
-      if (add > 0) {
-        setEnemyStamina((s) => Math.min(ENEMY_STAMINA_MAX, s + add));
+      if (enemyAdd > 0) {
+        setEnemyStamina((s) => Math.min(ENEMY_STAMINA_MAX, s + enemyAdd));
       }
       setEnemyStaminaProgress(Math.min(1, progress.enemy));
 
       progress.mana += (dt * 1000) / manaRegenMs;
-      add = 0;
+      let manaAdd = 0;
       while (progress.mana >= 1) {
         progress.mana -= 1;
-        add += 1;
+        manaAdd += 1;
       }
-      if (add > 0) {
-        setPlayerManaCurrent((m) => Math.min(playerMana, m + add));
+      if (manaAdd > 0) {
+        setPlayerManaCurrent((m) => Math.min(playerMana, m + manaAdd));
       }
       setManaProgress(Math.min(1, progress.mana));
     }, 100);
@@ -704,40 +704,6 @@ export default function BattleScreen() {
       </div>
 
       <div className="player-wrap">
-        <div className="battle-actions">
-          <button
-            className="btn-action attack"
-            onClick={() => handleAction("attack")}
-            disabled={disabled || !canAttack}
-          >
-            <Swords size={20} /> Atacar
-          </button>
-          <button
-            className="btn-action defend"
-            onClick={() => handleAction("defend")}
-            disabled={disabled || !canDefend}
-          >
-            <Shield size={20} /> Defender
-          </button>
-          <button
-            className="btn-action special"
-            onClick={() => handleAction("special")}
-            disabled={disabled || !canSpecial}
-          >
-            <Zap size={20} /> Especial
-          </button>
-          <button
-            className="btn-action bag"
-            onClick={() => setInventoryOpen(true)}
-            disabled={disabled}
-          >
-            <Package size={16} /> Mochila
-            <span className="bag-crystals">
-              <Gem size={9} />
-              {crystals}
-            </span>
-          </button>
-        </div>
         {equippedSkills.length > 0 ? (
           <div className="battle-skills">
             {equippedSkills.map((skill) => {
@@ -770,6 +736,40 @@ export default function BattleScreen() {
             </button>
           </div>
         )}
+        <div className="battle-actions">
+          <button
+            className="btn-action attack"
+            onClick={() => handleAction("attack")}
+            disabled={disabled || !canAttack}
+          >
+            <Swords size={20} /> Atacar
+          </button>
+          <button
+            className="btn-action defend"
+            onClick={() => handleAction("defend")}
+            disabled={disabled || !canDefend}
+          >
+            <Shield size={20} /> Defender
+          </button>
+          <button
+            className="btn-action special"
+            onClick={() => handleAction("special")}
+            disabled={disabled || !canSpecial}
+          >
+            <Zap size={20} /> Especial
+          </button>
+          <button
+            className="btn-action bag"
+            onClick={() => setInventoryOpen(true)}
+            disabled={disabled}
+          >
+            <Package size={13} /> Mochila
+            <span className="bag-crystals">
+              <Gem size={7} />
+              {crystals}
+            </span>
+          </button>
+        </div>
       </div>
 
       {pendingItems.length > 0 && (
