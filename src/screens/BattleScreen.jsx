@@ -29,7 +29,7 @@ const REGEN_INTERVAL = REGEN_BASE_INTERVAL / STAMINA_REGEN;
 const ATK_COST = 3;
 const DEF_COST = 2;
 const SPECIAL_MULT = 2;
-const MATCH_TIME = 60;
+const MATCH_TIME = 30;
 
 const STAMINA_FILL = "linear-gradient(180deg, #6fb1ff, #357abd)";
 const STAMINA_TICK = "#245a8f";
@@ -239,7 +239,7 @@ export default function BattleScreen() {
   }, []);
 
   useEffect(() => {
-    if (phase !== "player") return;
+    if (phase !== "player" && phase !== "resolve") return;
     const id = setInterval(() => {
       setTimeLeft((t) => Math.max(0, t - 1));
     }, 1000);
