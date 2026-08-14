@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Skull, User, Swords, Shield, Zap } from "lucide-react";
 import HealthBar from "../components/HealthBar.jsx";
@@ -238,13 +238,22 @@ export default function BattleScreen() {
     return () => clearInterval(id);
   }, []);
 
+  const phaseRef = useRef(phase);
+  phaseRef.current = phase;
+
   useEffect(() => {
-    if (phase !== "player" && phase !== "resolve") return;
+    let last = Date.now();
     const id = setInterval(() => {
-      setTimeLeft((t) => Math.max(0, t - 1));
-    }, 1000);
+      const now = Date.now();
+      const dt = (now - last) / 1000;
+      last = now;
+      const p = phaseRef.current;
+      if (p === "player" || p === "resolve") {
+        setTimeLeft((t) => Math.max(0, t - dt));
+      }
+    }, 100);
     return () => clearInterval(id);
-  }, [phase]);
+  }, []);
 
   useEffect(() => {
     if (phase === "player" && timeLeft <= 0) {
