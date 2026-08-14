@@ -24,7 +24,6 @@ import { ITEMS, getItem } from "../constants/items.js";
 import "./BattleScreen.css";
 
 const FURY_MAX = 5;
-const FURY_GAIN = 2;
 const ENEMY_STAMINA_MAX = 10;
 const ENEMY_STAMINA_REGEN = 2;
 const REGEN_BASE_INTERVAL = 4000;
@@ -263,12 +262,12 @@ export default function BattleScreen() {
 
       const newPlayerFury = playerSpecial
         ? 0
-        : Math.min(FURY_MAX, playerFury + playerDmg * FURY_GAIN);
+        : Math.min(FURY_MAX, playerFury + (playerDmg > 0 ? 1 : 0));
       const newEnemyFury = enemySpecial
         ? 0
         : Math.min(
             FURY_MAX,
-            Math.max(0, enemyFury + enemyDmg * FURY_GAIN - skillDrainFury)
+            Math.max(0, enemyFury + (enemyDmg > 0 ? 1 : 0) - skillDrainFury)
           );
       setPlayerFury(newPlayerFury);
       setEnemyFury(newEnemyFury);
@@ -574,22 +573,9 @@ export default function BattleScreen() {
       </div>
       <div className="battle-divider" />
 
-      {/* Vertical bars — enemy (top half, mirrored) */}
-      {/* Left enemy: mana (mesmo destaque que HP) */}
+      {/* Vertical bars — enemy (top half, espelhado do player) */}
+      {/* Left enemy: vida (com fury-pips) + estamina sobreposta */}
       <div className="arena-stack left enemy">
-        <div className="vbar mana">
-          <ResourceBar
-            value={enemyMana}
-            max={enemyMana}
-            fill={MANA_FILL}
-            tick={MANA_TICK}
-            vertical
-            reverse
-          />
-        </div>
-      </div>
-      {/* Right enemy: vida (com fury-pips) + estamina sobreposta */}
-      <div className="arena-stack right enemy">
         <div className="vbar-group">
           {/* Estamina: menor, fica por trás/abaixo da barra de vida */}
           <div className="vbar estamina">
@@ -612,8 +598,8 @@ export default function BattleScreen() {
               vertical
               reverse
             />
-            {/* Fúria do inimigo: pips finos colados na lateral esquerda da vida */}
-            <div className="fury-pips left">
+            {/* Fúria do inimigo: pips finos colados na lateral direita da vida */}
+            <div className="fury-pips right">
               {Array.from({ length: FURY_MAX }).map((_, i) => (
                 <div
                   key={i}
@@ -622,6 +608,19 @@ export default function BattleScreen() {
               ))}
             </div>
           </div>
+        </div>
+      </div>
+      {/* Right enemy: mana (mesmo destaque que HP) */}
+      <div className="arena-stack right enemy">
+        <div className="vbar mana">
+          <ResourceBar
+            value={enemyMana}
+            max={enemyMana}
+            fill={MANA_FILL}
+            tick={MANA_TICK}
+            vertical
+            reverse
+          />
         </div>
       </div>
 
