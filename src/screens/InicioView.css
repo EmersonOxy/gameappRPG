@@ -1,40 +1,235 @@
+/* ======================================
+   INICIO VIEW — LoR-Inspired Home Panel
+   ====================================== */
 .inicio-view {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 0;
+  padding: 0;
+  overflow-y: auto;
+  background:
+    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(200, 153, 58, 0.04) 0%, transparent 60%),
+    linear-gradient(180deg, #0c0a06 0%, #08090d 100%);
+}
+
+/* Hero banner — atmospheric like LoR's home screen art */
+.inicio-banner {
+  width: 100%;
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 20px 18px;
+  /* Atmospheric gradient simulating dark fantasy landscape */
+  background:
+    radial-gradient(ellipse 60% 80% at 70% 40%, rgba(180, 80, 20, 0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 60% at 20% 60%, rgba(30, 50, 80, 0.3) 0%, transparent 60%),
+    linear-gradient(180deg, #1a120a 0%, #0d0a06 60%, #08090d 100%);
+}
+
+/* Fog layer at bottom */
+.inicio-banner::after {
+  content: "";
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 80px;
+  background: linear-gradient(0deg, #08090d, transparent);
+  pointer-events: none;
+}
+
+/* Atmospheric torch glow left */
+.inicio-banner::before {
+  content: "";
+  position: absolute;
+  top: 20%; left: 15%;
+  width: 60px; height: 80px;
+  background: radial-gradient(ellipse at center, rgba(255, 140, 20, 0.18) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Torch flicker elements */
+.inicio-torch {
+  position: absolute;
+  top: 18px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50% 50% 30% 30%;
+  background: radial-gradient(ellipse at center, #ffa020, #ff5500);
+  filter: blur(2px);
+  animation: torchFlicker 1.8s ease-in-out infinite;
+}
+.inicio-torch.left  { left: 18%; }
+.inicio-torch.right { right: 18%; animation-delay: 0.9s; }
+
+@keyframes torchFlicker {
+  0%, 100% { opacity: 1;   transform: scaleX(1)   scaleY(1); }
+  25%       { opacity: 0.7; transform: scaleX(1.2) scaleY(0.8); }
+  50%       { opacity: 0.9; transform: scaleX(0.9) scaleY(1.15); }
+  75%       { opacity: 0.75;transform: scaleX(1.1) scaleY(0.9); }
+}
+
+/* Banner text */
+.inicio-banner-text {
+  position: relative;
+  z-index: 2;
+}
+
+.inicio-banner-title {
+  font-family: 'Cinzel', serif;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: var(--text-bright);
+  line-height: 1.1;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+}
+
+.inicio-banner-sub {
+  font-size: 12px;
+  color: var(--gold);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+/* Stats row — LoR-style info chips */
+.inicio-stats {
+  display: flex;
+  gap: 1px;
+  width: 100%;
+  background: var(--border);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.inicio-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 24px;
-  text-align: center;
+  gap: 2px;
+  padding: 12px 8px;
+  background: linear-gradient(180deg, #12100a, #0d0b07);
 }
 
-.inicio-view h2 {
-  font-size: 24px;
+.inicio-stat-value {
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gold-2);
 }
 
-.inicio-view p {
+.inicio-stat-label {
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
   color: var(--text-dim);
 }
 
+/* Main action area */
+.inicio-action {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 24px 24px 32px;
+  width: 100%;
+}
+
+/* Section title */
+.inicio-section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.inicio-section-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-bright));
+}
+.inicio-section-line.right {
+  background: linear-gradient(90deg, var(--border-bright), transparent);
+}
+
+.inicio-section-text {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+/* Battle button — LoR's attack/challenge button */
 .btn-battle {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 16px;
-  padding: 16px 48px;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+  height: 60px;
+  font-family: 'Cinzel', serif;
   font-size: 18px;
   font-weight: 700;
-  color: #3a2a00;
-  background: linear-gradient(180deg, var(--gold-2), var(--gold));
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #1a0d00;
+  /* LoR metallic gold button */
+  background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 35%, var(--gold) 100%);
   border: none;
-  border-radius: 14px;
+  border-radius: 3px;
   cursor: pointer;
-  box-shadow: 0 6px 0 var(--gold-dark), 0 10px 24px rgba(245, 185, 33, 0.35);
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  box-shadow:
+    0 6px 0 var(--gold-dark),
+    0 10px 30px rgba(200, 153, 58, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: transform 0.07s ease, box-shadow 0.07s ease;
+  overflow: hidden;
+}
+
+/* Shimmer */
+.btn-battle::before {
+  content: "";
+  position: absolute;
+  top: 0; left: -80%;
+  width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+  animation: battleShimmer 2.5s ease infinite;
+}
+
+@keyframes battleShimmer {
+  0%        { left: -80%; }
+  35%, 100% { left: 130%; }
 }
 
 .btn-battle:active {
-  transform: translateY(4px);
-  box-shadow: 0 2px 0 var(--gold-dark), 0 4px 12px rgba(245, 185, 33, 0.3);
+  transform: translateY(5px);
+  box-shadow:
+    0 1px 0 var(--gold-dark),
+    0 4px 12px rgba(200, 153, 58, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
+
+.btn-battle:hover:not(:active) {
+  box-shadow:
+    0 6px 0 var(--gold-dark),
+    0 14px 40px rgba(234, 184, 80, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+

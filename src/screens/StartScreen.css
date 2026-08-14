@@ -1,92 +1,261 @@
+/* ======================================
+   START SCREEN — LoR-Inspired Epic Splash
+   ====================================== */
 .start-screen {
   flex: 1;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: radial-gradient(
-    circle at 50% 30%,
-    #233a6e 0%,
-    #141a2e 45%,
-    #0b1020 100%
-  );
+  /* Dark stone dungeon — LoR atmosphere */
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 40%, #1c1408 0%, #08090d 60%, #000 100%);
 }
 
+/* Atmospheric fog layers */
 .start-screen::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(
-      circle at 20% 18%,
-      rgba(245, 185, 33, 0.16),
-      transparent 40%
-    ),
-    radial-gradient(circle at 80% 72%, rgba(74, 144, 217, 0.22), transparent 45%);
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 20%, rgba(200, 153, 58, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 80% at 50% 100%, rgba(10, 6, 2, 0.7) 0%, transparent 60%);
   pointer-events: none;
+  z-index: 1;
 }
 
+/* Vignette */
+.start-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(0,0,0,0.75) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ---- Runic corner ornaments (pure CSS) ---- */
+.start-corner {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  z-index: 2;
+  pointer-events: none;
+}
+.start-corner::before,
+.start-corner::after {
+  content: "";
+  position: absolute;
+  background: var(--gold);
+  opacity: 0.55;
+}
+.start-corner.tl { top: 18px; left: 18px; }
+.start-corner.tr { top: 18px; right: 18px; transform: scaleX(-1); }
+.start-corner.bl { bottom: 18px; left: 18px; transform: scaleY(-1); }
+.start-corner.br { bottom: 18px; right: 18px; transform: scale(-1); }
+
+.start-corner::before {
+  top: 0; left: 0;
+  width: 100%; height: 2px;
+}
+.start-corner::after {
+  top: 0; left: 0;
+  width: 2px; height: 100%;
+}
+
+/* Horizontal rule across screen */
+.start-divider {
+  position: absolute;
+  left: 56px; right: 56px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold-2) 50%, var(--gold) 70%, transparent);
+  opacity: 0.35;
+  z-index: 2;
+}
+.start-divider.top    { top:    80px; }
+.start-divider.bottom { bottom: 80px; }
+
+/* ---- Content ---- */
 .start-content {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
-  padding: 24px;
+  gap: 20px;
+  padding: 32px 28px;
   text-align: center;
 }
 
+/* ---- Logo emblem ---- */
+.start-emblem {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.start-emblem-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  opacity: 0.7;
+  animation: ringPulse 3s ease-in-out infinite;
+}
+.start-emblem-ring.inner {
+  inset: 8px;
+  border-color: var(--gold-2);
+  opacity: 0.4;
+  animation-delay: 1s;
+}
+
+@keyframes ringPulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50%       { opacity: 0.85; transform: scale(1.04); }
+}
+
+.start-emblem-icon {
+  font-size: 38px;
+  filter: drop-shadow(0 0 12px rgba(200, 153, 58, 0.7));
+  animation: iconFloat 4s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+
+/* ---- Game Logo ---- */
 .game-logo {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
 }
 
 .game-title {
-  font-size: 52px;
+  font-family: 'Cinzel', serif;
+  font-size: 44px;
   font-weight: 900;
-  letter-spacing: 4px;
+  letter-spacing: 6px;
   line-height: 1;
-  background: linear-gradient(180deg, #fff 0%, var(--gold-2) 100%);
+  background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 45%, var(--gold) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 40px rgba(245, 185, 33, 0.35);
+  filter: drop-shadow(0 0 24px rgba(200, 153, 58, 0.4));
+  animation: titleGlow 3s ease-in-out infinite;
+}
+
+@keyframes titleGlow {
+  0%, 100% { filter: drop-shadow(0 0 16px rgba(200, 153, 58, 0.35)); }
+  50%       { filter: drop-shadow(0 0 32px rgba(234, 184, 80, 0.65)); }
 }
 
 .game-subtitle {
-  font-size: 16px;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 12px;
-  padding-left: 12px;
+  letter-spacing: 10px;
+  padding-left: 10px;
   color: var(--gold);
+  opacity: 0.75;
+  text-transform: uppercase;
 }
 
+/* ---- Tagline ---- */
 .game-tagline {
-  font-size: 14px;
+  font-size: 13px;
+  font-style: italic;
   color: var(--text-dim);
+  letter-spacing: 0.5px;
 }
 
+/* ---- Metallic separator ---- */
+.start-sep {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 200px;
+}
+.start-sep-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim));
+}
+.start-sep-line.right {
+  background: linear-gradient(90deg, var(--gold-dim), transparent);
+}
+.start-sep-diamond {
+  width: 6px;
+  height: 6px;
+  background: var(--gold);
+  transform: rotate(45deg);
+  opacity: 0.7;
+}
+
+/* ---- CTA Button — LoR-style physical press ---- */
 .btn-start {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  margin-top: 12px;
-  padding: 16px 48px;
-  font-size: 20px;
+  margin-top: 6px;
+  padding: 0 40px;
+  height: 54px;
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
   font-weight: 700;
-  letter-spacing: 1px;
-  color: #3a2a00;
-  background: linear-gradient(180deg, var(--gold-2), var(--gold));
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #1a1000;
+  /* Metallic gold gradient — matches LoR's attack token active state */
+  background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
   border: none;
-  border-radius: 14px;
+  border-radius: 3px;
   cursor: pointer;
-  box-shadow: 0 6px 0 var(--gold-dark), 0 10px 24px rgba(245, 185, 33, 0.35);
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  /* LoR 3D raised button effect */
+  box-shadow:
+    0 5px 0 var(--gold-dark),
+    0 8px 24px rgba(200, 153, 58, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: transform 0.07s ease, box-shadow 0.07s ease;
+  overflow: hidden;
+}
+
+/* Shimmer sweep */
+.btn-start::after {
+  content: "";
+  position: absolute;
+  top: 0; left: -60%;
+  width: 40%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  animation: btnShimmer 3.5s ease infinite;
+}
+
+@keyframes btnShimmer {
+  0%   { left: -60%; }
+  40%, 100% { left: 130%; }
 }
 
 .btn-start:active {
   transform: translateY(4px);
-  box-shadow: 0 2px 0 var(--gold-dark), 0 4px 12px rgba(245, 185, 33, 0.3);
+  box-shadow:
+    0 1px 0 var(--gold-dark),
+    0 4px 12px rgba(200, 153, 58, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
+
+/* Hover glow */
+.btn-start:hover {
+  box-shadow:
+    0 5px 0 var(--gold-dark),
+    0 12px 32px rgba(234, 184, 80, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+

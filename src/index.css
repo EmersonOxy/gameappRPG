@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -5,16 +7,38 @@
 }
 
 :root {
-  --bg-deep: #0b1020;
-  --bg-dark: #141a2e;
-  --bg-card: #1c2438;
-  --gold: #f5b921;
-  --gold-2: #ffd86b;
-  --gold-dark: #b8791a;
-  --blue: #4a90d9;
-  --text: #f2f5ff;
-  --text-dim: #9aa4c0;
-  --border: rgba(255, 255, 255, 0.08);
+  /* LoR-inspired dark stone base */
+  --bg-deep:        #08090d;
+  --bg-dark:        #0f1218;
+  --bg-card:        #14181f;
+  --bg-panel:       rgba(12, 14, 20, 0.94);
+
+  /* LoR Metallic Gold — ornate frames, active buttons */
+  --gold:           #c8993a;
+  --gold-2:         #eab850;
+  --gold-bright:    #ffd97a;
+  --gold-dark:      #7a5518;
+  --gold-dim:       rgba(200, 153, 58, 0.3);
+
+  /* LoR Teal — mana/magic/muted accents */
+  --teal:           #2dd4bf;
+  --teal-dim:       rgba(45, 212, 191, 0.12);
+
+  /* LoR Crimson — HP, combat, danger */
+  --crimson:        #b83030;
+  --crimson-2:      #e05050;
+
+  /* Parchment text — warm off-white */
+  --text:           #e8dcc8;
+  --text-dim:       rgba(232, 220, 200, 0.48);
+  --text-bright:    #f5edd8;
+
+  /* Metal borders */
+  --border:         rgba(200, 153, 58, 0.15);
+  --border-bright:  rgba(200, 153, 58, 0.38);
+
+  /* Compat aliases */
+  --blue:           #4a90d9;
 }
 
 html,
@@ -24,8 +48,8 @@ body,
 }
 
 body {
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-  background: #05070f;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #04050a;
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
@@ -40,7 +64,10 @@ body {
   height: 100dvh;
   margin: 0 auto;
   background: var(--bg-deep);
-  box-shadow: 0 0 60px rgba(0, 0, 0, 0.8);
+  box-shadow:
+    0 0 0 1px rgba(200, 153, 58, 0.1),
+    0 0 80px rgba(0, 0, 0, 0.95),
+    inset 0 0 100px rgba(0, 0, 0, 0.35);
   display: flex;
   flex-direction: column;
   overflow: hidden;

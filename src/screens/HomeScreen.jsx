@@ -5,17 +5,20 @@ import InicioView from "./InicioView.jsx";
 import { useGame } from "../context/GameContext.jsx";
 import "./HomeScreen.css";
 
+const PLAYER_NAME = "Aventureiro";
+
 export default function HomeScreen() {
   const { gold, xp, level, xpPerLevel } = useGame();
+  const initials = PLAYER_NAME.slice(0, 1).toUpperCase();
 
   return (
     <div className="home-screen">
       <header className="top-bar">
         <div className="top-bar-main">
           <div className="player-info">
-            <div className="avatar" />
+            <div className="avatar">{initials}</div>
             <div className="player-text">
-              <span className="player-name">Aventureiro</span>
+              <span className="player-name">{PLAYER_NAME}</span>
               <span className="player-level">Nível {level}</span>
             </div>
           </div>

@@ -1,66 +1,111 @@
+/* ======================================
+   HOME SCREEN — LoR-Inspired Top Bar
+   ====================================== */
 .home-screen {
   flex: 1;
   display: flex;
   flex-direction: column;
   height: 100%;
+  background: var(--bg-deep);
 }
 
+/* Top bar — metallic panel like LoR's header */
 .top-bar {
-  background: linear-gradient(180deg, #1a2440, var(--bg-dark));
-  border-bottom: 1px solid var(--border);
+  position: relative;
+  background:
+    linear-gradient(180deg, #18140e 0%, #0e0b07 100%);
+  border-bottom: 1px solid var(--border-bright);
+  /* Inner highlight line — LoR metallic sheen */
+  box-shadow:
+    0 1px 0 rgba(200, 153, 58, 0.08) inset,
+    0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* Very subtle warm texture */
+.top-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(200, 153, 58, 0.035) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 .top-bar-main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
+  padding: 10px 16px;
+  position: relative;
 }
 
+/* XP bar — LoR style: thin gold line */
 .xp-track {
-  height: 5px;
-  background: rgba(0, 0, 0, 0.35);
+  height: 3px;
+  background: rgba(0, 0, 0, 0.5);
   overflow: hidden;
 }
 
 .xp-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--gold), var(--gold-2));
-  transition: width 0.4s ease;
+  background: linear-gradient(90deg, var(--gold-dark), var(--gold-2), var(--gold-bright));
+  transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 0 8px var(--gold-dim);
 }
 
+/* Player info */
 .player-info {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
+/* Avatar — LoR circular portrait with gold ring */
 .avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--blue), #2b3d66);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 30%, #2a3a5c, #0e1520);
   border: 2px solid var(--gold);
+  box-shadow:
+    0 0 0 1px rgba(200, 153, 58, 0.2),
+    0 0 10px rgba(200, 153, 58, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold-2);
+  flex-shrink: 0;
 }
 
 .player-text {
   display: flex;
   flex-direction: column;
+  gap: 1px;
 }
 
 .player-name {
+  font-family: 'Cinzel', serif;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13px;
+  color: var(--text-bright);
+  letter-spacing: 0.5px;
 }
 
 .player-level {
-  font-size: 11px;
-  color: var(--text-dim);
+  font-size: 10px;
+  color: var(--gold);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.8;
 }
 
+/* Currency — LoR-style pill chip */
 .currency {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .currency-item {
@@ -68,23 +113,31 @@
   align-items: center;
   gap: 5px;
   font-size: 13px;
-  font-weight: 700;
-  background: var(--bg-card);
-  padding: 5px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
+  font-weight: 800;
+  font-family: 'Inter', sans-serif;
+  /* Dark metallic pill */
+  background: linear-gradient(180deg, #1e1a12, #13110b);
+  padding: 5px 11px;
+  border-radius: 2px;
+  border: 1px solid var(--border-bright);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 2px 8px rgba(0, 0, 0, 0.4);
+  color: var(--gold-2);
 }
 
 .dot {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
 }
 
 .gold-dot {
-  background: radial-gradient(circle at 35% 35%, #ffe08a, #e0a800);
+  background: radial-gradient(circle at 35% 35%, var(--gold-bright), var(--gold));
+  box-shadow: 0 0 4px rgba(200, 153, 58, 0.6);
 }
 
+/* Main content area */
 .home-content {
   flex: 1;
   overflow-y: auto;
@@ -92,19 +145,23 @@
   flex-direction: column;
 }
 
+/* Placeholder pages */
 .placeholder {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   color: var(--text-dim);
   padding: 20px;
   text-align: center;
 }
 
 .placeholder h2 {
+  font-family: 'Cinzel', serif;
   color: var(--text);
-  font-size: 22px;
+  font-size: 20px;
+  letter-spacing: 1px;
 }
+
