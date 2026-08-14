@@ -8,21 +8,21 @@ export default function StartScreen() {
   return (
     <div className="start-screen">
       {/* Corner ornaments */}
-      <div className="start-corner tl" />
-      <div className="start-corner tr" />
-      <div className="start-corner bl" />
-      <div className="start-corner br" />
+      <div className="rune-corner tl" />
+      <div className="rune-corner tr" />
+      <div className="rune-corner bl" />
+      <div className="rune-corner br" />
 
       {/* Horizontal dividers */}
-      <div className="start-divider top" />
-      <div className="start-divider bottom" />
+      <div className="rune-divider top" />
+      <div className="rune-divider bottom" />
 
       <div className="start-content">
         {/* Animated emblem */}
-        <div className="start-emblem">
-          <div className="start-emblem-ring" />
-          <div className="start-emblem-ring inner" />
-          <span className="start-emblem-icon">⚔️</span>
+        <div className="rune-emblem">
+          <div className="rune-emblem-ring" />
+          <div className="rune-emblem-ring inner" />
+          <span className="rune-emblem-icon">⚔️</span>
         </div>
 
         {/* Title */}
@@ -32,10 +32,10 @@ export default function StartScreen() {
         </div>
 
         {/* Metallic separator */}
-        <div className="start-sep">
-          <div className="start-sep-line" />
-          <div className="start-sep-diamond" />
-          <div className="start-sep-line right" />
+        <div className="rune-sep">
+          <div className="rune-sep-line" />
+          <div className="rune-sep-diamond" />
+          <div className="rune-sep-line right" />
         </div>
 
         <p className="game-tagline">Sua aventura começa aqui</p>

@@ -18,18 +18,6 @@ import DiceRoll from "../components/DiceRoll.jsx";
 import { useGame } from "../context/GameContext.jsx";
 import "./BattleScreen.css";
 
-const MAX_HP = 5;
-const PLAYER = { hp: MAX_HP, atk: 2, def: 2 };
-const ENEMY = {
-  hp: MAX_HP,
-  atk: 2,
-  def: 2,
-  goldBase: 1,
-  goldExtra: 2,
-  xpBase: 1,
-  xpExtra: 2,
-};
-
 const FURY_MAX = 5;
 const FURY_GAIN = 2;
 const STAMINA_MAX = 10;
@@ -72,9 +60,22 @@ const RETURN = 900;
 
 export default function BattleScreen() {
   const navigate = useNavigate();
-  const { addReward } = useGame();
-  const [playerHp, setPlayerHp] = useState(PLAYER.hp);
-  const [enemyHp, setEnemyHp] = useState(ENEMY.hp);
+  const {
+    addReward,
+    difficulty,
+    playerMaxHp,
+    playerAtk,
+    playerDef,
+    enemyMaxHp,
+    enemyAtk,
+    enemyDef,
+    goldBase,
+    goldExtra,
+    xpBase,
+    xpExtra,
+  } = useGame();
+  const [playerHp, setPlayerHp] = useState(playerMaxHp);
+  const [enemyHp, setEnemyHp] = useState(enemyMaxHp);
   const [playerFury, setPlayerFury] = useState(0);
   const [enemyFury, setEnemyFury] = useState(0);
   const [playerStamina, setPlayerStamina] = useState(STAMINA_MAX);
@@ -145,12 +146,12 @@ export default function BattleScreen() {
         if (Math.random() < missChance(playerLuck)) {
           playerMiss = true;
         } else {
-          let d = rollDamage(PLAYER.atk, ENEMY.def);
+          let d = rollDamage(playerAtk, enemyDef);
           if (enemyAction === "defend") d = d / 2;
           enemyDmg = d;
         }
       } else if (playerSpecial) {
-        let d = rollDamage(PLAYER.atk, ENEMY.def) * SPECIAL_MULT;
+        let d = rollDamage(playerAtk, enemyDef) * SPECIAL_MULT;
         if (enemyAction === "defend") d = d / 2;
         enemyDmg = d;
       }
@@ -159,12 +160,12 @@ export default function BattleScreen() {
         if (Math.random() < missChance(enemyLuck)) {
           enemyMiss = true;
         } else {
-          let d = rollDamage(ENEMY.atk, PLAYER.def);
+          let d = rollDamage(enemyAtk, playerDef);
           if (playerAction === "defend") d = d / 2;
           playerDmg = d;
         }
       } else if (enemySpecial) {
-        let d = rollDamage(ENEMY.atk, PLAYER.def) * SPECIAL_MULT;
+        let d = rollDamage(enemyAtk, playerDef) * SPECIAL_MULT;
         if (playerAction === "defend") d = d / 2;
         playerDmg = d;
       }
@@ -219,8 +220,8 @@ export default function BattleScreen() {
 
         setTimeout(() => {
           if (newEnemyHp <= 0) {
-            const goldGain = rollReward(ENEMY.goldBase, ENEMY.goldExtra);
-            const xpGain = rollReward(ENEMY.xpBase, ENEMY.xpExtra);
+            const goldGain = rollReward(goldBase, goldExtra);
+            const xpGain = rollReward(xpBase, xpExtra);
             addReward(goldGain, xpGain);
             setReward({ gold: goldGain, xp: xpGain });
             setPhase("victory");
@@ -291,8 +292,8 @@ export default function BattleScreen() {
   }, [phase, playerStamina, playerFury]);
 
   function nextBattle() {
-    setPlayerHp(MAX_HP);
-    setEnemyHp(MAX_HP);
+    setPlayerHp(playerMaxHp);
+    setEnemyHp(enemyMaxHp);
     setPlayerFury(0);
     setEnemyFury(0);
     setPlayerStamina(STAMINA_MAX);
@@ -324,6 +325,12 @@ export default function BattleScreen() {
 
   return (
     <div className="battle-screen">
+      {/* Corner ornaments — shared runic frame */}
+      <div className="rune-corner tl" />
+      <div className="rune-corner tr" />
+      <div className="rune-corner bl" />
+      <div className="rune-corner br" />
+
       <div className="timer-wrap">
         <div
           className={"timer-fill" + (timePct <= 20 ? " danger" : "")}
@@ -332,8 +339,9 @@ export default function BattleScreen() {
       </div>
       <div className="battle-divider" />
       <div className={"enemy-wrap" + (enemyMoving ? " attacking" : "")}>
+        <div className="threat-badge">Ameaça Nível {difficulty}</div>
         <div className="enemy-bar">
-          <HealthBar hp={enemyHp} max={MAX_HP} hitKey={enemyHit} />
+          <HealthBar hp={enemyHp} max={enemyMaxHp} hitKey={enemyHit} />
         </div>
         <ResourceBar
           value={enemyStamina}
@@ -377,7 +385,7 @@ export default function BattleScreen() {
       </div>
 
       <div className="player-wrap">
-        <HealthBar hp={playerHp} max={MAX_HP} hitKey={playerHit} />
+        <HealthBar hp={playerHp} max={playerMaxHp} hitKey={playerHit} />
         <ResourceBar
           value={playerStamina}
           max={STAMINA_MAX}
@@ -419,8 +427,25 @@ export default function BattleScreen() {
 
       {phase === "dice" && (
         <div className="dice-overlay">
+          <div className="rune-corner tl" />
+          <div className="rune-corner tr" />
+          <div className="rune-corner bl" />
+          <div className="rune-corner br" />
+          <div className="rune-divider top" />
+          <div className="rune-divider bottom" />
+
           <div className="dice-header">
+            <div className="rune-emblem dice-emblem">
+              <div className="rune-emblem-ring" />
+              <div className="rune-emblem-ring inner" />
+              <span className="rune-emblem-icon">🎲</span>
+            </div>
             <h2 className="dice-title">Role o dado</h2>
+            <div className="rune-sep">
+              <div className="rune-sep-line" />
+              <div className="rune-sep-diamond" />
+              <div className="rune-sep-line right" />
+            </div>
             <p className="dice-subtitle">A sorte define sua chance de errar</p>
           </div>
 
@@ -453,11 +478,20 @@ export default function BattleScreen() {
 
       {phase === "victory" && (
         <div className="result-overlay">
+          <div className="rune-corner tl" />
+          <div className="rune-corner tr" />
+          <div className="rune-corner bl" />
+          <div className="rune-corner br" />
           <div className="result-card">
             <div className="result-icon win">
               <Trophy size={42} />
             </div>
             <h2 className="result-title win">Vitória!</h2>
+            <div className="rune-sep">
+              <div className="rune-sep-line" />
+              <div className="rune-sep-diamond" />
+              <div className="rune-sep-line right" />
+            </div>
             <p className="result-subtitle">Recompensas</p>
             <div className="reward-row">
               <div className="reward-chip gold">
@@ -483,6 +517,10 @@ export default function BattleScreen() {
 
       {phase === "defeat" && (
         <div className="result-overlay">
+          <div className="rune-corner tl" />
+          <div className="rune-corner tr" />
+          <div className="rune-corner bl" />
+          <div className="rune-corner br" />
           <div className="result-card">
             <div className="result-icon lose">
               <Skull size={42} />
@@ -490,6 +528,11 @@ export default function BattleScreen() {
             <h2 className="result-title lose">
               {defeatReason === "timeout" ? "Tempo esgotado!" : "Derrota!"}
             </h2>
+            <div className="rune-sep">
+              <div className="rune-sep-line" />
+              <div className="rune-sep-diamond" />
+              <div className="rune-sep-line right" />
+            </div>
             <p className="result-subtitle">Recompensas</p>
             <div className="reward-row">
               <div className="reward-chip gold">

@@ -35,47 +35,6 @@
   z-index: 1;
 }
 
-/* ---- Runic corner ornaments (pure CSS) ---- */
-.start-corner {
-  position: absolute;
-  width: 60px;
-  height: 60px;
-  z-index: 2;
-  pointer-events: none;
-}
-.start-corner::before,
-.start-corner::after {
-  content: "";
-  position: absolute;
-  background: var(--gold);
-  opacity: 0.55;
-}
-.start-corner.tl { top: 18px; left: 18px; }
-.start-corner.tr { top: 18px; right: 18px; transform: scaleX(-1); }
-.start-corner.bl { bottom: 18px; left: 18px; transform: scaleY(-1); }
-.start-corner.br { bottom: 18px; right: 18px; transform: scale(-1); }
-
-.start-corner::before {
-  top: 0; left: 0;
-  width: 100%; height: 2px;
-}
-.start-corner::after {
-  top: 0; left: 0;
-  width: 2px; height: 100%;
-}
-
-/* Horizontal rule across screen */
-.start-divider {
-  position: absolute;
-  left: 56px; right: 56px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold-2) 50%, var(--gold) 70%, transparent);
-  opacity: 0.35;
-  z-index: 2;
-}
-.start-divider.top    { top:    80px; }
-.start-divider.bottom { bottom: 80px; }
-
 /* ---- Content ---- */
 .start-content {
   position: relative;
@@ -86,48 +45,6 @@
   gap: 20px;
   padding: 32px 28px;
   text-align: center;
-}
-
-/* ---- Logo emblem ---- */
-.start-emblem {
-  position: relative;
-  width: 90px;
-  height: 90px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 4px;
-}
-
-.start-emblem-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 2px solid var(--gold);
-  opacity: 0.7;
-  animation: ringPulse 3s ease-in-out infinite;
-}
-.start-emblem-ring.inner {
-  inset: 8px;
-  border-color: var(--gold-2);
-  opacity: 0.4;
-  animation-delay: 1s;
-}
-
-@keyframes ringPulse {
-  0%, 100% { opacity: 0.5; transform: scale(1); }
-  50%       { opacity: 0.85; transform: scale(1.04); }
-}
-
-.start-emblem-icon {
-  font-size: 38px;
-  filter: drop-shadow(0 0 12px rgba(200, 153, 58, 0.7));
-  animation: iconFloat 4s ease-in-out infinite;
-}
-
-@keyframes iconFloat {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-4px); }
 }
 
 /* ---- Game Logo ---- */
@@ -174,29 +91,6 @@
   font-style: italic;
   color: var(--text-dim);
   letter-spacing: 0.5px;
-}
-
-/* ---- Metallic separator ---- */
-.start-sep {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 200px;
-}
-.start-sep-line {
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-dim));
-}
-.start-sep-line.right {
-  background: linear-gradient(90deg, var(--gold-dim), transparent);
-}
-.start-sep-diamond {
-  width: 6px;
-  height: 6px;
-  background: var(--gold);
-  transform: rotate(45deg);
-  opacity: 0.7;
 }
 
 /* ---- CTA Button — LoR-style physical press ---- */

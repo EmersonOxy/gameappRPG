@@ -233,3 +233,16 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
+/* Threat level label */
+.inicio-threat {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border);
+  padding: 5px 14px;
+  border-radius: 999px;
+}
+

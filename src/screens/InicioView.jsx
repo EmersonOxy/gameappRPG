@@ -5,7 +5,7 @@ import "./InicioView.css";
 
 export default function InicioView() {
   const navigate = useNavigate();
-  const { gold, xp, level } = useGame();
+  const { gold, xp, level, playerAtk, playerDef, difficulty } = useGame();
 
   return (
     <div className="inicio-view">
@@ -33,6 +33,14 @@ export default function InicioView() {
           <span className="inicio-stat-value">{xp}</span>
           <span className="inicio-stat-label">XP</span>
         </div>
+        <div className="inicio-stat">
+          <span className="inicio-stat-value">{playerAtk}</span>
+          <span className="inicio-stat-label">Ataque</span>
+        </div>
+        <div className="inicio-stat">
+          <span className="inicio-stat-value">{playerDef}</span>
+          <span className="inicio-stat-label">Defesa</span>
+        </div>
       </div>
 
       {/* Action area */}
@@ -47,6 +55,8 @@ export default function InicioView() {
           <Swords size={22} />
           Batalhar
         </button>
+
+        <span className="inicio-threat">Ameaça · Nível {difficulty}</span>
       </div>
     </div>
   );
