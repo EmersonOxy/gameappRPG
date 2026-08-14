@@ -1,6 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Skull, User, Swords, Shield, Zap } from "lucide-react";
+import {
+  Skull,
+  User,
+  Swords,
+  Shield,
+  Zap,
+  Trophy,
+  Coins,
+  Sparkles,
+  RotateCw,
+  LogOut,
+} from "lucide-react";
 import HealthBar from "../components/HealthBar.jsx";
 import ResourceBar from "../components/ResourceBar.jsx";
 import DiceRoll from "../components/DiceRoll.jsx";
@@ -30,6 +41,7 @@ const ATK_COST = 3;
 const DEF_COST = 2;
 const SPECIAL_MULT = 2;
 const MATCH_TIME = 30;
+const DEFEAT_XP = 1;
 
 const STAMINA_FILL = "linear-gradient(180deg, #6fb1ff, #357abd)";
 const STAMINA_TICK = "#245a8f";
@@ -85,6 +97,7 @@ export default function BattleScreen() {
   const [rolled, setRolled] = useState(false);
   const [timeLeft, setTimeLeft] = useState(MATCH_TIME);
   const [defeatReason, setDefeatReason] = useState("defeated");
+  const [reward, setReward] = useState({ gold: 0, xp: 0 });
 
   function handleRoll() {
     if (phase !== "dice" || rolling) return;
@@ -206,13 +219,15 @@ export default function BattleScreen() {
 
         setTimeout(() => {
           if (newEnemyHp <= 0) {
-            addReward(
-              rollReward(ENEMY.goldBase, ENEMY.goldExtra),
-              rollReward(ENEMY.xpBase, ENEMY.xpExtra)
-            );
+            const goldGain = rollReward(ENEMY.goldBase, ENEMY.goldExtra);
+            const xpGain = rollReward(ENEMY.xpBase, ENEMY.xpExtra);
+            addReward(goldGain, xpGain);
+            setReward({ gold: goldGain, xp: xpGain });
             setPhase("victory");
           } else if (newPlayerHp <= 0) {
             setDefeatReason("defeated");
+            addReward(0, DEFEAT_XP);
+            setReward({ gold: 0, xp: DEFEAT_XP });
             setPhase("defeat");
           } else {
             setPhase("player");
@@ -258,6 +273,8 @@ export default function BattleScreen() {
   useEffect(() => {
     if (phase === "player" && timeLeft <= 0) {
       setDefeatReason("timeout");
+      addReward(0, DEFEAT_XP);
+      setReward({ gold: 0, xp: DEFEAT_XP });
       setPhase("defeat");
     }
   }, [phase, timeLeft]);
@@ -295,6 +312,7 @@ export default function BattleScreen() {
     setEnemyLuck(null);
     setTimeLeft(MATCH_TIME);
     setDefeatReason("defeated");
+    setReward({ gold: 0, xp: 0 });
     setPhase("dice");
   }
 
@@ -302,7 +320,6 @@ export default function BattleScreen() {
   const canAttack = playerStamina >= ATK_COST;
   const canDefend = playerStamina >= DEF_COST;
   const canSpecial = playerFury >= FURY_MAX;
-  const exhausted = phase === "player" && !canAttack && !canDefend && !canSpecial;
   const timePct = (timeLeft / MATCH_TIME) * 100;
 
   return (
@@ -374,7 +391,6 @@ export default function BattleScreen() {
           tick={FURY_TICK}
           height={16}
         />
-        {exhausted && <span className="stamina-hint">Sem estamina...</span>}
         <div className="battle-actions">
           <button
             className="btn-action attack"
@@ -436,27 +452,62 @@ export default function BattleScreen() {
 
       {phase === "victory" && (
         <div className="result-overlay">
-          <h2 className="result-title win">Vitória!</h2>
-          <div className="result-actions">
-            <button className="btn-result" onClick={() => navigate("/home")}>
-              Sair
-            </button>
-            <button className="btn-result primary" onClick={nextBattle}>
-              Próximo combate
-            </button>
+          <div className="result-card">
+            <div className="result-icon win">
+              <Trophy size={42} />
+            </div>
+            <h2 className="result-title win">Vitória!</h2>
+            <p className="result-subtitle">Recompensas</p>
+            <div className="reward-row">
+              <div className="reward-chip gold">
+                <Coins size={18} />
+                <span>+{reward.gold}</span>
+              </div>
+              <div className="reward-chip xp">
+                <Sparkles size={18} />
+                <span>+{reward.xp} XP</span>
+              </div>
+            </div>
+            <div className="result-actions">
+              <button className="btn-result" onClick={() => navigate("/home")}>
+                <LogOut size={18} /> Sair
+              </button>
+              <button className="btn-result primary" onClick={nextBattle}>
+                <Swords size={18} /> Próximo combate
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {phase === "defeat" && (
         <div className="result-overlay">
-          <h2 className="result-title lose">
-            {defeatReason === "timeout" ? "Tempo esgotado!" : "Derrota!"}
-          </h2>
-          <div className="result-actions">
-            <button className="btn-result primary" onClick={() => navigate("/home")}>
-              Sair
-            </button>
+          <div className="result-card">
+            <div className="result-icon lose">
+              <Skull size={42} />
+            </div>
+            <h2 className="result-title lose">
+              {defeatReason === "timeout" ? "Tempo esgotado!" : "Derrota!"}
+            </h2>
+            <p className="result-subtitle">Recompensas</p>
+            <div className="reward-row">
+              <div className="reward-chip gold">
+                <Coins size={18} />
+                <span>+{reward.gold}</span>
+              </div>
+              <div className="reward-chip xp">
+                <Sparkles size={18} />
+                <span>+{reward.xp} XP</span>
+              </div>
+            </div>
+            <div className="result-actions">
+              <button className="btn-result" onClick={() => navigate("/home")}>
+                <LogOut size={18} /> Sair
+              </button>
+              <button className="btn-result primary" onClick={nextBattle}>
+                <RotateCw size={18} /> Jogar novamente
+              </button>
+            </div>
           </div>
         </div>
       )}
