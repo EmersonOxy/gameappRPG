@@ -43,6 +43,16 @@
   transition: width 0.6s ease;
 }
 
+.health-heal-ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: rgba(143, 245, 228, 0.35);
+  box-shadow: 0 0 10px rgba(143, 245, 228, 0.35);
+  transition: width 0.6s ease;
+}
+
 .tick {
   position: absolute;
   top: 0;
@@ -102,6 +112,19 @@
 }
 
 .health-bar.vertical.reverse .health-recent {
+  top: 0;
+  bottom: auto;
+}
+
+.health-bar.vertical .health-heal-ghost {
+  top: auto;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transition: height 0.6s ease;
+}
+
+.health-bar.vertical.reverse .health-heal-ghost {
   top: 0;
   bottom: auto;
 }

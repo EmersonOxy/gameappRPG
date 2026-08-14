@@ -25,7 +25,6 @@ const ENEMY_STAMINA_MAX = 10;
 const ENEMY_STAMINA_REGEN = 2;
 const REGEN_BASE_INTERVAL = 4000;
 const MANA_REGEN_BASE_INTERVAL = 8000;
-const REGEN_TICK = 1;
 const ATK_COST = 3;
 const DEF_COST = 2;
 const ENEMY_SPECIAL_MULT = 2;
@@ -115,6 +114,14 @@ export default function BattleScreen() {
   const [defeatReason, setDefeatReason] = useState("defeated");
   const [reward, setReward] = useState({ gold: 0, xp: 0 });
   const [leveledUp, setLeveledUp] = useState(false);
+
+  const staminaRegenMs = REGEN_BASE_INTERVAL / playerStaminaRegen;
+  const enemyStaminaRegenMs = REGEN_BASE_INTERVAL / ENEMY_STAMINA_REGEN;
+  const manaRegenMs = MANA_REGEN_BASE_INTERVAL / playerManaRegen;
+
+  const [staminaProgress, setStaminaProgress] = useState(0);
+  const [enemyStaminaProgress, setEnemyStaminaProgress] = useState(0);
+  const [manaProgress, setManaProgress] = useState(0);
 
   function handleRoll() {
     if (phase !== "dice" || rolling) return;
@@ -330,39 +337,63 @@ export default function BattleScreen() {
     resolveTurn(action, skill);
   }
 
-  useEffect(() => {
-    const playerId = setInterval(() => {
-      setPlayerStamina((s) => Math.min(playerStaminaMax, s + REGEN_TICK));
-    }, REGEN_BASE_INTERVAL / playerStaminaRegen);
-    const enemyId = setInterval(() => {
-      setEnemyStamina((s) => Math.min(ENEMY_STAMINA_MAX, s + REGEN_TICK));
-    }, REGEN_BASE_INTERVAL / ENEMY_STAMINA_REGEN);
-    const manaId = setInterval(() => {
-      setPlayerManaCurrent((m) => Math.min(playerMana, m + REGEN_TICK));
-    }, MANA_REGEN_BASE_INTERVAL / playerManaRegen);
-    return () => {
-      clearInterval(playerId);
-      clearInterval(enemyId);
-      clearInterval(manaId);
-    };
-  }, [playerStaminaMax, playerStaminaRegen, playerMana, playerManaRegen]);
-
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
 
   useEffect(() => {
+    const progress = { stamina: 0, enemy: 0, mana: 0 };
     let last = Date.now();
     const id = setInterval(() => {
       const now = Date.now();
-      const dt = (now - last) / 1000;
+      const dt = Math.min((now - last) / 1000, 1);
       last = now;
+
       const p = phaseRef.current;
       if (p === "player" || p === "resolve") {
         setTimeLeft((t) => Math.max(0, t - dt));
       }
+
+      progress.stamina += dt / staminaRegenMs;
+      let add = 0;
+      while (progress.stamina >= 1) {
+        progress.stamina -= 1;
+        add += 1;
+      }
+      if (add > 0) {
+        setPlayerStamina((s) => Math.min(playerStaminaMax, s + add));
+      }
+      setStaminaProgress(Math.min(1, progress.stamina));
+
+      progress.enemy += dt / enemyStaminaRegenMs;
+      add = 0;
+      while (progress.enemy >= 1) {
+        progress.enemy -= 1;
+        add += 1;
+      }
+      if (add > 0) {
+        setEnemyStamina((s) => Math.min(ENEMY_STAMINA_MAX, s + add));
+      }
+      setEnemyStaminaProgress(Math.min(1, progress.enemy));
+
+      progress.mana += dt / manaRegenMs;
+      add = 0;
+      while (progress.mana >= 1) {
+        progress.mana -= 1;
+        add += 1;
+      }
+      if (add > 0) {
+        setPlayerManaCurrent((m) => Math.min(playerMana, m + add));
+      }
+      setManaProgress(Math.min(1, progress.mana));
     }, 100);
     return () => clearInterval(id);
-  }, []);
+  }, [
+    staminaRegenMs,
+    enemyStaminaRegenMs,
+    manaRegenMs,
+    playerStaminaMax,
+    playerMana,
+  ]);
 
   useEffect(() => {
     if (phase === "player" && timeLeft <= 0) {
@@ -396,6 +427,9 @@ export default function BattleScreen() {
     setPlayerStamina(playerStaminaMax);
     setEnemyStamina(ENEMY_STAMINA_MAX);
     setPlayerManaCurrent(playerMana);
+    setStaminaProgress(0);
+    setEnemyStaminaProgress(0);
+    setManaProgress(0);
     setPlayerShield(0);
     setEnemyStunned(false);
     setEnemyStunFlash(false);
@@ -481,6 +515,7 @@ export default function BattleScreen() {
             max={ENEMY_STAMINA_MAX}
             fill={STAMINA_FILL}
             tick={STAMINA_TICK}
+            progress={enemyStaminaProgress}
             vertical
             reverse
           />
@@ -498,6 +533,7 @@ export default function BattleScreen() {
             max={playerStaminaMax}
             fill={STAMINA_FILL}
             tick={STAMINA_TICK}
+            progress={staminaProgress}
             vertical
           />
         </div>
@@ -518,6 +554,7 @@ export default function BattleScreen() {
             max={playerMana}
             fill={MANA_FILL}
             tick={MANA_TICK}
+            progress={manaProgress}
             vertical
           />
         </div>

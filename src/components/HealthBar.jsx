@@ -12,6 +12,7 @@ function usePrevious(value) {
 export default function HealthBar({ hp, max, hitKey, vertical = false, reverse = false }) {
   const [shaking, setShaking] = useState(false);
   const [recentHp, setRecentHp] = useState(null);
+  const [healGhostPct, setHealGhostPct] = useState(null);
   const prevHp = usePrevious(hp);
 
   useEffect(() => {
@@ -32,6 +33,13 @@ export default function HealthBar({ hp, max, hitKey, vertical = false, reverse =
       clearTimeout(t2);
     };
   }, [hitKey]);
+
+  useEffect(() => {
+    if (prevHp == null || hp <= prevHp) return;
+    setHealGhostPct((hp / max) * 100);
+    const t = setTimeout(() => setHealGhostPct(null), 700);
+    return () => clearTimeout(t);
+  }, [hp, prevHp, max]);
 
   const fillPct = (hp / max) * 100;
   const recentWidth =
@@ -74,6 +82,16 @@ export default function HealthBar({ hp, max, hitKey, vertical = false, reverse =
                     height: recentWidth + "%",
                   }
                 : { left: fillPct + "%", width: recentWidth + "%" }
+            }
+          />
+        )}
+        {healGhostPct != null && (
+          <div
+            className="health-heal-ghost"
+            style={
+              vertical
+                ? { height: healGhostPct + "%" }
+                : { width: healGhostPct + "%" }
             }
           />
         )}

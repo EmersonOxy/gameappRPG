@@ -11,8 +11,11 @@ export default function ResourceBar({
   height = 16,
   vertical = false,
   reverse = false,
+  progress = null,
 }) {
   const clamped = Math.max(0, Math.min(max, value));
+  const continuous = progress !== null;
+
   const prevValue = useRef(clamped);
   const [solidUnits, setSolidUnits] = useState(clamped);
   const [ghostUnits, setGhostUnits] = useState(clamped);
@@ -23,6 +26,13 @@ export default function ResourceBar({
   useEffect(() => {
     const prev = prevValue.current;
     prevValue.current = clamped;
+
+    if (continuous) {
+      setSolidUnits(clamped);
+      setGhostUnits(clamped);
+      setFillDuration(clamped > prev ? 160 : 400);
+      return;
+    }
 
     if (clamped > prev) {
       setGhostOn(true);
@@ -47,11 +57,21 @@ export default function ResourceBar({
     setGhostUnits(clamped);
     setGhostOn(false);
     setFillDuration(400);
-  }, [clamped]);
+  }, [clamped, continuous]);
 
-  const solidPct = max > 0 ? (solidUnits / max) * 100 : 0;
-  const ghostPct = max > 0 ? (ghostUnits / max) * 100 : 0;
   const solidValue = Math.round(solidUnits);
+  const solidPct = max > 0 ? (solidUnits / max) * 100 : 0;
+
+  let ghostPct;
+  let ghostVisible;
+  if (continuous) {
+    const ghostVal = Math.min(max, clamped + progress);
+    ghostPct = max > 0 ? (ghostVal / max) * 100 : 0;
+    ghostVisible = clamped < max;
+  } else {
+    ghostPct = max > 0 ? (ghostUnits / max) * 100 : 0;
+    ghostVisible = ghostOn;
+  }
 
   const ticks = [];
   for (let i = 0; i < max; i++) {
@@ -80,9 +100,9 @@ export default function ResourceBar({
       style={vertical ? undefined : { height: height + "px" }}
     >
       <div
-        className={"resource-ghost" + (ghostOn ? " on" : "")}
+        className={"resource-ghost" + (ghostVisible ? " on" : "")}
         style={{
-          "--ghost-dur": ghostDuration + "ms",
+          "--ghost-dur": (continuous ? 120 : ghostDuration) + "ms",
           [vertical ? "height" : "width"]: ghostPct + "%",
           background: fill,
         }}
