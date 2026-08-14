@@ -15,10 +15,10 @@ export default function SkillTreeScreen() {
     level,
     playerMana,
     skillsOwned,
-    skillEquipped,
-    equippedSkill,
+    skillsEquipped,
+    equippedSkills,
     buySkill,
-    equipSkill,
+    toggleSkill,
   } = useGame();
   const [selectedId, setSelectedId] = useState(null);
   const [toast, setToast] = useState(null);
@@ -34,11 +34,10 @@ export default function SkillTreeScreen() {
 
   const selected = SKILLS.find((s) => s.id === selectedId) || null;
   const SelectedIcon = selected ? selected.icon : null;
-  const EquippedIcon = equippedSkill ? equippedSkill.icon : null;
 
   function nodeState(skill) {
     if (skillsOwned.includes(skill.id)) {
-      return skillEquipped === skill.id ? "equipped" : "owned";
+      return skillsEquipped.includes(skill.id) ? "equipped" : "owned";
     }
     if (skill.parent && !skillsOwned.includes(skill.parent)) return "locked";
     if (level < skill.levelReq) return "locked-level";
@@ -68,25 +67,28 @@ export default function SkillTreeScreen() {
     }
   }
 
-  function handleEquip() {
+  function handleToggle() {
     if (!selected) return;
-    equipSkill(selected.id);
-    showToast("Habilidade equipada!");
+    const on = skillsEquipped.includes(selected.id);
+    toggleSkill(selected.id);
+    showToast(on ? "Habilidade removida da seleção!" : "Habilidade selecionada!");
   }
 
   return (
     <div className="skill-tree-view">
       <div className="skill-tree-header">
         <h2 className="skill-tree-title">Habilidades</h2>
-        <span className="skill-tree-sub">Compre com ouro e equipe 1 por batalha</span>
-        {EquippedIcon && equippedSkill ? (
-          <div className={"equipped-chip branch-" + equippedSkill.branch}>
-            <EquippedIcon size={14} />
-            <span>Equipada: {equippedSkill.name}</span>
+        <span className="skill-tree-sub">Compre com ouro e selecione para a batalha</span>
+        {equippedSkills.length > 0 ? (
+          <div className="equipped-chip">
+            <span>
+              Selecionadas ({equippedSkills.length}):{" "}
+              {equippedSkills.map((s) => s.name).join(", ")}
+            </span>
           </div>
         ) : (
           <div className="equipped-chip empty">
-            <span>Nenhuma habilidade equipada</span>
+            <span>Nenhuma habilidade selecionada</span>
           </div>
         )}
       </div>
@@ -129,7 +131,7 @@ export default function SkillTreeScreen() {
                         <span className="node-name">{skill.name}</span>
                         <span className="node-chip">
                           {state === "equipped"
-                            ? "Equipada"
+                            ? "Selecionada"
                             : state === "owned"
                             ? "Pronta"
                             : state === "locked" || state === "locked-level"
@@ -163,10 +165,10 @@ export default function SkillTreeScreen() {
                 <span
                   className={
                     "detail-own-chip" +
-                    (skillEquipped === selected.id ? " equipped" : "")
+                    (skillsEquipped.includes(selected.id) ? " equipped" : "")
                   }
                 >
-                  {skillEquipped === selected.id ? "Equipada" : "Comprada"}
+                  {skillsEquipped.includes(selected.id) ? "Selecionada" : "Comprada"}
                 </span>
               )}
             </div>
@@ -201,13 +203,13 @@ export default function SkillTreeScreen() {
             )}
             <div className="detail-actions">
               {skillsOwned.includes(selected.id) ? (
-                skillEquipped === selected.id ? (
-                  <button className="btn-detail disabled" disabled>
-                    <Check size={16} /> Equipada
+                skillsEquipped.includes(selected.id) ? (
+                  <button className="btn-detail" onClick={handleToggle}>
+                    <Check size={16} /> Remover seleção
                   </button>
                 ) : (
-                  <button className="btn-detail primary" onClick={handleEquip}>
-                    Equipar
+                  <button className="btn-detail primary" onClick={handleToggle}>
+                    Selecionar
                   </button>
                 )
               ) : nodeState(selected) === "locked" ||

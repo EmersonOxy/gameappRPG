@@ -24,6 +24,7 @@ const FURY_GAIN = 2;
 const ENEMY_STAMINA_MAX = 10;
 const ENEMY_STAMINA_REGEN = 2;
 const REGEN_BASE_INTERVAL = 4000;
+const MANA_REGEN_BASE_INTERVAL = 12000;
 const REGEN_TICK = 1;
 const ATK_COST = 3;
 const DEF_COST = 2;
@@ -72,11 +73,12 @@ export default function BattleScreen() {
     playerStaminaRegen,
     playerFuryMult,
     playerMana,
+    playerManaRegen,
     enemyMaxHp,
     enemyAtk,
     enemyDef,
     enemyMana,
-    equippedSkill,
+    equippedSkills,
     goldBase,
     goldExtra,
     xpBase,
@@ -139,7 +141,7 @@ export default function BattleScreen() {
     return "skip";
   }
 
-  function resolveTurn(playerAction) {
+  function resolveTurn(playerAction, skill) {
     const stunned = enemyStunned;
     const enemyAction = chooseEnemyAction(stunned);
     setPhase("resolve");
@@ -156,7 +158,6 @@ export default function BattleScreen() {
     const delay = playerAttacks || enemyAttacks ? LUNGE : 300;
 
     setTimeout(() => {
-      const skill = playerAction === "skill" ? equippedSkill : null;
       let playerDmg = 0;
       let enemyDmg = 0;
       let playerMiss = false;
@@ -281,7 +282,7 @@ export default function BattleScreen() {
       setEnemyMissed(enemyMiss);
       setPlayerCrit(enemySpecial);
       setEnemyCrit(playerSpecial);
-      setSkillFlash(skill && !skillMiss ? skill.name : null);
+      setSkillFlash(skill && !skillMiss ? skill : null);
       if (skillStun) setEnemyStunned(true);
 
       setTimeout(() => {
@@ -318,18 +319,15 @@ export default function BattleScreen() {
     }, delay);
   }
 
-  function handleAction(action) {
+  function handleAction(action, skill) {
     if (phase !== "player") return;
     if (action === "attack" && playerStamina < ATK_COST) return;
     if (action === "defend" && playerStamina < DEF_COST) return;
     if (action === "special" && playerFury < FURY_MAX) return;
-    if (
-      action === "skill" &&
-      (!equippedSkill || playerManaCurrent < equippedSkill.manaCost)
-    ) {
+    if (action === "skill" && (!skill || playerManaCurrent < skill.manaCost)) {
       return;
     }
-    resolveTurn(action);
+    resolveTurn(action, skill);
   }
 
   useEffect(() => {
@@ -339,11 +337,15 @@ export default function BattleScreen() {
     const enemyId = setInterval(() => {
       setEnemyStamina((s) => Math.min(ENEMY_STAMINA_MAX, s + REGEN_TICK));
     }, REGEN_BASE_INTERVAL / ENEMY_STAMINA_REGEN);
+    const manaId = setInterval(() => {
+      setPlayerManaCurrent((m) => Math.min(playerMana, m + REGEN_TICK));
+    }, MANA_REGEN_BASE_INTERVAL / playerManaRegen);
     return () => {
       clearInterval(playerId);
       clearInterval(enemyId);
+      clearInterval(manaId);
     };
-  }, [playerStaminaMax, playerStaminaRegen]);
+  }, [playerStaminaMax, playerStaminaRegen, playerMana, playerManaRegen]);
 
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
@@ -377,14 +379,14 @@ export default function BattleScreen() {
     const canAttack = playerStamina >= ATK_COST;
     const canDefend = playerStamina >= DEF_COST;
     const canSpecial = playerFury >= FURY_MAX;
-    const canSkill = Boolean(
-      equippedSkill && playerManaCurrent >= equippedSkill.manaCost
+    const canSkill = equippedSkills.some(
+      (s) => playerManaCurrent >= s.manaCost
     );
     if (!canAttack && !canDefend && !canSpecial && !canSkill) {
       const t = setTimeout(() => resolveTurn("skip"), 800);
       return () => clearTimeout(t);
     }
-  }, [phase, playerStamina, playerFury, playerManaCurrent, equippedSkill]);
+  }, [phase, playerStamina, playerFury, playerManaCurrent, equippedSkills]);
 
   function nextBattle() {
     setPlayerHp(playerMaxHp);
@@ -422,10 +424,6 @@ export default function BattleScreen() {
   const canAttack = playerStamina >= ATK_COST;
   const canDefend = playerStamina >= DEF_COST;
   const canSpecial = playerFury >= FURY_MAX;
-  const canSkill = Boolean(
-    equippedSkill && playerManaCurrent >= equippedSkill.manaCost
-  );
-  const SkillIcon = equippedSkill ? equippedSkill.icon : null;
   const timePct = (timeLeft / MATCH_TIME) * 100;
 
   return (
@@ -537,11 +535,11 @@ export default function BattleScreen() {
           {enemyMissed && <div className="miss-flash left">Errou!</div>}
           {enemyCrit && <div className="crit-flash left">Crítico!</div>}
           {enemyStunFlash && <div className="stun-flash left">Congelado!</div>}
-          {skillFlash && equippedSkill && (
+          {skillFlash && (
             <div
-              className={"skill-flash left branch-" + equippedSkill.branch}
+              className={"skill-flash left branch-" + skillFlash.branch}
             >
-              {skillFlash}!
+              {skillFlash.name}!
             </div>
           )}
         </div>
@@ -591,25 +589,39 @@ export default function BattleScreen() {
           >
             <Zap size={20} /> Especial
           </button>
-          {SkillIcon && equippedSkill ? (
-            <button
-              className={"btn-action skill branch-" + equippedSkill.branch}
-              onClick={() => handleAction("skill")}
-              disabled={disabled || !canSkill}
-            >
-              <SkillIcon size={20} />
-              <span className="skill-btn-name">{equippedSkill.name}</span>
-              <span className="skill-cost">
-                <Droplets size={11} />
-                {equippedSkill.manaCost}
-              </span>
-            </button>
-          ) : (
-            <button className="btn-action mana" disabled>
-              <Droplets size={20} /> Mana
-            </button>
-          )}
         </div>
+        {equippedSkills.length > 0 ? (
+          <div className="battle-skills">
+            {equippedSkills.map((skill) => {
+              const SkillIcon = skill.icon;
+              const skillDisabled =
+                disabled || playerManaCurrent < skill.manaCost;
+              return (
+                <button
+                  key={skill.id}
+                  className={
+                    "btn-action skill branch-" + skill.branch
+                  }
+                  onClick={() => handleAction("skill", skill)}
+                  disabled={skillDisabled}
+                >
+                  <SkillIcon size={18} />
+                  <span className="skill-btn-name">{skill.name}</span>
+                  <span className="skill-cost">
+                    <Droplets size={11} />
+                    {skill.manaCost}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="battle-skills">
+            <button className="btn-action mana" disabled>
+              <Droplets size={20} /> Nenhuma habilidade
+            </button>
+          </div>
+        )}
       </div>
 
       {phase === "dice" && (

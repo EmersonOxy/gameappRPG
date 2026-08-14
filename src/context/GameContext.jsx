@@ -35,7 +35,7 @@ function loadProgress() {
         stats: { ...INITIAL_STATS },
         statPoints: 0,
         skillsOwned: [],
-        skillEquipped: null,
+        skillsEquipped: [],
       };
     }
     const data = JSON.parse(raw);
@@ -52,15 +52,18 @@ function loadProgress() {
       statPoints = (level - 1) * POINTS_PER_LEVEL;
     }
     const skillsOwned = sanitizeSkills(data.skillsOwned);
-    let skillEquipped = data.skillEquipped || null;
-    if (!skillsOwned.includes(skillEquipped)) skillEquipped = null;
+    let skillsEquipped = sanitizeSkills(data.skillsEquipped);
+    if (skillsEquipped.length === 0 && data.skillEquipped) {
+      skillsEquipped = sanitizeSkills([data.skillEquipped]);
+    }
+    skillsEquipped = skillsEquipped.filter((id) => skillsOwned.includes(id));
     return {
       gold: Number(data.gold) || 0,
       totalXp,
       stats,
       statPoints,
       skillsOwned,
-      skillEquipped,
+      skillsEquipped,
     };
   } catch {
     return {
@@ -69,7 +72,7 @@ function loadProgress() {
       stats: { ...INITIAL_STATS },
       statPoints: 0,
       skillsOwned: [],
-      skillEquipped: null,
+      skillsEquipped: [],
     };
   }
 }
@@ -83,7 +86,7 @@ export function GameProvider({ children }) {
   const [stats, setStats] = useState(initial.stats);
   const [statPoints, setStatPoints] = useState(initial.statPoints);
   const [skillsOwned, setSkillsOwned] = useState(initial.skillsOwned);
-  const [skillEquipped, setSkillEquipped] = useState(initial.skillEquipped);
+  const [skillsEquipped, setSkillsEquipped] = useState(initial.skillsEquipped);
 
   useEffect(() => {
     localStorage.setItem(
@@ -94,10 +97,10 @@ export function GameProvider({ children }) {
         stats,
         statPoints,
         skillsOwned,
-        skillEquipped,
+        skillsEquipped,
       })
     );
-  }, [gold, totalXp, stats, statPoints, skillsOwned, skillEquipped]);
+  }, [gold, totalXp, stats, statPoints, skillsOwned, skillsEquipped]);
 
   function addReward(goldGain, xpGain) {
     const nextTotalXp = totalXp + xpGain;
@@ -132,9 +135,11 @@ export function GameProvider({ children }) {
     return { ok: true };
   }
 
-  function equipSkill(id) {
+  function toggleSkill(id) {
     if (!skillsOwned.includes(id)) return { ok: false };
-    setSkillEquipped(id);
+    setSkillsEquipped((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
     return { ok: true };
   }
 
@@ -148,6 +153,7 @@ export function GameProvider({ children }) {
   const playerStaminaRegen = 1 + stats.regen;
   const playerFuryMult = 2 + (stats.furia - 1) * 0.5;
   const playerMana = 4 + stats.mana * 4;
+  const playerManaRegen = stats.regenmana;
 
   const enemyMaxHp =
     5 + Math.floor((level - 1) / 2) + Math.floor((level - 1) / 3);
@@ -160,7 +166,9 @@ export function GameProvider({ children }) {
   const xpBase = 1 + Math.floor((level - 1) / 3);
   const xpExtra = 2 + Math.floor((level - 1) / 3);
 
-  const equippedSkill = skillEquipped ? getSkill(skillEquipped) : null;
+  const equippedSkills = skillsEquipped
+    .map((id) => getSkill(id))
+    .filter(Boolean);
 
   return (
     <GameContext.Provider
@@ -175,10 +183,10 @@ export function GameProvider({ children }) {
         addReward,
         upgradeStat,
         skillsOwned,
-        skillEquipped,
-        equippedSkill,
+        skillsEquipped,
+        equippedSkills,
         buySkill,
-        equipSkill,
+        toggleSkill,
         difficulty: level,
         playerMaxHp,
         playerAtk,
@@ -187,6 +195,7 @@ export function GameProvider({ children }) {
         playerStaminaRegen,
         playerFuryMult,
         playerMana,
+        playerManaRegen,
         enemyMaxHp,
         enemyAtk,
         enemyDef,

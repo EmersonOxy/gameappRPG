@@ -6,6 +6,7 @@ import {
   Flame,
   Swords,
   Droplets,
+  Waves,
 } from "lucide-react";
 
 export const POINTS_PER_LEVEL = 1;
@@ -59,6 +60,13 @@ export const STATS = [
     description: "Quantidade de mana base",
     effect: "+4 de mana por ponto",
     icon: Droplets,
+  },
+  {
+    key: "regenmana",
+    label: "Regen. de Mana",
+    description: "Velocidade que a mana é restaurada",
+    effect: "+1 de regeneração de mana por ponto",
+    icon: Waves,
   },
 ];
 
