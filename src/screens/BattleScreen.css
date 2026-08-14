@@ -29,6 +29,30 @@
   z-index: 0;
 }
 
+.timer-wrap {
+  position: absolute;
+  top: 10px;
+  left: 16px;
+  right: 16px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(10, 14, 26, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  z-index: 3;
+}
+
+.timer-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #5bd46d, #b7e24c);
+  transition: width 1s linear;
+}
+
+.timer-fill.danger {
+  background: linear-gradient(90deg, #ff7a5a, #d33f2e);
+}
+
 .enemy-wrap {
   position: absolute;
   top: 40px;

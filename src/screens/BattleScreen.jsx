@@ -29,6 +29,7 @@ const REGEN_INTERVAL = REGEN_BASE_INTERVAL / STAMINA_REGEN;
 const ATK_COST = 3;
 const DEF_COST = 2;
 const SPECIAL_MULT = 2;
+const MATCH_TIME = 60;
 
 const STAMINA_FILL = "linear-gradient(180deg, #6fb1ff, #357abd)";
 const STAMINA_TICK = "#245a8f";
@@ -82,6 +83,8 @@ export default function BattleScreen() {
   const [dieValue, setDieValue] = useState(1);
   const [rolling, setRolling] = useState(false);
   const [rolled, setRolled] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(MATCH_TIME);
+  const [defeatReason, setDefeatReason] = useState("defeated");
 
   function handleRoll() {
     if (phase !== "dice" || rolling) return;
@@ -209,6 +212,7 @@ export default function BattleScreen() {
             );
             setPhase("victory");
           } else if (newPlayerHp <= 0) {
+            setDefeatReason("defeated");
             setPhase("defeat");
           } else {
             setPhase("player");
@@ -233,6 +237,21 @@ export default function BattleScreen() {
     }, REGEN_INTERVAL);
     return () => clearInterval(id);
   }, []);
+
+  useEffect(() => {
+    if (phase !== "player") return;
+    const id = setInterval(() => {
+      setTimeLeft((t) => Math.max(0, t - 1));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase === "player" && timeLeft <= 0) {
+      setDefeatReason("timeout");
+      setPhase("defeat");
+    }
+  }, [phase, timeLeft]);
 
   useEffect(() => {
     if (phase !== "player") return;
@@ -265,6 +284,8 @@ export default function BattleScreen() {
     setDieValue(1);
     setPlayerLuck(null);
     setEnemyLuck(null);
+    setTimeLeft(MATCH_TIME);
+    setDefeatReason("defeated");
     setPhase("dice");
   }
 
@@ -273,9 +294,16 @@ export default function BattleScreen() {
   const canDefend = playerStamina >= DEF_COST;
   const canSpecial = playerFury >= FURY_MAX;
   const exhausted = phase === "player" && !canAttack && !canDefend && !canSpecial;
+  const timePct = (timeLeft / MATCH_TIME) * 100;
 
   return (
     <div className="battle-screen">
+      <div className="timer-wrap">
+        <div
+          className={"timer-fill" + (timePct <= 20 ? " danger" : "")}
+          style={{ width: timePct + "%" }}
+        />
+      </div>
       <div className={"enemy-wrap" + (enemyMoving ? " attacking" : "")}>
         <div className="enemy-bar">
           <HealthBar hp={enemyHp} max={MAX_HP} hitKey={enemyHit} />
@@ -413,7 +441,9 @@ export default function BattleScreen() {
 
       {phase === "defeat" && (
         <div className="result-overlay">
-          <h2 className="result-title lose">Derrota!</h2>
+          <h2 className="result-title lose">
+            {defeatReason === "timeout" ? "Tempo esgotado!" : "Derrota!"}
+          </h2>
           <div className="result-actions">
             <button className="btn-result primary" onClick={() => navigate("/home")}>
               Sair
