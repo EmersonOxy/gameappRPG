@@ -22,10 +22,13 @@ const ENEMY = {
 const FURY_MAX = 5;
 const FURY_GAIN = 2;
 const STAMINA_MAX = 10;
+const STAMINA_REGEN = 2;
+const REGEN_BASE_INTERVAL = 1000;
+const REGEN_TICK = 1;
+const REGEN_INTERVAL = REGEN_BASE_INTERVAL / STAMINA_REGEN;
 const ATK_COST = 3;
 const DEF_COST = 2;
 const SPECIAL_MULT = 2;
-const REGEN = 4;
 
 const STAMINA_FILL = "linear-gradient(180deg, #6fb1ff, #357abd)";
 const STAMINA_TICK = "#245a8f";
@@ -178,16 +181,8 @@ export default function BattleScreen() {
           : enemyAction === "defend"
           ? DEF_COST
           : 0;
-      let newPlayerStamina = Math.max(0, playerStamina - playerCost);
-      let newEnemyStamina = Math.max(0, enemyStamina - enemyCost);
-      if (playerAction === "skip") {
-        newPlayerStamina = Math.min(STAMINA_MAX, newPlayerStamina + REGEN);
-      }
-      if (enemyAction === "skip") {
-        newEnemyStamina = Math.min(STAMINA_MAX, newEnemyStamina + REGEN);
-      }
-      setPlayerStamina(newPlayerStamina);
-      setEnemyStamina(newEnemyStamina);
+      setPlayerStamina((s) => Math.max(0, s - playerCost));
+      setEnemyStamina((s) => Math.max(0, s - enemyCost));
 
       setPlayerBlocking(playerAction === "defend");
       setEnemyBlocking(enemyAction === "defend");
@@ -230,6 +225,14 @@ export default function BattleScreen() {
     if (action === "special" && playerFury < FURY_MAX) return;
     resolveTurn(action);
   }
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setPlayerStamina((s) => Math.min(STAMINA_MAX, s + REGEN_TICK));
+      setEnemyStamina((s) => Math.min(STAMINA_MAX, s + REGEN_TICK));
+    }, REGEN_INTERVAL);
+    return () => clearInterval(id);
+  }, []);
 
   useEffect(() => {
     if (phase !== "player") return;
