@@ -95,6 +95,8 @@ export default function BattleScreen() {
   const [playerStamina, setPlayerStamina] = useState(playerStaminaMax);
   const [enemyStamina, setEnemyStamina] = useState(ENEMY_STAMINA_MAX);
   const [playerManaCurrent, setPlayerManaCurrent] = useState(playerMana);
+  const [playerMaxHpCurrent, setPlayerMaxHpCurrent] = useState(playerMaxHp);
+  const [enemyMaxHpCurrent, setEnemyMaxHpCurrent] = useState(enemyMaxHp);
   const [playerShield, setPlayerShield] = useState(0);
   const [enemyStunned, setEnemyStunned] = useState(false);
   const [enemyStunFlash, setEnemyStunFlash] = useState(false);
@@ -177,6 +179,8 @@ export default function BattleScreen() {
     setTimeout(() => {
       let playerDmg = 0;
       let enemyDmg = 0;
+      let playerCritDmg = 0;
+      let enemyCritDmg = 0;
       let playerMiss = false;
       let enemyMiss = false;
       let skillMiss = false;
@@ -203,7 +207,7 @@ export default function BattleScreen() {
           if (fx.stun) skillStun = true;
         } else if (fx.type === "heal") {
           skillHeal = fx.full
-            ? playerMaxHp
+            ? playerMaxHpCurrent
             : fx.base + Math.floor(playerMaxHp * fx.pct);
         } else if (fx.type === "shield") {
           skillShield = fx.base + Math.floor(playerDef * fx.defFactor);
@@ -224,7 +228,7 @@ export default function BattleScreen() {
       } else if (playerSpecial) {
         let d = rollDamage(playerAtk, enemyDef) * playerFuryMult;
         if (enemyAction === "defend") d = d / 2;
-        enemyDmg = d;
+        enemyCritDmg = d;
       }
 
       if (enemyAction === "attack") {
@@ -238,7 +242,7 @@ export default function BattleScreen() {
       } else if (enemySpecial) {
         let d = rollDamage(enemyAtk, playerDef) * ENEMY_SPECIAL_MULT;
         if (playerAction === "defend") d = d / 2;
-        playerDmg = d;
+        playerCritDmg = d;
       }
 
       let shieldLeft = playerShield;
@@ -250,24 +254,40 @@ export default function BattleScreen() {
       }
       setPlayerShield(shieldLeft);
 
-      const newEnemyHp = Math.max(0, enemyHp - enemyDmg);
+      const newPlayerMaxHp = Math.max(1, playerMaxHpCurrent - playerCritDmg);
+      const newEnemyMaxHp = Math.max(1, enemyMaxHpCurrent - enemyCritDmg);
+
+      const newEnemyHp = Math.max(
+        0,
+        Math.min(newEnemyMaxHp, enemyHp) - enemyDmg
+      );
       const newPlayerHp = Math.max(
         0,
-        Math.min(playerMaxHp, playerHp + skillHeal) - playerDmg
+        Math.min(newPlayerMaxHp, playerHp + skillHeal) - playerDmg
       );
+      setPlayerMaxHpCurrent(newPlayerMaxHp);
+      setEnemyMaxHpCurrent(newEnemyMaxHp);
       setEnemyHp(newEnemyHp);
       setPlayerHp(newPlayerHp);
-      if (enemyDmg > 0) setEnemyHit(Date.now());
-      if (playerDmg > 0) setPlayerHit(Date.now());
+      if (enemyDmg > 0 || enemyCritDmg > 0) setEnemyHit(Date.now());
+      if (playerDmg > 0 || playerCritDmg > 0) setPlayerHit(Date.now());
 
       const newPlayerFury = playerSpecial
         ? 0
-        : Math.min(FURY_MAX, playerFury + (playerDmg > 0 ? 1 : 0));
+        : Math.min(
+            FURY_MAX,
+            playerFury + (playerDmg > 0 || playerCritDmg > 0 ? 1 : 0)
+          );
       const newEnemyFury = enemySpecial
         ? 0
         : Math.min(
             FURY_MAX,
-            Math.max(0, enemyFury + (enemyDmg > 0 ? 1 : 0) - skillDrainFury)
+            Math.max(
+              0,
+              enemyFury +
+                (enemyDmg > 0 || enemyCritDmg > 0 ? 1 : 0) -
+                skillDrainFury
+            )
           );
       setPlayerFury(newPlayerFury);
       setEnemyFury(newEnemyFury);
@@ -342,7 +362,7 @@ export default function BattleScreen() {
               text = `${dmg} de dano`;
             } else if (fx.type === "heal") {
               const heal = Math.floor(playerMaxHp * fx.pct);
-              pHp = Math.min(playerMaxHp, pHp + heal);
+              pHp = Math.min(playerMaxHpRef.current, pHp + heal);
               text = `+${heal} de vida`;
             } else if (fx.type === "mana") {
               setPlayerManaCurrent((m) => Math.min(playerMana, m + fx.amount));
@@ -424,6 +444,8 @@ export default function BattleScreen() {
 
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
+  const playerMaxHpRef = useRef(playerMaxHpCurrent);
+  playerMaxHpRef.current = playerMaxHpCurrent;
 
   useEffect(() => {
     if (!itemPopup) return;
@@ -513,6 +535,8 @@ export default function BattleScreen() {
   function nextBattle() {
     setPlayerHp(playerMaxHp);
     setEnemyHp(enemyMaxHp);
+    setPlayerMaxHpCurrent(playerMaxHp);
+    setEnemyMaxHpCurrent(enemyMaxHp);
     setPlayerFury(0);
     setEnemyFury(0);
     setPlayerStamina(playerStaminaMax);
@@ -594,6 +618,7 @@ export default function BattleScreen() {
             <HealthBar
               hp={enemyHp}
               max={enemyMaxHp}
+              currentMax={enemyMaxHpCurrent}
               hitKey={enemyHit}
               vertical
               reverse
@@ -641,7 +666,13 @@ export default function BattleScreen() {
           </div>
           {/* Vida: por cima, com segmentos de fúria grudados na lateral */}
           <div className="vbar vida">
-            <HealthBar hp={playerHp} max={playerMaxHp} hitKey={playerHit} vertical />
+            <HealthBar
+              hp={playerHp}
+              max={playerMaxHp}
+              currentMax={playerMaxHpCurrent}
+              hitKey={playerHit}
+              vertical
+            />
             {/* Fúria: pips finos colados na lateral direita da vida */}
             <div className="fury-pips right">
               {Array.from({ length: FURY_MAX }).map((_, i) => (
