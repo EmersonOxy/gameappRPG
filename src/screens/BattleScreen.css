@@ -1,5 +1,9 @@
 /* ======================================
    BATTLE SCREEN — LoR-Inspired Arena
+   Hierarquia visual de 3 camadas:
+   L1 (Decisão): HP + botão Atacar
+   L2 (Recurso): Fury/Stamina/Mana/Shield, timer, sprites
+   L3 (Ambientação): fog, divider, arena atmosphere
    ====================================== */
 
 /* ---- Arena background — matches StartScreen atmosphere ---- */
@@ -59,29 +63,29 @@
   padding: 0 8px;
 }
 
-/* ---- Timer ---- */
+/* ---- Timer — Camada 2 (suporte, não ação) ---- */
 .timer-wrap {
   position: absolute;
   top: 14px;
   left: 20px; right: 20px;
-  height: 10px;
+  height: 8px;
   border-radius: 999px;
   background: rgba(0, 0, 0, 0.6);
-  border: 1px solid var(--border);
+  /* L2: borda tênue, sem inset highlight */
+  border: 1px solid var(--l3-border);
   overflow: hidden;
   z-index: 6;
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
 .timer-fill {
   height: 100%;
   background: linear-gradient(90deg, #2cc96e, #7de84d);
   transition: width 0.12s linear;
-  box-shadow: 0 0 8px rgba(44, 201, 110, 0.4);
+  /* Sem glow constante — só no estado de perigo (L1 temporário) */
 }
 
+/* Timer danger: temporariamente promovido a L1 para chamar atenção */
 .timer-fill.danger {
   background: linear-gradient(90deg, #c0392b, #e74c3c);
   box-shadow: 0 0 10px rgba(192, 57, 43, 0.55);
@@ -134,85 +138,62 @@
   justify-content: center;
 }
 
-/* Enemy — dark crimson frame, skull red aura */
+/* Enemy sprite — Camada 2 (identificação, não decisão)
+   Corner ornaments REMOVIDOS: são L3 numa tela de uso constante.
+   Mantém apenas a borda crimson + aura pulsante tênue. */
 .enemy-sprite {
   position: relative;
   width: 116px;
   height: 116px;
   border-radius: 4px;
-  /* Dark stone-like panel */
   background: linear-gradient(160deg, #1e0f0f 0%, #120808 100%);
-  /* Metallic frame like LoR card border */
-  border: 2px solid rgba(139, 28, 28, 0.6);
+  border: 2px solid rgba(139, 28, 28, 0.55);
   color: #d97070;
+  /* L2: 2 camadas apenas — profundidade + outline, sem inset highlight */
   box-shadow:
-    0 0 0 1px rgba(80, 10, 10, 0.6),
-    0 0 30px rgba(139, 28, 28, 0.2),
-    0 20px 50px rgba(0, 0, 0, 0.7),
-    inset 0 1px 0 rgba(255, 80, 80, 0.06);
+    0 0 0 1px rgba(80, 10, 10, 0.5),
+    0 16px 40px rgba(0, 0, 0, 0.6);
   padding: 14px;
 }
 
-/* Pulsing crimson aura on enemy */
+/* Aura tênue — L3 atmosfera, não L1 ação */
 .enemy-sprite::after {
   content: "";
   position: absolute;
-  inset: -6px;
+  inset: -4px;
   border-radius: 6px;
   background: transparent;
-  box-shadow: 0 0 20px rgba(192, 57, 43, 0.25);
-  animation: enemyAuraPulse 2.5s ease-in-out infinite;
+  box-shadow: 0 0 14px rgba(192, 57, 43, 0.18);
+  animation: enemyAuraPulse 3s ease-in-out infinite;
   pointer-events: none;
 }
 
 @keyframes enemyAuraPulse {
-  0%, 100% { box-shadow: 0 0 16px rgba(192, 57, 43, 0.2); }
-  50%       { box-shadow: 0 0 32px rgba(192, 57, 43, 0.5); }
+  0%, 100% { box-shadow: 0 0 10px rgba(192, 57, 43, 0.14); }
+  50%       { box-shadow: 0 0 22px rgba(192, 57, 43, 0.34); }
 }
 
-/* Gold corner ornaments on enemy sprite */
-.enemy-sprite::before {
-  content: "";
-  position: absolute;
-  inset: -2px;
-  border-radius: 6px;
-  background:
-    linear-gradient(135deg, rgba(200,153,58,0.4) 0%, transparent 25%) top left / 18px 18px no-repeat,
-    linear-gradient(225deg, rgba(200,153,58,0.4) 0%, transparent 25%) top right / 18px 18px no-repeat,
-    linear-gradient(315deg, rgba(200,153,58,0.4) 0%, transparent 25%) bottom left / 18px 18px no-repeat,
-    linear-gradient(45deg, rgba(200,153,58,0.4) 0%, transparent 25%) bottom right / 18px 18px no-repeat;
-  pointer-events: none;
-}
+/* Corner ornaments nos sprites REMOVIDOS (eram L3 desnecessário
+   em tela de uso constante — tornavam tudo do mesmo peso visual).
+   Regra: ornamento pesado só em StartScreen (hero) e recompensas. */
 
-/* Player sprite — blue knight frame */
+/* Player sprite — Camada 2 */
 .player-sprite {
   position: relative;
   width: 100px;
   height: 100px;
   border-radius: 4px;
   background: linear-gradient(160deg, #0f1a2e 0%, #080f1e 100%);
-  border: 2px solid rgba(45, 80, 160, 0.55);
+  border: 2px solid rgba(45, 80, 160, 0.5);
   color: #7aade0;
+  /* L2: 2 camadas apenas */
   box-shadow:
-    0 0 0 1px rgba(10, 20, 60, 0.6),
-    0 0 24px rgba(45, 100, 200, 0.15),
-    0 18px 46px rgba(0, 0, 0, 0.65),
-    inset 0 1px 0 rgba(100, 160, 255, 0.06);
+    0 0 0 1px rgba(10, 20, 60, 0.5),
+    0 14px 36px rgba(0, 0, 0, 0.55);
   padding: 12px;
 }
 
-.player-sprite::before {
-  content: "";
-  position: absolute;
-  inset: -2px;
-  border-radius: 6px;
-  background:
-    linear-gradient(135deg, rgba(200,153,58,0.35) 0%, transparent 25%) top left / 16px 16px no-repeat,
-    linear-gradient(225deg, rgba(200,153,58,0.35) 0%, transparent 25%) top right / 16px 16px no-repeat,
-    linear-gradient(315deg, rgba(200,153,58,0.35) 0%, transparent 25%) bottom left / 16px 16px no-repeat,
-    linear-gradient(45deg, rgba(200,153,58,0.35) 0%, transparent 25%) bottom right / 16px 16px no-repeat;
-  pointer-events: none;
-}
+/* ::before dos sprites REMOVIDO — corner ornaments eram L3 ruído */
 
 /* Player holder */
 .player-sprite-holder {
@@ -327,7 +308,9 @@
 .skill-flash.branch-sagrado { color: #8ff5e4; }
 .skill-flash.branch-gelo    { color: #a8d4ff; }
 
-/* Shield badge on player sprite */
+/* Shield badge — Camada 2 (recurso ativo)
+   Glow de entrada via animação (blockPop já tem), sem glow permanente.
+   O badge aparece com impacto e depois fica discreto — comportamento L2. */
 .shield-badge {
   position: absolute;
   top: -8px;
@@ -342,9 +325,15 @@
   color: #06282b;
   background: linear-gradient(180deg, #7fe8dc, #2dd4bf);
   border: 1px solid #0e5a52;
-  box-shadow: 0 0 12px rgba(45, 212, 191, 0.5);
+  /* Sem box-shadow permanente — glow apenas durante a animação de entrada */
   z-index: 5;
-  animation: blockPop 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+  animation: shieldIn 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+@keyframes shieldIn {
+  0%   { transform: scale(0.4); opacity: 0; box-shadow: 0 0 18px rgba(45, 212, 191, 0.8); }
+  70%  { transform: scale(1.1); opacity: 1; box-shadow: 0 0 10px rgba(45, 212, 191, 0.4); }
+  100% { transform: scale(1);   opacity: 1; box-shadow: none; }
 }
 
 /* Enemy texts — left side of the sprite / screen */
@@ -405,7 +394,7 @@
 .arena-stack .vbar.furia     { height: 48%; }
 .arena-stack .vbar.mana      { height: 48%; }
 
-/* ---- Action buttons ---- */
+/* ---- Action buttons — hierarquia L1 / L2 ---- */
 .battle-actions {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -455,7 +444,6 @@
   color: #fff;
   white-space: nowrap;
   overflow: hidden;
-  /* 3D press feel like LoR attack button */
   transition: transform 0.06s ease, box-shadow 0.08s ease, opacity 0.15s ease;
 }
 
@@ -464,69 +452,54 @@
   cursor: default;
 }
 
-/* Attack — LoR's attack crimson */
+/* ATTACK — Camada 1 (ação principal do combate)
+   ÚNICO botão que mantém glow de profundidade em repouso.
+   Isso o destaca de todos os outros botões — é o ponto focal L1. */
 .btn-action.attack {
   background: linear-gradient(180deg, #d44030 0%, #8b1c1c 100%);
   box-shadow:
     0 5px 0 #571010,
-    0 8px 24px rgba(180, 50, 30, 0.15),
-    inset 0 1px 0 rgba(255, 130, 100, 0.2);
+    0 8px 20px rgba(180, 50, 30, 0.3);
 }
 
-/* Defend — LoR's teal/steel */
+/* DEFEND — Camada 2 (ação de suporte)
+   Sem inset highlight, sem glow de profundidade. Presente, não dominante. */
 .btn-action.defend {
   background: linear-gradient(180deg, #2a7a84 0%, #164850 100%);
-  box-shadow:
-    0 5px 0 #0d3038,
-    0 8px 24px rgba(30, 120, 140, 0.12),
-    inset 0 1px 0 rgba(80, 200, 220, 0.15);
+  box-shadow: 0 4px 0 #0d3038;
 }
 
-/* Special — LoR's activated gold */
+/* SPECIAL — Camada 2 (ativo disponível)
+   Glow removido em repouso; sobe para L1 via animação quando disponível. */
 .btn-action.special {
   background: linear-gradient(180deg, var(--gold-2) 0%, #8a5a10 100%);
-  box-shadow:
-    0 5px 0 #4a3008,
-    0 8px 24px rgba(200, 153, 58, 0.12),
-    inset 0 1px 0 rgba(255, 220, 120, 0.25);
+  box-shadow: 0 4px 0 #4a3008;
 }
 
-/* Mana — teal (reserved, no use yet) */
+/* MANA — Camada 2 */
 .btn-action.mana {
   background: linear-gradient(180deg, #1f7f86 0%, #0e4a50 100%);
-  box-shadow:
-    0 5px 0 #083034,
-    0 8px 24px rgba(30, 140, 150, 0.12),
-    inset 0 1px 0 rgba(80, 220, 230, 0.15);
+  box-shadow: 0 4px 0 #083034;
 }
 
-/* Equipped skill — branch colored */
+/* Equipped skill — branch colored, Camada 2 */
 .btn-action.skill {
   color: #fff;
 }
 
 .btn-action.skill.branch-fogo {
   background: linear-gradient(180deg, #d44030 0%, #8b1c1c 100%);
-  box-shadow:
-    0 5px 0 #571010,
-    0 8px 24px rgba(180, 50, 30, 0.15),
-    inset 0 1px 0 rgba(255, 130, 100, 0.2);
+  box-shadow: 0 4px 0 #571010;
 }
 
 .btn-action.skill.branch-sagrado {
   background: linear-gradient(180deg, #2dd4bf 0%, #0e7a72 100%);
-  box-shadow:
-    0 5px 0 #08423c,
-    0 8px 24px rgba(45, 212, 191, 0.12),
-    inset 0 1px 0 rgba(140, 245, 228, 0.2);
+  box-shadow: 0 4px 0 #08423c;
 }
 
 .btn-action.skill.branch-gelo {
   background: linear-gradient(180deg, #4a90d9 0%, #1f4a7a 100%);
-  box-shadow:
-    0 5px 0 #122e4d,
-    0 8px 24px rgba(70, 140, 220, 0.15),
-    inset 0 1px 0 rgba(140, 200, 255, 0.2);
+  box-shadow: 0 4px 0 #122e4d;
 }
 
 .skill-btn-name {
@@ -550,14 +523,14 @@
   flex-shrink: 0;
 }
 
-/* Active state glow on special when available */
+/* Special: sobe para L1 temporariamente quando disponível */
 .btn-action.special:not(:disabled) {
-  animation: specialReady 1.8s ease-in-out infinite;
+  animation: specialReady 2s ease-in-out infinite;
 }
 
 @keyframes specialReady {
-  0%, 100% { box-shadow: 0 5px 0 #4a3008, 0 8px 24px rgba(200, 153, 58, 0.1), inset 0 1px 0 rgba(255, 220, 120, 0.2); }
-  50%       { box-shadow: 0 5px 0 #4a3008, 0 12px 40px rgba(234, 184, 80, 0.35), inset 0 1px 0 rgba(255, 220, 120, 0.3); }
+  0%, 100% { box-shadow: 0 4px 0 #4a3008, 0 6px 18px rgba(200, 153, 58, 0.1); }
+  50%       { box-shadow: 0 4px 0 #4a3008, 0 10px 32px rgba(234, 184, 80, 0.38); }
 }
 
 .btn-action:not(:disabled):active {
@@ -1007,7 +980,8 @@
   flex-shrink: 0;
 }
 
-/* ---- Pending items chips ---- */
+/* ---- Pending items chips — Camada 2 (informação de suporte)
+   Box-shadow externo removido: chips são informativos, não L1. */
 .pending-items {
   position: absolute;
   top: 30px;
@@ -1028,31 +1002,31 @@
   font-weight: 800;
   color: var(--text-bright);
   background: rgba(10, 10, 16, 0.85);
-  border: 1px solid var(--border-bright);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  /* L2: borda de contexto, sem box-shadow externo */
+  border: 1px solid var(--l2-border);
   animation: chipIn 0.3s ease both;
 }
 
 .pending-chip.branch-furia,
 .pending-chip.branch-dano {
   color: #ffb09a;
-  border-color: rgba(212, 64, 48, 0.5);
+  border-color: rgba(212, 64, 48, 0.4);
 }
 
 .pending-chip.branch-vida {
   color: #ff9d8a;
-  border-color: rgba(212, 64, 48, 0.5);
+  border-color: rgba(212, 64, 48, 0.4);
 }
 
 .pending-chip.branch-mana,
 .pending-chip.branch-escudo {
   color: #8ff5e4;
-  border-color: rgba(45, 212, 191, 0.4);
+  border-color: rgba(45, 212, 191, 0.3);
 }
 
 .pending-chip.branch-estamina {
   color: #a8d4ff;
-  border-color: rgba(90, 150, 220, 0.45);
+  border-color: rgba(90, 150, 220, 0.35);
 }
 
 .pending-count {

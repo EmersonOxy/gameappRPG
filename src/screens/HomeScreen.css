@@ -1,5 +1,9 @@
 /* ======================================
    HOME SCREEN — LoR-Inspired Top Bar
+   Hierarquia:
+   L1: avatar/nome (identidade do herói, pequena mas âncora)
+   L2: ouro/XP (recurso persistente, discreto)
+   L3: fundo gradiente da top bar
    ====================================== */
 .home-screen {
   flex: 1;
@@ -59,17 +63,17 @@
   gap: 10px;
 }
 
-/* Avatar — LoR circular portrait with gold ring */
+/* Avatar — âncora visual L1 (pequena, mas única)
+   Mantemos borda dourada de 2px (identidade do herói).
+   Removido: segundo glow ring (era L3 duplicado no mesmo elemento). */
 .avatar {
   width: 42px;
   height: 42px;
   border-radius: 50%;
   background: radial-gradient(circle at 40% 30%, #2a3a5c, #0e1520);
   border: 2px solid var(--gold);
-  box-shadow:
-    0 0 0 1px rgba(200, 153, 58, 0.2),
-    0 0 10px rgba(200, 153, 58, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  /* L1: apenas 1 ring de delineação, sem glow externo em repouso */
+  box-shadow: 0 0 0 1px rgba(200, 153, 58, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -102,7 +106,8 @@
   opacity: 0.8;
 }
 
-/* Currency — LoR-style pill chip */
+/* Currency — Camada 2 (recurso persistente, discreto)
+   Rebaixado: sem inset shadow, borda --l2-border, font-size fluído. */
 .currency {
   display: flex;
   gap: 6px;
@@ -112,18 +117,16 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 13px;
-  font-weight: 800;
+  font-size: var(--l2-font-sz);
+  font-weight: 700;
   font-family: 'Inter', sans-serif;
-  /* Dark metallic pill */
-  background: linear-gradient(180deg, #1e1a12, #13110b);
-  padding: 5px 11px;
+  /* L2: background escuro sem gradiente ornamentado */
+  background: rgba(20, 16, 10, 0.9);
+  padding: 5px 10px;
   border-radius: 2px;
-  border: 1px solid var(--border-bright);
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.05) inset,
-    0 2px 8px rgba(0, 0, 0, 0.4);
-  color: var(--gold-2);
+  /* L2: borda única tênue, sem inset shadow */
+  border: 1px solid var(--l2-border);
+  color: var(--gold);
 }
 
 .dot {

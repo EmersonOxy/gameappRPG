@@ -1,5 +1,7 @@
 /* ======================================
    SHOP — item store
+   Hierarquia: item disponível (botão comprar) = L1.
+   Descrição/custo = L2. Card frame = L3.
    ====================================== */
 .shop-view {
   display: flex;
@@ -60,10 +62,10 @@
   align-items: center;
   gap: 12px;
   padding: 12px;
-  border: 1px solid var(--border);
+  /* L3: borda tênue, sem box-shadow ornamental */
+  border: 1px solid var(--l3-border);
   border-radius: 4px;
   background: linear-gradient(180deg, #12100a, #0d0b07);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
 }
 
 .shop-icon {
@@ -75,16 +77,17 @@
   justify-content: center;
   border-radius: 4px;
   color: var(--gold-2);
-  background: rgba(200, 153, 58, 0.08);
-  border: 1px solid rgba(200, 153, 58, 0.3);
+  background: rgba(200, 153, 58, 0.07);
+  /* L3: borda quase invisível — o ícone é ambientação, não informação */
+  border: 1px solid var(--l3-border);
 }
 
-.shop-icon.branch-mana    { color: #8fe8e0; border-color: rgba(45, 212, 191, 0.4);  background: rgba(45, 212, 191, 0.07); }
-.shop-icon.branch-estamina{ color: #a8d4ff; border-color: rgba(90, 150, 220, 0.45); background: rgba(90, 150, 220, 0.08); }
-.shop-icon.branch-vida    { color: #ff9d8a; border-color: rgba(212, 64, 48, 0.5);  background: rgba(212, 64, 48, 0.08); }
-.shop-icon.branch-furia   { color: #ffb37a; border-color: rgba(240, 117, 31, 0.5); background: rgba(240, 117, 31, 0.08); }
-.shop-icon.branch-escudo  { color: #c8b7ff; border-color: rgba(150, 120, 220, 0.45); background: rgba(150, 120, 220, 0.08); }
-.shop-icon.branch-dano    { color: #ff9d8a; border-color: rgba(212, 64, 48, 0.5);  background: rgba(212, 64, 48, 0.08); }
+.shop-icon.branch-mana    { color: #8fe8e0; border-color: rgba(45, 212, 191, 0.2);  background: rgba(45, 212, 191, 0.06); }
+.shop-icon.branch-estamina{ color: #a8d4ff; border-color: rgba(90, 150, 220, 0.2); background: rgba(90, 150, 220, 0.06); }
+.shop-icon.branch-vida    { color: #ff9d8a; border-color: rgba(212, 64, 48, 0.25);  background: rgba(212, 64, 48, 0.06); }
+.shop-icon.branch-furia   { color: #ffb37a; border-color: rgba(240, 117, 31, 0.25); background: rgba(240, 117, 31, 0.06); }
+.shop-icon.branch-escudo  { color: #c8b7ff; border-color: rgba(150, 120, 220, 0.2); background: rgba(150, 120, 220, 0.06); }
+.shop-icon.branch-dano    { color: #ff9d8a; border-color: rgba(212, 64, 48, 0.25);  background: rgba(212, 64, 48, 0.06); }
 
 .shop-info {
   flex: 1;

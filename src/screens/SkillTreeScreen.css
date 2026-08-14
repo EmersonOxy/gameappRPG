@@ -1,5 +1,9 @@
 /* ======================================
    SKILL TREE — LoR-Inspired Ability Tree
+   Hierarquia:
+   L1: skill equipada (equipped) — único nó com glow em repouso
+   L2: skill disponível (available), custos/descrições
+   L3: frames de branch, conectores, ícones de nó
    ====================================== */
 .skill-tree-view {
   display: flex;
@@ -78,10 +82,10 @@
 }
 
 .skill-branch {
-  border: 1px solid var(--border);
+  /* L3: borda tênue, sem box-shadow ornamental nos branches */
+  border: 1px solid var(--l3-border);
   border-radius: 4px;
   background: linear-gradient(180deg, #12100a, #0d0b07);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
   padding: 12px 10px 14px;
 }
 
@@ -184,23 +188,25 @@
   text-overflow: ellipsis;
 }
 
-/* Available — gold pulse */
+/* Disponível — Camada 2 (presente, mas não dominante)
+   Pulsação constante REMOVIDA: economiza atenção visual para o equipped (L1).
+   Borda mais clara sinaliza disponibilidade sem gritar. */
 .skill-node.available {
-  border-color: rgba(200, 153, 58, 0.6);
+  border-color: rgba(200, 153, 58, 0.5);
   color: var(--gold-2);
-  animation: nodePulse 2.2s ease-in-out infinite;
+}
+
+.skill-node.available:hover {
+  box-shadow: 0 0 10px rgba(200, 153, 58, 0.25);
 }
 
 .skill-node.available .node-chip {
   color: var(--gold-2);
-  border-color: rgba(200, 153, 58, 0.5);
-  background: rgba(200, 153, 58, 0.08);
+  border-color: rgba(200, 153, 58, 0.4);
+  background: rgba(200, 153, 58, 0.07);
 }
 
-@keyframes nodePulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(200, 153, 58, 0.25); }
-  50%       { box-shadow: 0 0 14px 2px rgba(200, 153, 58, 0.35); }
-}
+/* Animação de pulsação preservada apenas para o equipped (L1) via .skill-node.equipped */
 
 /* Owned — branch color fill */
 .skill-node.owned,
@@ -243,10 +249,10 @@
   outline-offset: 1px;
 }
 
-/* Locked */
+/* Locked — Camada 3 (máximo rebaixamento: quase apagado) */
 .skill-node.locked,
 .skill-node.locked-level {
-  opacity: 0.55;
+  opacity: 0.4;
   cursor: pointer;
 }
 

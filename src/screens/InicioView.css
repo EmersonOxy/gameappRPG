@@ -1,5 +1,9 @@
 /* ======================================
    INICIO VIEW — LoR-Inspired Home Panel
+   Hierarquia:
+   L1: btn-battle (único elemento dominante desta tela)
+   L2: os 5 stats (nível/ouro/XP/ATK/DEF) — painel informativo
+   L3: banner atmosférico, tochas, dividers
    ====================================== */
 .inicio-view {
   flex: 1;
@@ -98,14 +102,16 @@
   margin-top: 4px;
 }
 
-/* Stats row — LoR-style info chips */
+/* Stats row — Camada 2 (painel informativo, sem destaque individual)
+   Todos os 5 stats têm o mesmo peso L2 entre si — nenhum é L1 aqui.
+   O único elemento L1 desta tela é o botão Batalhar. */
 .inicio-stats {
   display: flex;
   gap: 1px;
   width: 100%;
   background: var(--border);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+  border-top: 1px solid var(--l3-border);
+  border-bottom: 1px solid var(--l3-border);
   flex-shrink: 0;
 }
 
@@ -116,15 +122,18 @@
   align-items: center;
   justify-content: center;
   gap: 2px;
-  padding: 12px 8px;
-  background: linear-gradient(180deg, #12100a, #0d0b07);
+  padding: 11px 8px;
+  /* L2: background neutro, sem gradiente ornamentado */
+  background: var(--bg-card);
 }
 
+/* L2: menor, mais sutil — deixa o btn-battle dominar */
 .inicio-stat-value {
   font-family: 'Cinzel', serif;
-  font-size: 18px;
+  font-size: clamp(14px, 3.6vw, 16px);
   font-weight: 700;
-  color: var(--gold-2);
+  color: var(--gold);
+  opacity: 0.9;
 }
 
 .inicio-stat-label {

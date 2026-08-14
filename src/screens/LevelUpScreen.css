@@ -1,5 +1,9 @@
 /* ======================================
    LEVEL UP SCREEN — LoR-Inspired Stat Allocation
+   Hierarquia:
+   L1: points-count.active + stat-up button (decisão de alocação)
+   L2: stat-name, stat-desc, stat-level
+   L3: stat-row frame, stat-icon (estrutura visual)
    ====================================== */
 .levelup-screen {
   flex: 1;
@@ -117,8 +121,8 @@
   padding: 12px 14px;
   border-radius: 3px;
   background: linear-gradient(180deg, #18140e 0%, #0d0b08 100%);
-  border: 1px solid rgba(200, 153, 58, 0.22);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  /* L3: borda tênue, sem box-shadow — os rows são estrutura, não destaque */
+  border: 1px solid var(--l3-border);
 }
 
 .stat-icon {
@@ -129,9 +133,10 @@
   align-items: center;
   justify-content: center;
   border-radius: 3px;
-  color: var(--gold-2);
-  background: rgba(200, 153, 58, 0.08);
-  border: 1px solid rgba(200, 153, 58, 0.25);
+  color: var(--gold);
+  background: rgba(200, 153, 58, 0.06);
+  /* L3: ícone é estrutura, não informação */
+  border: 1px solid var(--l3-border);
 }
 
 .stat-info {

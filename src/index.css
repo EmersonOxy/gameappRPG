@@ -1,5 +1,42 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap');
 
+/* ============================================================
+   SISTEMA DE HIERARQUIA VISUAL — 3 CAMADAS
+   Inspirado no design system da Riot / Legends of Runeterra
+   ============================================================
+
+   CAMADA 1 — DECISÃO (máximo destaque, glow em repouso permitido)
+   Usar em: HP do jogador/inimigo, botão de ação principal (Atacar,
+   Batalhar), resultado de dano/crit no momento em que ocorre.
+   Cor de maior contraste, maior peso de fonte.
+   → --l1-color, --l1-accent, --l1-danger
+
+   CAMADA 2 — RECURSO (suporte, sempre visível mas discreto)
+   Usar em: Fury, Stamina, Mana, Ouro, XP, nível, Shield.
+   Sem glow em repouso. Borda fina única. Destaque temporário
+   apenas ao mudar de estado (cheio, crítico, recém-aumentado).
+   → --l2-color, --l2-accent, --l2-border
+
+   CAMADA 3 — AMBIENTAÇÃO (moldura, não informação)
+   Usar em: ornamentos rúnicos, dividers, corner ornaments, texturas.
+   Opacidade 0.12–0.3, nunca reforçada com sombra extra.
+   Reservada para StartScreen (tela hero) e momentos de recompensa.
+   Nas telas de uso constante (Battle, Home) = mínimo indispensável.
+   → --l3-opacity, --l3-border
+
+   REGRA DE ORNAMENTO:
+   - StartScreen: todos os ornamentos permitidos (tela hero única).
+   - Battle/Home/Inicio: max 1 corner-ornament group (o do .app-frame).
+     Nenhum corner ornament nos elementos individuais.
+   - Shop/SkillTree/LevelUp: rune-sep nos cabeçalhos de seção, ok.
+     Nenhum box-shadow extra em cards individuais.
+
+   ANIMAÇÃO DE GLOW:
+   - Permitida em repouso APENAS em: btn-battle, btn-attack (L1).
+   - Skill equipada (equipped): glow tênue, é o único nó que pulsa.
+   - Todo o resto: sem animação de brilho em repouso.
+   ============================================================ */
+
 * {
   margin: 0;
   padding: 0;
@@ -39,6 +76,29 @@
 
   /* Compat aliases */
   --blue:           #4a90d9;
+
+  /* --------------------------------------------------
+     CAMADA 1 — Decisão
+     -------------------------------------------------- */
+  --l1-color:       var(--text-bright);       /* cor de texto L1 */
+  --l1-accent:      var(--gold-bright);        /* ouro máximo contraste */
+  --l1-danger:      var(--crimson-2);          /* HP / perigo máximo */
+  --l1-border-hp:   rgba(184, 48, 48, 0.65);  /* borda crimson do HP */
+  --l1-font-sz:     clamp(16px, 4vw, 20px);
+
+  /* --------------------------------------------------
+     CAMADA 2 — Recurso
+     -------------------------------------------------- */
+  --l2-color:       var(--text);              /* texto de recurso */
+  --l2-accent:      var(--gold);              /* ouro moderado */
+  --l2-border:      rgba(200, 153, 58, 0.2); /* borda tênue — metade de --border-bright */
+  --l2-font-sz:     clamp(11px, 2.8vw, 13px);
+
+  /* --------------------------------------------------
+     CAMADA 3 — Ambientação
+     -------------------------------------------------- */
+  --l3-opacity:     0.25;
+  --l3-border:      rgba(200, 153, 58, 0.12); /* quase invisível, estrutura apenas */
 }
 
 html,
