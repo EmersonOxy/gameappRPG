@@ -26,8 +26,8 @@ export default function HealthBar({ hp, max, hitKey, vertical = false, reverse =
     if (!hitKey) return;
     if (prevHp == null || hp >= prevHp) return;
     setRecentHp(prevHp);
-    const t1 = setTimeout(() => setRecentHp(hp), 800);
-    const t2 = setTimeout(() => setRecentHp(null), 1600);
+    const t1 = setTimeout(() => setRecentHp(hp), 150);
+    const t2 = setTimeout(() => setRecentHp(null), 800);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);

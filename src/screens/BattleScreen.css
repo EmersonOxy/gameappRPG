@@ -446,6 +446,17 @@
   clip-path: polygon(0 0, 100% 0, 100% 100%, 40% 100%);
 }
 
+/* Barras do inimigo — de cabeça para baixo (espelho vertical do player) */
+.arena-stack.enemy.left .vbar .health-bar.vertical,
+.arena-stack.enemy.left .vbar .resource-bar.vertical {
+  clip-path: polygon(0 100%, 100% 100%, 60% 0, 0 0);
+}
+
+.arena-stack.enemy.right .vbar .health-bar.vertical,
+.arena-stack.enemy.right .vbar .resource-bar.vertical {
+  clip-path: polygon(0 100%, 100% 100%, 100% 0, 40% 0);
+}
+
 /* Segmentos — destaque suave nas divisões das barras verticais */
 .arena-stack .health-bar.vertical .tick.v.filled {
   box-shadow: 0 0 4px rgba(255, 255, 255, 0.08);
