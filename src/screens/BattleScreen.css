@@ -323,7 +323,7 @@
 .arena-stack.right { right: 14px; }
 
 .arena-stack.player {
-  bottom: 116px;
+  bottom: 150px;
   top: calc(50% + 16px);
   align-items: flex-end;
 }
