@@ -364,13 +364,18 @@
 /* ---- Vertical resource stacks (arena edges) ---- */
 .arena-stack {
   position: absolute;
-  display: flex;
-  gap: 6px;
   z-index: 3;
 }
 
 .arena-stack.left  { left: 14px; }
 .arena-stack.right { right: 14px; }
+
+/* Grupo composito: vida (por cima) + estamina (por trás, menor) */
+.vbar-group {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+}
 
 .arena-stack.player {
   bottom: 150px;
@@ -384,15 +389,102 @@
   align-items: flex-start;
 }
 
-.arena-stack .vbar {
-  width: 16px;
-  min-height: 0;
+/* HP — Camada 1: barra principal, mais larga */
+.arena-stack .vbar.vida {
+  position: relative;
+  width: 20px;
+  height: 100%;
+  z-index: 2;
 }
 
-.arena-stack .vbar.vida      { height: 100%; }
-.arena-stack .vbar.estamina  { height: 72%; }
-.arena-stack .vbar.furia     { height: 48%; }
-.arena-stack .vbar.mana      { height: 48%; }
+/* Estamina — por trás da vida, menos da metade da lateral exposta.
+   É menor (80% da altura) e mais estreita que a vida.
+   Fica alinhada ao mesmo lado e a vida cobre ~55% dela horizontalmente. */
+.arena-stack .vbar.estamina {
+  position: absolute;
+  /* lado oposto ao do .fury-pips — fica pelo interior */
+  width: 13px;
+  height: 80%;
+  z-index: 1; /* atrás da vida */
+  bottom: 0;  /* player: alinha pela base */
+}
+
+/* Para o inimigo (enemy), estamina alinha pelo topo */
+.arena-stack.enemy .vbar.estamina {
+  bottom: auto;
+  top: 0;
+}
+
+/* Posição horizontal da estamina:
+   Player (left stack): estamina fica à direita da vida, coberta majoritariamente
+   - a vida tem 20px, estamina tem 13px
+   - empurra a estamina para que ~8px fiquem visíveis à direita */
+.arena-stack.left .vbar.estamina {
+  left: 12px; /* vida começa em 0, tem 20px — estamina começa em 12px → 8px expostos */
+}
+
+/* Enemy (right stack): vida na direita, estamina à esquerda dela */
+.arena-stack.right .vbar.estamina {
+  right: 12px;
+  left: auto;
+}
+
+/* Mana — Camada 1 simétrica: mesmo destaque que HP no lado direito */
+.arena-stack .vbar.mana {
+  width: 20px;
+  height: 100%;
+}
+
+/* ---- Fury pips: segmentos finos e compridos colados na lateral da vida ---- */
+.fury-pips {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* player: pips crescem de baixo */
+  gap: 2px;
+  z-index: 3;
+  padding-bottom: 2px;
+}
+
+/* Enemy pips crescem do topo */
+.arena-stack.enemy .fury-pips {
+  justify-content: flex-start;
+  padding-bottom: 0;
+  padding-top: 2px;
+}
+
+/* Player: pips à direita da barra de vida */
+.fury-pips.right {
+  right: -5px;
+}
+
+/* Enemy: pips à esquerda da barra de vida */
+.fury-pips.left {
+  left: -5px;
+}
+
+.fury-pip {
+  width: 3px;
+  height: 10px;
+  border-radius: 1px;
+  /* Inativo: cinza escuro quase invisível (L3) */
+  background: rgba(80, 50, 10, 0.5);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
+}
+
+/* Pip ativo: laranja fúria, sem glow permanente (L2) */
+.fury-pip.on {
+  background: linear-gradient(180deg, #ffa94d, #f0751f);
+}
+
+/* Último pip (stack completo = L1 temporário): glow de destaque */
+.fury-pips .fury-pip:last-child.on {
+  box-shadow: 0 0 6px rgba(240, 117, 31, 0.8);
+  background: linear-gradient(180deg, #ffcc70, #f0751f);
+}
 
 /* ---- Action buttons — hierarquia L1 / L2 ---- */
 .battle-actions {

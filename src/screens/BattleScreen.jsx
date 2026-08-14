@@ -577,17 +577,8 @@ export default function BattleScreen() {
       <div className="battle-divider" />
 
       {/* Vertical bars — enemy (top half, mirrored) */}
+      {/* Left enemy: mana (mesmo destaque que HP) */}
       <div className="arena-stack left enemy">
-        <div className="vbar furia">
-          <ResourceBar
-            value={enemyFury}
-            max={FURY_MAX}
-            fill={FURY_FILL}
-            tick={FURY_TICK}
-            vertical
-            reverse
-          />
-        </div>
         <div className="vbar mana">
           <ResourceBar
             value={enemyMana}
@@ -599,55 +590,75 @@ export default function BattleScreen() {
           />
         </div>
       </div>
+      {/* Right enemy: vida (com fury-pips) + estamina sobreposta */}
       <div className="arena-stack right enemy">
-        <div className="vbar vida">
-          <HealthBar
-            hp={enemyHp}
-            max={enemyMaxHp}
-            hitKey={enemyHit}
-            vertical
-            reverse
-          />
-        </div>
-        <div className="vbar estamina">
-          <ResourceBar
-            value={enemyStamina}
-            max={ENEMY_STAMINA_MAX}
-            fill={STAMINA_FILL}
-            tick={STAMINA_TICK}
-            progress={enemyStaminaProgress}
-            vertical
-            reverse
-          />
+        <div className="vbar-group">
+          {/* Estamina: menor, fica por trás/abaixo da barra de vida */}
+          <div className="vbar estamina">
+            <ResourceBar
+              value={enemyStamina}
+              max={ENEMY_STAMINA_MAX}
+              fill={STAMINA_FILL}
+              tick={STAMINA_TICK}
+              progress={enemyStaminaProgress}
+              vertical
+              reverse
+            />
+          </div>
+          {/* Vida: por cima, com segmentos de fúria grudados na lateral */}
+          <div className="vbar vida">
+            <HealthBar
+              hp={enemyHp}
+              max={enemyMaxHp}
+              hitKey={enemyHit}
+              vertical
+              reverse
+            />
+            {/* Fúria do inimigo: pips finos colados na lateral esquerda da vida */}
+            <div className="fury-pips left">
+              {Array.from({ length: FURY_MAX }).map((_, i) => (
+                <div
+                  key={i}
+                  className={"fury-pip" + (i < enemyFury ? " on" : "")}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Vertical bars — player (bottom half) */}
+      {/* Left player: vida (com fury-pips) + estamina sobreposta */}
       <div className="arena-stack left player">
-        <div className="vbar vida">
-          <HealthBar hp={playerHp} max={playerMaxHp} hitKey={playerHit} vertical />
-        </div>
-        <div className="vbar estamina">
-          <ResourceBar
-            value={playerStamina}
-            max={playerStaminaMax}
-            fill={STAMINA_FILL}
-            tick={STAMINA_TICK}
-            progress={staminaProgress}
-            vertical
-          />
+        <div className="vbar-group">
+          {/* Estamina: menor, fica por trás/abaixo da barra de vida */}
+          <div className="vbar estamina">
+            <ResourceBar
+              value={playerStamina}
+              max={playerStaminaMax}
+              fill={STAMINA_FILL}
+              tick={STAMINA_TICK}
+              progress={staminaProgress}
+              vertical
+            />
+          </div>
+          {/* Vida: por cima, com segmentos de fúria grudados na lateral */}
+          <div className="vbar vida">
+            <HealthBar hp={playerHp} max={playerMaxHp} hitKey={playerHit} vertical />
+            {/* Fúria: pips finos colados na lateral direita da vida */}
+            <div className="fury-pips right">
+              {Array.from({ length: FURY_MAX }).map((_, i) => (
+                <div
+                  key={i}
+                  className={"fury-pip" + (i < playerFury ? " on" : "")}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
+      {/* Right player: mana (mesmo destaque que vida, lado direito) */}
       <div className="arena-stack right player">
-        <div className="vbar furia">
-          <ResourceBar
-            value={playerFury}
-            max={FURY_MAX}
-            fill={FURY_FILL}
-            tick={FURY_TICK}
-            vertical
-          />
-        </div>
         <div className="vbar mana">
           <ResourceBar
             value={playerManaCurrent}
