@@ -18,14 +18,18 @@
 .dice-face {
   position: absolute;
   inset: 0;
-  background: #f4f2ec;
-  border-radius: 12px;
+  /* Antique parchment/ivory cube face matching LoR gold theme */
+  background: linear-gradient(135deg, #f5edd8 0%, #e2d2b4 100%);
+  border-radius: 8px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   padding: 14px;
   gap: 4px;
-  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(200, 153, 58, 0.6);
+  box-shadow:
+    inset 0 0 10px rgba(120, 85, 24, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
   backface-visibility: hidden;
 }
 
@@ -58,7 +62,9 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #1a1a24;
+  /* Dark mahogany/bronze pips */
+  background: radial-gradient(circle at 35% 35%, #7a5518, #3a2200);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
 @keyframes throwBounce {
@@ -84,3 +90,4 @@
     transform: translateY(0) scale(1);
   }
 }
+

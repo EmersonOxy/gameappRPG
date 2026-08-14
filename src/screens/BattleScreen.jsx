@@ -330,6 +330,7 @@ export default function BattleScreen() {
           style={{ width: timePct + "%" }}
         />
       </div>
+      <div className="battle-divider" />
       <div className={"enemy-wrap" + (enemyMoving ? " attacking" : "")}>
         <div className="enemy-bar">
           <HealthBar hp={enemyHp} max={MAX_HP} hitKey={enemyHit} />
