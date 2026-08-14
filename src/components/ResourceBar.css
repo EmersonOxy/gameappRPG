@@ -18,7 +18,7 @@
   bottom: 0;
   width: 0;
   opacity: 0;
-  transition: width 0.35s ease, opacity 0.25s ease;
+  transition: width var(--ghost-dur, 0.35s) ease, opacity 0.25s ease;
 }
 
 .resource-ghost.on {
@@ -30,7 +30,7 @@
   top: 0;
   left: 0;
   bottom: 0;
-  transition: width 0.4s ease;
+  transition: width var(--fill-dur, 0.4s) ease;
 }
 
 .resource-fill::after {
@@ -63,7 +63,7 @@
   bottom: 0;
   width: auto;
   height: 0;
-  transition: height 0.35s ease, opacity 0.25s ease;
+  transition: height var(--ghost-dur, 0.35s) ease, opacity 0.25s ease;
 }
 
 .resource-bar.vertical.reverse .resource-ghost {
@@ -77,7 +77,7 @@
   right: 0;
   bottom: 0;
   width: auto;
-  transition: height 0.4s ease;
+  transition: height var(--fill-dur, 0.4s) ease;
 }
 
 .resource-bar.vertical.reverse .resource-fill {

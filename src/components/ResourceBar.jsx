@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import "./ResourceBar.css";
 
+const STEP_MS = 120;
+
 export default function ResourceBar({
   value,
   max,
@@ -10,33 +12,47 @@ export default function ResourceBar({
   vertical = false,
   reverse = false,
 }) {
-  const pct = Math.max(0, Math.min(100, (value / max) * 100));
-  const prevValue = useRef(value);
-  const [solid, setSolid] = useState(pct);
-  const [ghost, setGhost] = useState(pct);
+  const clamped = Math.max(0, Math.min(max, value));
+  const prevValue = useRef(clamped);
+  const [solidUnits, setSolidUnits] = useState(clamped);
+  const [ghostUnits, setGhostUnits] = useState(clamped);
   const [ghostOn, setGhostOn] = useState(false);
+  const [ghostDuration, setGhostDuration] = useState(0);
+  const [fillDuration, setFillDuration] = useState(400);
 
   useEffect(() => {
     const prev = prevValue.current;
-    prevValue.current = value;
+    prevValue.current = clamped;
 
-    if (value > prev) {
+    if (clamped > prev) {
       setGhostOn(true);
-      setGhost(pct);
-      const t1 = setTimeout(() => setSolid(pct), 150);
-      const t2 = setTimeout(() => setGhostOn(false), 560);
-      return () => {
-        clearTimeout(t1);
-        clearTimeout(t2);
-      };
+      setGhostUnits(clamped);
+      setFillDuration(90);
+
+      const start = Math.floor(prev) + 1;
+      const steps = [];
+      for (let u = start; u <= clamped; u += 1) steps.push(u);
+      const count = Math.max(1, steps.length);
+      setGhostDuration(count * STEP_MS);
+
+      const timers = steps.map((u, idx) =>
+        setTimeout(() => setSolidUnits(u), (idx + 1) * STEP_MS)
+      );
+      timers.push(setTimeout(() => setGhostOn(false), count * STEP_MS + 220));
+
+      return () => timers.forEach(clearTimeout);
     }
 
-    setSolid(pct);
-    setGhost(pct);
+    setSolidUnits(clamped);
+    setGhostUnits(clamped);
     setGhostOn(false);
-  }, [value, pct]);
+    setFillDuration(400);
+  }, [clamped]);
 
-  const solidValue = Math.round((solid / 100) * max);
+  const solidPct = max > 0 ? (solidUnits / max) * 100 : 0;
+  const ghostPct = max > 0 ? (ghostUnits / max) * 100 : 0;
+  const solidValue = Math.round(solidUnits);
+
   const ticks = [];
   for (let i = 0; i < max; i++) {
     ticks.push(
@@ -66,14 +82,16 @@ export default function ResourceBar({
       <div
         className={"resource-ghost" + (ghostOn ? " on" : "")}
         style={{
-          [vertical ? "height" : "width"]: ghost + "%",
+          "--ghost-dur": ghostDuration + "ms",
+          [vertical ? "height" : "width"]: ghostPct + "%",
           background: fill,
         }}
       />
       <div
         className="resource-fill"
         style={{
-          [vertical ? "height" : "width"]: solid + "%",
+          "--fill-dur": fillDuration + "ms",
+          [vertical ? "height" : "width"]: solidPct + "%",
           background: fill,
         }}
       />
