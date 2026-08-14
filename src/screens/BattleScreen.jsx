@@ -364,8 +364,8 @@ export default function BattleScreen() {
               <Shield size={52} />
             </div>
           )}
-          {enemyMissed && <div className="miss-flash">Errou!</div>}
-          {enemyCrit && <div className="crit-flash">Crítico!</div>}
+          {enemyMissed && <div className="miss-flash left">Errou!</div>}
+          {enemyCrit && <div className="crit-flash left">Crítico!</div>}
         </div>
       </div>
 
@@ -379,8 +379,8 @@ export default function BattleScreen() {
               <Shield size={52} />
             </div>
           )}
-          {playerMissed && <div className="miss-flash">Errou!</div>}
-          {playerCrit && <div className="crit-flash">Crítico!</div>}
+          {playerMissed && <div className="miss-flash right">Errou!</div>}
+          {playerCrit && <div className="crit-flash right">Crítico!</div>}
         </div>
       </div>
 

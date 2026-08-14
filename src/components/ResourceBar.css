@@ -11,6 +11,20 @@
   overflow: hidden;
 }
 
+.resource-ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  opacity: 0;
+  transition: width 0.35s ease, opacity 0.25s ease;
+}
+
+.resource-ghost.on {
+  opacity: 0.4;
+}
+
 .resource-fill {
   position: absolute;
   top: 0;
