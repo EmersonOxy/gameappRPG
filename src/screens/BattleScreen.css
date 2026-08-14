@@ -433,6 +433,28 @@
   height: 100%;
 }
 
+/* ---- Forma "espada" (trapézio com 1 lado reto) ----
+   Topo largo, base mais estreita (~60% da largura), gume virado
+   para o centro da arena e lombo reto junto à borda da tela. */
+.arena-stack.left .vbar .health-bar.vertical,
+.arena-stack.left .vbar .resource-bar.vertical {
+  clip-path: polygon(0 0, 100% 0, 60% 100%, 0 100%);
+}
+
+.arena-stack.right .vbar .health-bar.vertical,
+.arena-stack.right .vbar .resource-bar.vertical {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 40% 100%);
+}
+
+/* Segmentos — destaque suave nas divisões das barras verticais */
+.arena-stack .health-bar.vertical .tick.v.filled {
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.08);
+}
+
+.arena-stack .resource-bar.vertical .resource-tick.v {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
 /* ---- Fury pips: segmentos finos e compridos colados na lateral da vida ---- */
 .fury-pips {
   position: absolute;
