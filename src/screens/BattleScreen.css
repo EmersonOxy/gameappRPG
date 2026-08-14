@@ -370,23 +370,23 @@
 .arena-stack.left  { left: 14px; }
 .arena-stack.right { right: 14px; }
 
-/* Grupo composito: vida (por cima) + estamina (por trás, menor) */
+/* Grupo composito: vida (por cima) + estamina (por trás, menor).
+   height: 100% é obrigatório — vida/estamina usam % da altura do grupo. */
 .vbar-group {
   position: relative;
   display: flex;
   align-items: stretch;
+  height: 100%;
 }
 
 .arena-stack.player {
   bottom: 150px;
   top: calc(50% + 16px);
-  align-items: flex-end;
 }
 
 .arena-stack.enemy {
   top: 48px;
   bottom: calc(50% + 16px);
-  align-items: flex-start;
 }
 
 /* HP — Camada 1: barra principal, mais larga */
@@ -397,12 +397,11 @@
   z-index: 2;
 }
 
-/* Estamina — por trás da vida, menos da metade da lateral exposta.
-   É menor (80% da altura) e mais estreita que a vida.
-   Fica alinhada ao mesmo lado e a vida cobre ~55% dela horizontalmente. */
+/* Estamina — por trás da vida, com menos da metade da lateral coberta.
+   Menor (80% da altura) e mais estreita (13px) que a vida (20px).
+   A parte exposta fica do lado da borda da tela, oposta aos fury-pips. */
 .arena-stack .vbar.estamina {
   position: absolute;
-  /* lado oposto ao do .fury-pips — fica pelo interior */
   width: 13px;
   height: 80%;
   z-index: 1; /* atrás da vida */
@@ -415,17 +414,16 @@
   top: 0;
 }
 
-/* Posição horizontal da estamina:
-   Player (left stack): estamina fica à direita da vida, coberta majoritariamente
-   - a vida tem 20px, estamina tem 13px
-   - empurra a estamina para que ~8px fiquem visíveis à direita */
+/* Player (left stack): estamina avança 8px para fora da vida, junto à borda
+   da tela. A vida (20px) cobre 5px dos 13px da estamina (~38%, menos da
+   metade) e os outros 8px ficam expostos no lado esquerdo da tela. */
 .arena-stack.left .vbar.estamina {
-  left: 12px; /* vida começa em 0, tem 20px — estamina começa em 12px → 8px expostos */
+  left: -8px;
 }
 
-/* Enemy (right stack): vida na direita, estamina à esquerda dela */
+/* Enemy (right stack): mesmo efeito espelhado junto à borda direita */
 .arena-stack.right .vbar.estamina {
-  right: 12px;
+  right: -8px;
   left: auto;
 }
 
@@ -455,14 +453,14 @@
   padding-top: 2px;
 }
 
-/* Player: pips à direita da barra de vida */
+/* Player: pips à direita, colados rente à lateral da vida (pip tem 3px) */
 .fury-pips.right {
-  right: -5px;
+  right: -3px;
 }
 
-/* Enemy: pips à esquerda da barra de vida */
+/* Enemy: pips à esquerda, colados rente à lateral da vida */
 .fury-pips.left {
-  left: -5px;
+  left: -3px;
 }
 
 .fury-pip {

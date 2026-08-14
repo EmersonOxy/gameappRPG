@@ -64,6 +64,11 @@
   box-shadow: 0 0 6px rgba(45, 212, 191, 0.18);
 }
 
+/* Fill da mana na arena: mesmo glow em repouso que o fill do HP (L1) */
+.vbar.mana .resource-fill {
+  box-shadow: 0 0 10px rgba(45, 212, 191, 0.35);
+}
+
 /* Estamina na arena (dentro de .vbar.estamina): Camada 2 ainda mais neutra */
 .vbar.estamina .resource-bar.vertical {
   border: 1px solid rgba(74, 120, 180, 0.25);

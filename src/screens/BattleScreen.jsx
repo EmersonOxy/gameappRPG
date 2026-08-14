@@ -39,8 +39,6 @@ const CRYSTAL_REFILL_TURNS = 2;
 
 const STAMINA_FILL = "linear-gradient(180deg, #6fb1ff, #357abd)";
 const STAMINA_TICK = "#245a8f";
-const FURY_FILL = "linear-gradient(180deg, #ffa94d, #f0751f)";
-const FURY_TICK = "#8f4700";
 const MANA_FILL = "linear-gradient(180deg, #4dd0c1, #15858a)";
 const MANA_TICK = "#0f5c60";
 
