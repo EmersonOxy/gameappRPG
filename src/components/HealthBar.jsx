@@ -98,6 +98,10 @@ export default function HealthBar({
             vertical ? { height: ghostPct + "%" } : { width: ghostPct + "%" }
           }
         />
+        <div
+          className="health-fill"
+          style={vertical ? { height: fillPct + "%" } : { width: fillPct + "%" }}
+        />
         {recentHp != null && (
           <div
             className="health-recent"
@@ -111,10 +115,6 @@ export default function HealthBar({
             }
           />
         )}
-        <div
-          className="health-fill"
-          style={vertical ? { height: fillPct + "%" } : { width: fillPct + "%" }}
-        />
         {ticks}
       </div>
     </div>
