@@ -200,7 +200,7 @@
   white-space: nowrap;
 }
 
-/* Battle button — LoR's attack/challenge button */
+/* Battle button — LoR's attack/challenge button (moldura do kit UI) */
 .btn-battle {
   position: relative;
   display: inline-flex;
@@ -215,25 +215,12 @@
   font-weight: 700;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: #1a0d00;
-  /* LoR metallic gold button */
-  background:
-    radial-gradient(circle 5px at 10px 10px, var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
-    radial-gradient(circle 5px at calc(100% - 10px) 10px, var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
-    radial-gradient(circle 5px at 10px calc(100% - 10px), var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
-    radial-gradient(circle 5px at calc(100% - 10px) calc(100% - 10px), var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
-    linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 35%, var(--gold) 100%);
-  border: 1px solid var(--gold-dark);
-  outline: 1px solid var(--gold-2);
-  outline-offset: 2px;
-  border-radius: 3px;
+  color: var(--text-bright);
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
-  box-shadow:
-    0 0 0 1px rgba(200, 153, 58, 0.4),
-    0 var(--btn-depth) 0 var(--gold-dark),
-    0 10px 30px rgba(200, 153, 58, 0.25),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  background: url(../assets/ui/icons/Rect-Dark-Default.png) no-repeat center / 100% 100%;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5);
   overflow: hidden;
 }
 
@@ -253,10 +240,9 @@
 }
 
 .btn-battle:hover:not(:active) {
-  box-shadow:
-    0 var(--btn-depth) 0 var(--gold-dark),
-    0 14px 40px rgba(234, 184, 80, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  background-image: url(../assets/ui/icons/Rect-Dark-Hover.png);
+  filter: brightness(1.1);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5), 0 0 14px rgba(200, 153, 58, 0.3);
 }
 
 /* Distribute points button — secondary gold outline */

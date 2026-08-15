@@ -102,22 +102,22 @@
   position: absolute;
   top: 8px;
   right: 8px;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: 1px solid var(--gold-dim);
-  background: rgba(10, 10, 16, 0.72);
-  color: var(--gold-2);
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 6px;
+  background: url(../assets/ui/icons/Square-Dark-Default/Pause.png) no-repeat center / 100% 100%;
   cursor: pointer;
   z-index: 9;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
   transition: transform 0.08s ease, filter 0.12s ease;
 }
 
-.pause-button:hover { filter: brightness(1.25); }
+.pause-button:hover {
+  background-image: url(../assets/ui/icons/Square-Dark-Hover/Pause.png);
+  filter: drop-shadow(0 2px 8px rgba(200, 153, 58, 0.4));
+}
+
 .pause-button:active { transform: scale(0.92); }
 
 /* ---- Pause overlay ---- */
@@ -327,6 +327,41 @@
 @keyframes itemPopupIn {
   from { opacity: 0; transform: translate(-50%, 8px); }
   to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* ---- Reação do inimigo (emoji no balão) — canto inferior direito ---- */
+.enemy-reaction {
+  position: absolute;
+  right: -6px;
+  bottom: -4px;
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 6;
+  animation: reactionPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.reaction-bubble {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
+}
+
+.reaction-emoji {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  z-index: 1;
+}
+
+@keyframes reactionPop {
+  from { transform: scale(0.3) rotate(-8deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
 /* Badge de chefe — promovido a L1 quando é o chefão */
@@ -757,11 +792,11 @@
   background: linear-gradient(180deg, #ffcc70, #f0751f);
 }
 
-/* ---- Action buttons — hierarquia L1 / L2 ---- */
+/* ---- Action buttons — arte PNG (up normal / down pressionado) ---- */
 .battle-actions {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
   width: 100%;
   max-width: 460px;
 }
@@ -785,34 +820,20 @@
 
 .battle-skills .btn-action {
   flex: 0 0 auto;
-  min-width: 118px;
-  padding: 0 10px;
-}
-
-/* Habilidades com chip de elemento precisam de um pouco mais de espaço */
-.battle-skills .btn-action.skill {
-  min-width: 134px;
+  width: 88px;
+  height: 48px;
 }
 
 .btn-action {
   flex: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 0 4px;
-  height: 52px;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
+  padding: 0;
+  height: 62px;
   border: none;
-  border-radius: 3px;
+  border-radius: 5px;
   cursor: pointer;
-  color: #fff;
-  white-space: nowrap;
-  overflow: hidden;
-  transition: transform 0.06s ease, box-shadow 0.08s ease, opacity 0.15s ease;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  transition: transform 0.06s ease, filter 0.15s ease;
 }
 
 .btn-action:disabled {
@@ -820,98 +841,53 @@
   filter: grayscale(0.55) brightness(0.6);
 }
 
-/* ATTACK — Camada 1 (ação principal do combate)
-   ÚNICO botão que mantém glow de profundidade em repouso.
-   Isso o destaca de todos os outros botões — é o ponto focal L1. */
+/* ATTACK — ação principal do combate */
 .btn-action.attack {
-  background:
-    radial-gradient(circle 4px at 8px 8px, var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
-    radial-gradient(circle 4px at calc(100% - 8px) 8px, var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
-    radial-gradient(circle 4px at 8px calc(100% - 8px), var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
-    radial-gradient(circle 4px at calc(100% - 8px) calc(100% - 8px), var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
-    linear-gradient(180deg, #d44030 0%, #8b1c1c 100%);
-  border: 1px solid #571010;
-  outline: 1px solid var(--gold-2);
-  outline-offset: 1px;
-  box-shadow:
-    0 0 0 1px rgba(200, 153, 58, 0.35),
-    0 5px 0 #571010,
-    0 8px 20px rgba(180, 50, 30, 0.3),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+  background-image: url(../assets/ui/buttons/button_Attack_up.png);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45), 0 8px 20px rgba(180, 50, 30, 0.22);
 }
 
-/* DEFEND — Camada 2 (ação de suporte)
-   Sem inset highlight, sem glow de profundidade. Presente, não dominante. */
+/* DEFEND / SPECIAL / BAG */
 .btn-action.defend {
-  background: linear-gradient(180deg, #2a7a84 0%, #164850 100%);
-  box-shadow: 0 4px 0 #0d3038;
+  background-image: url(../assets/ui/buttons/button_shield_up.png);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45);
 }
 
-/* SPECIAL — Camada 2 (ativo disponível)
-   Glow removido em repouso; sobe para L1 via animação quando disponível. */
 .btn-action.special {
-  background: linear-gradient(180deg, var(--gold-2) 0%, #8a5a10 100%);
-  box-shadow: 0 4px 0 #4a3008;
+  background-image: url(../assets/ui/buttons/button_Especial_up.png);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45);
 }
 
-/* MANA — Camada 2 */
-.btn-action.mana {
-  background: linear-gradient(180deg, #1f7f86 0%, #0e4a50 100%);
-  box-shadow: 0 4px 0 #083034;
+.btn-action.bag {
+  background-image: url(../assets/ui/buttons/button_bag_up.png);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45);
 }
 
-/* Equipped skill — branch colored, Camada 2 */
+/* Habilidades equipadas — arte genérica */
 .btn-action.skill {
-  color: #fff;
+  background-image: url(../assets/ui/buttons/button_up.png);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.4);
 }
 
-.btn-action.skill.branch-sombrio {
-  background: linear-gradient(180deg, #d44030 0%, #8b1c1c 100%);
-  box-shadow: 0 4px 0 #571010;
+/* Pressionado: troca para o PNG "down" */
+.btn-action.attack:active:not(:disabled) {
+  background-image: url(../assets/ui/buttons/button_Attack_down.png);
 }
 
-.btn-action.skill.branch-sagrado {
-  background: linear-gradient(180deg, #2dd4bf 0%, #0e7a72 100%);
-  box-shadow: 0 4px 0 #08423c;
+.btn-action.defend:active:not(:disabled) {
+  background-image: url(../assets/ui/buttons/button_shield_down.png);
 }
 
-.btn-action.skill.branch-magico {
-  background: linear-gradient(180deg, #4a90d9 0%, #1f4a7a 100%);
-  box-shadow: 0 4px 0 #122e4d;
+.btn-action.special:active:not(:disabled) {
+  background-image: url(../assets/ui/buttons/button_Especial_down.png);
 }
 
-.skill-btn-name {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 66px;
+.btn-action.bag:active:not(:disabled) {
+  background-image: url(../assets/ui/buttons/button_bag_down.png);
 }
 
-/* Chip do elemento da habilidade (aparência de carta) */
-.skill-element {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 16px;
-  border-radius: 999px;
-  border: 1px solid currentColor;
-  background: rgba(0, 0, 0, 0.35);
-  flex-shrink: 0;
-}
-
-.skill-cost {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  font-size: 10px;
-  font-weight: 900;
-  color: #cfefff;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 999px;
-  padding: 2px 6px;
-  flex-shrink: 0;
+.btn-action.skill:active:not(:disabled) {
+  background-image: url(../assets/ui/buttons/button_down.png);
 }
 
 /* Special: sobe para L1 temporariamente quando disponível */
@@ -920,13 +896,12 @@
 }
 
 @keyframes specialReady {
-  0%, 100% { box-shadow: 0 4px 0 #4a3008, 0 6px 18px rgba(200, 153, 58, 0.1); }
-  50%       { box-shadow: 0 4px 0 #4a3008, 0 10px 32px rgba(234, 184, 80, 0.38); }
+  0%, 100% { box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45), 0 0 0 rgba(234, 184, 80, 0); }
+  50%       { box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45), 0 0 18px rgba(234, 184, 80, 0.5); }
 }
 
 .btn-action:not(:disabled):active {
   transform: translateY(4px) scale(1.02, 0.95);
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.5) !important;
   animation: none;
 }
 
@@ -1152,6 +1127,44 @@
 .btn-result:hover { filter: brightness(1.1); }
 .btn-result:not(.primary):active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.5); }
 
+/* Botões com arte do kit UI (Rect-Dark): ícone embutido, sem texto */
+.btn-result.ui-btn {
+  border: none;
+  border-radius: 5px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5);
+}
+
+.btn-result.ui-btn:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5), 0 0 12px rgba(200, 153, 58, 0.25);
+}
+
+.btn-result.ui-play { background-image: url(../assets/ui/icons/Rect-Dark-Default/Play.png); }
+.btn-result.ui-play:hover { background-image: url(../assets/ui/icons/Rect-Dark-Hover/Play.png); }
+
+.btn-result.ui-exit { background-image: url(../assets/ui/icons/Rect-Dark-Default/Exit.png); }
+.btn-result.ui-exit:hover { background-image: url(../assets/ui/icons/Rect-Dark-Hover/Exit.png); }
+
+.btn-result.ui-repeat { background-image: url(../assets/ui/icons/Rect-Dark-Default/Repeat-Right.png); }
+.btn-result.ui-repeat:hover { background-image: url(../assets/ui/icons/Rect-Dark-Hover/Repeat-Right.png); }
+
+.btn-result.ui-levels { background-image: url(../assets/ui/icons/Rect-Dark-Default/Levels.png); }
+.btn-result.ui-levels:hover { background-image: url(../assets/ui/icons/Rect-Dark-Hover/Levels.png); }
+
+.btn-result.ui-star { background-image: url(../assets/ui/icons/Rect-Dark-Default/Star.png); }
+.btn-result.ui-star:hover { background-image: url(../assets/ui/icons/Rect-Dark-Hover/Star.png); }
+
+.btn-result.ui-btn.primary {
+  filter: drop-shadow(0 0 10px rgba(200, 153, 58, 0.45));
+}
+
+.btn-result.ui-btn.primary:hover {
+  filter: drop-shadow(0 0 14px rgba(200, 153, 58, 0.65)) brightness(1.1);
+}
+
 .btn-result.primary {
   color: #1a0d00;
   background:
@@ -1340,6 +1353,37 @@
 
 .btn-roll.primary { /* same style */ }
 
+/* Botões do dado com arte do kit UI */
+.btn-roll.ui-frame {
+  color: var(--text-bright);
+  border: none;
+  outline: none;
+  background: url(../assets/ui/icons/Rect-Dark-Default.png) no-repeat center / 100% 100%;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5);
+}
+
+.btn-roll.ui-frame:hover {
+  background-image: url(../assets/ui/icons/Rect-Dark-Hover.png);
+  filter: brightness(1.1);
+}
+
+.btn-roll.ui-play {
+  border: none;
+  outline: none;
+  background: url(../assets/ui/icons/Rect-Dark-Default/Play.png) no-repeat center / 100% 100%;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5), 0 0 14px rgba(200, 153, 58, 0.3);
+}
+
+.btn-roll.ui-play:hover {
+  background-image: url(../assets/ui/icons/Rect-Dark-Hover/Play.png);
+  filter: brightness(1.1);
+}
+
+.btn-roll.ui-frame::after,
+.btn-roll.ui-play::after {
+  display: none;
+}
+
 .btn-roll:disabled { cursor: default; animation: none; filter: grayscale(0.55) brightness(0.6); }
 .btn-roll:disabled::after { display: none; }
 
@@ -1357,30 +1401,6 @@
 /* ========================================
    INVENTORY / MOCHILA / ITEMS
    ======================================== */
-.btn-action.bag {
-  gap: 3px;
-  font-size: 9.5px;
-  letter-spacing: 0.3px;
-  background: linear-gradient(180deg, #7a5fd0 0%, #4a3480 100%);
-  box-shadow:
-    0 5px 0 #2a1a4a,
-    0 8px 24px rgba(122, 95, 208, 0.15),
-    inset 0 1px 0 rgba(180, 150, 255, 0.2);
-}
-
-.bag-crystals {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  font-size: 8.5px;
-  font-weight: 900;
-  color: #e6dbff;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 999px;
-  padding: 1px 2px;
-  flex-shrink: 0;
-}
 
 /* ---- Pending items chips — Camada 2 (informação de suporte)
    Box-shadow externo removido: chips são informativos, não L1. */

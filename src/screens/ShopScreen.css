@@ -197,37 +197,31 @@
 .shop-buy {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   height: 38px;
-  padding: 0 14px;
+  padding: 0 16px;
   font-family: 'Cinzel', serif;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1px;
-  border: 1px solid var(--gold-dark);
-  outline: 1px solid var(--gold-2);
-  outline-offset: 1px;
-  border-radius: 3px;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
-  color: #1a0d00;
-  background:
-    radial-gradient(circle 4px at 8px 8px, var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
-    radial-gradient(circle 4px at calc(100% - 8px) 8px, var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
-    radial-gradient(circle 4px at 8px calc(100% - 8px), var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
-    radial-gradient(circle 4px at calc(100% - 8px) calc(100% - 8px), var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
-    linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
-  box-shadow:
-    0 0 0 1px rgba(200, 153, 58, 0.35),
-    0 var(--btn-depth) 0 var(--gold-dark),
-    0 8px 18px rgba(200, 153, 58, 0.18),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  color: var(--text-bright);
+  background: url(../assets/ui/icons/Rect-Dark-Default.png) no-repeat center / 100% 100%;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.5);
+  transition: transform 0.06s ease, filter 0.12s ease;
+}
+
+.shop-buy:hover:not(:disabled) {
+  background-image: url(../assets/ui/icons/Rect-Dark-Hover.png);
+  filter: brightness(1.12);
 }
 
 .shop-buy:disabled {
   cursor: default;
   filter: grayscale(0.55) brightness(0.6);
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
 }
 
 .shop-toast {

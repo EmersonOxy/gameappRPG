@@ -28,9 +28,20 @@
   position: relative;
 }
 
-.nav-item svg {
+.nav-icon {
+  width: 34px;
+  height: 20px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
   transition: transform 0.15s ease, filter 0.15s ease;
 }
+
+.nav-icon.nav-home { background-image: url(../assets/ui/icons/Rect-Dark-Default/Home.png); }
+.nav-icon.nav-levels { background-image: url(../assets/ui/icons/Rect-Dark-Default/Levels.png); }
+.nav-icon.nav-star { background-image: url(../assets/ui/icons/Rect-Dark-Default/Star.png); }
+.nav-icon.nav-cart { background-image: url(../assets/ui/icons/Rect-Dark-Default/Cart.png); }
+.nav-icon.nav-player { background-image: url(../assets/ui/icons/Rect-Dark-Default/Player.png); }
 
 .nav-item.active {
   color: var(--gold-bright);
@@ -46,8 +57,14 @@
   box-shadow: 0 0 6px var(--gold);
 }
 
-.nav-item.active svg {
+.nav-item.active .nav-icon {
   transform: translateY(-2px);
   filter: drop-shadow(0 0 6px rgba(200, 153, 58, 0.6));
 }
+
+.nav-item.active .nav-icon.nav-home { background-image: url(../assets/ui/icons/Rect-Dark-Hover/Home.png); }
+.nav-item.active .nav-icon.nav-levels { background-image: url(../assets/ui/icons/Rect-Dark-Hover/Levels.png); }
+.nav-item.active .nav-icon.nav-star { background-image: url(../assets/ui/icons/Rect-Dark-Hover/Star.png); }
+.nav-item.active .nav-icon.nav-cart { background-image: url(../assets/ui/icons/Rect-Dark-Hover/Cart.png); }
+.nav-item.active .nav-icon.nav-player { background-image: url(../assets/ui/icons/Rect-Dark-Hover/Player.png); }
 

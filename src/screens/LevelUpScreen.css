@@ -242,30 +242,24 @@
   gap: 10px;
   width: 100%;
   max-width: 320px;
-  height: 54px;
+  height: 56px;
   font-family: 'Cinzel', serif;
   font-size: 16px;
   font-weight: 900;
   letter-spacing: 2px;
   text-transform: uppercase;
-  border: 1px solid var(--gold-dark);
-  outline: 1px solid var(--gold-2);
-  outline-offset: 2px;
-  border-radius: 3px;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
-  color: #1a0d00;
-  background:
-    radial-gradient(circle 5px at 10px 10px, var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
-    radial-gradient(circle 5px at calc(100% - 10px) 10px, var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
-    radial-gradient(circle 5px at 10px calc(100% - 10px), var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
-    radial-gradient(circle 5px at calc(100% - 10px) calc(100% - 10px), var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
-    linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
-  box-shadow:
-    0 0 0 1px rgba(200, 153, 58, 0.35),
-    0 var(--btn-depth) 0 var(--gold-dark),
-    0 10px 26px rgba(200, 153, 58, 0.25),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  color: var(--text-bright);
+  background: url(../assets/ui/icons/Rect-Dark-Default.png) no-repeat center / 100% 100%;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5);
+  transition: transform 0.06s ease, filter 0.12s ease;
+}
+
+.btn-continue:hover:not(:disabled) {
+  background-image: url(../assets/ui/icons/Rect-Dark-Hover.png);
+  filter: brightness(1.1);
 }
 
 .btn-continue:disabled {

@@ -1,26 +1,25 @@
 import { NavLink } from "react-router-dom";
-import { Home, Sparkles, Store, User, Map } from "lucide-react";
 import "./BottomNav.css";
 
 const tabs = [
-  { to: "/home", label: "Início", icon: Home, end: true },
-  { to: "/home/map", label: "Mapa", icon: Map },
-  { to: "/home/skills", label: "Habilidades", icon: Sparkles },
-  { to: "/home/shop", label: "Loja", icon: Store },
-  { to: "/home/profile", label: "Perfil", icon: User },
+  { to: "/home", label: "Início", icon: "home", end: true },
+  { to: "/home/map", label: "Mapa", icon: "levels" },
+  { to: "/home/skills", label: "Habilidades", icon: "star" },
+  { to: "/home/shop", label: "Loja", icon: "cart" },
+  { to: "/home/profile", label: "Perfil", icon: "player" },
 ];
 
 export default function BottomNav() {
   return (
     <nav className="bottom-nav">
-      {tabs.map(({ to, label, icon: Icon, end }) => (
+      {tabs.map(({ to, label, icon, end }) => (
         <NavLink
           key={to}
           to={to}
           end={end}
           className={({ isActive }) => "nav-item" + (isActive ? " active" : "")}
         >
-          <Icon size={22} strokeWidth={2.2} />
+          <span className={"nav-icon nav-" + icon} aria-hidden="true" />
           <span>{label}</span>
         </NavLink>
       ))}
