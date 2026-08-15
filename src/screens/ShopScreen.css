@@ -58,14 +58,29 @@
 }
 
 .shop-card {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 12px;
-  /* L3: borda tênue, sem box-shadow ornamental */
-  border: 1px solid var(--l3-border);
+  border: 1px solid var(--border-bright);
   border-radius: 4px;
   background: linear-gradient(180deg, #12100a, #0d0b07);
+  box-shadow: inset 0 0 0 1px rgba(200, 206, 222, 0.08);
+}
+
+.shop-card::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 5px;
+  height: 5px;
+  transform: rotate(45deg);
+  background: var(--emerald-glass);
+  border: 1px solid var(--emerald-bright);
+  box-shadow: 0 0 5px var(--emerald-glass);
+  pointer-events: none;
 }
 
 .shop-icon {

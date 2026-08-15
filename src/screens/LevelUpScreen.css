@@ -115,14 +115,29 @@
 }
 
 .stat-row {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
   border-radius: 3px;
   background: linear-gradient(180deg, #18140e 0%, #0d0b08 100%);
-  /* L3: borda tênue, sem box-shadow — os rows são estrutura, não destaque */
-  border: 1px solid var(--l3-border);
+  border: 1px solid var(--border-bright);
+  box-shadow: inset 0 0 0 1px rgba(200, 206, 222, 0.08);
+}
+
+.stat-row::after {
+  content: "";
+  position: absolute;
+  top: 9px;
+  left: 9px;
+  width: 5px;
+  height: 5px;
+  transform: rotate(45deg);
+  background: var(--emerald-glass);
+  border: 1px solid var(--emerald-bright);
+  box-shadow: 0 0 5px var(--emerald-glass);
+  pointer-events: none;
 }
 
 .stat-icon {

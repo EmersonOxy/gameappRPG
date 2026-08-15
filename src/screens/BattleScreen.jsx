@@ -19,6 +19,7 @@ import {
 import HealthBar from "../components/HealthBar.jsx";
 import ResourceBar from "../components/ResourceBar.jsx";
 import DiceRoll from "../components/DiceRoll.jsx";
+import VictorianCorner from "../components/ornaments/VictorianCorner.jsx";
 import { useGame } from "../context/GameContext.jsx";
 import { ITEMS, getItem } from "../constants/items.js";
 import "./BattleScreen.css";
@@ -625,11 +626,11 @@ export default function BattleScreen() {
 
   return (
     <div className="battle-screen">
-      {/* Corner ornaments — shared runic frame */}
-      <div className="rune-corner tl" />
-      <div className="rune-corner tr" />
-      <div className="rune-corner bl" />
-      <div className="rune-corner br" />
+      {/* Corner ornaments — shared victorian frame */}
+      <VictorianCorner pos="tl" />
+      <VictorianCorner pos="tr" />
+      <VictorianCorner pos="bl" />
+      <VictorianCorner pos="br" />
 
       <div className="timer-wrap">
         <div
@@ -949,10 +950,10 @@ export default function BattleScreen() {
 
       {phase === "dice" && (
         <div className="dice-overlay">
-          <div className="rune-corner tl" />
-          <div className="rune-corner tr" />
-          <div className="rune-corner bl" />
-          <div className="rune-corner br" />
+          <VictorianCorner pos="tl" />
+          <VictorianCorner pos="tr" />
+          <VictorianCorner pos="bl" />
+          <VictorianCorner pos="br" />
           <div className="rune-divider top" />
           <div className="rune-divider bottom" />
 
@@ -1000,10 +1001,10 @@ export default function BattleScreen() {
 
       {phase === "victory" && (
         <div className="result-overlay">
-          <div className="rune-corner tl" />
-          <div className="rune-corner tr" />
-          <div className="rune-corner bl" />
-          <div className="rune-corner br" />
+          <VictorianCorner pos="tl" metal="gold" gem="quartz" />
+          <VictorianCorner pos="tr" metal="gold" gem="quartz" />
+          <VictorianCorner pos="bl" metal="gold" gem="quartz" />
+          <VictorianCorner pos="br" metal="gold" gem="quartz" />
           <div className="result-card">
             <div className="result-icon win">
               <Trophy size={42} />
@@ -1055,10 +1056,10 @@ export default function BattleScreen() {
 
       {phase === "defeat" && (
         <div className="result-overlay">
-          <div className="rune-corner tl" />
-          <div className="rune-corner tr" />
-          <div className="rune-corner bl" />
-          <div className="rune-corner br" />
+          <VictorianCorner pos="tl" metal="gold" gem="quartz" />
+          <VictorianCorner pos="tr" metal="gold" gem="quartz" />
+          <VictorianCorner pos="bl" metal="gold" gem="quartz" />
+          <VictorianCorner pos="br" metal="gold" gem="quartz" />
           <div className="result-card">
             <div className="result-icon lose">
               <Skull size={42} />

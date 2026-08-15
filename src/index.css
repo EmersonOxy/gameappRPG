@@ -57,6 +57,23 @@
   --gold-dark:      #7a5518;
   --gold-dim:       rgba(200, 153, 58, 0.3);
 
+  /* Victorian Silver — molduras estruturais (frames, painéis, barras) */
+  --silver:         #aeb4c4;
+  --silver-bright:  #e8ecf5;
+  --silver-dark:    #5c6270;
+  --silver-dim:     rgba(190, 196, 214, 0.25);
+
+  /* Emerald — gemas decorativas translúcidas (efeito vidro) */
+  --emerald:        #20c97f;
+  --emerald-bright: #8cf5c4;
+  --emerald-dark:   #0f7a4e;
+  --emerald-glass:  rgba(46, 206, 134, 0.30);
+
+  /* Quartz — cristal claro decorativo */
+  --quartz:         #e7e4f2;
+  --quartz-bright:  #ffffff;
+  --quartz-glass:   rgba(238, 235, 248, 0.28);
+
   /* LoR Teal — mana/magic/muted accents */
   --teal:           #2dd4bf;
   --teal-dim:       rgba(45, 212, 191, 0.12);
@@ -70,9 +87,9 @@
   --text-dim:       rgba(232, 220, 200, 0.48);
   --text-bright:    #f5edd8;
 
-  /* Metal borders */
-  --border:         rgba(200, 153, 58, 0.15);
-  --border-bright:  rgba(200, 153, 58, 0.38);
+  /* Metal borders — prata (molduras) */
+  --border:         rgba(202, 208, 224, 0.15);
+  --border-bright:  rgba(214, 220, 236, 0.40);
 
   /* Compat aliases */
   --blue:           #4a90d9;
@@ -91,14 +108,14 @@
      -------------------------------------------------- */
   --l2-color:       var(--text);              /* texto de recurso */
   --l2-accent:      var(--gold);              /* ouro moderado */
-  --l2-border:      rgba(200, 153, 58, 0.2); /* borda tênue — metade de --border-bright */
+  --l2-border:      rgba(200, 206, 222, 0.18); /* borda tênue prateada */
   --l2-font-sz:     clamp(11px, 2.8vw, 13px);
 
   /* --------------------------------------------------
      CAMADA 3 — Ambientação
      -------------------------------------------------- */
   --l3-opacity:     0.25;
-  --l3-border:      rgba(200, 153, 58, 0.12); /* quase invisível, estrutura apenas */
+  --l3-border:      rgba(200, 206, 222, 0.11); /* quase invisível, estrutura apenas */
 }
 
 html,
@@ -137,42 +154,27 @@ body {
    SHARED ORNAMENTS — LoR runic frame
    ====================================== */
 
-/* ---- Runic corner ornaments (pure CSS) ---- */
-.rune-corner {
+/* ---- Victorian corner ornaments (SVG inside the component) ---- */
+.vic-corner {
   position: absolute;
-  width: 60px;
-  height: 60px;
+  width: 62px;
+  height: 62px;
   z-index: 2;
   pointer-events: none;
 }
-.rune-corner::before,
-.rune-corner::after {
-  content: "";
-  position: absolute;
-  background: var(--gold);
-  opacity: 0.55;
-}
-.rune-corner.tl { top: 18px; left: 18px; }
-.rune-corner.tr { top: 18px; right: 18px; transform: scaleX(-1); }
-.rune-corner.bl { bottom: 18px; left: 18px; transform: scaleY(-1); }
-.rune-corner.br { bottom: 18px; right: 18px; transform: scale(-1); }
-
-.rune-corner::before {
-  top: 0; left: 0;
-  width: 100%; height: 2px;
-}
-.rune-corner::after {
-  top: 0; left: 0;
-  width: 2px; height: 100%;
-}
+.vic-corner.tl { top: 14px; left: 14px; }
+.vic-corner.tr { top: 14px; right: 14px; transform: scaleX(-1); }
+.vic-corner.bl { bottom: 14px; left: 14px; transform: scaleY(-1); }
+.vic-corner.br { bottom: 14px; right: 14px; transform: scale(-1); }
+.vic-corner svg { display: block; width: 100%; height: 100%; }
 
 /* Horizontal rule across screen */
 .rune-divider {
   position: absolute;
   left: 56px; right: 56px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold-2) 50%, var(--gold) 70%, transparent);
-  opacity: 0.35;
+  background: linear-gradient(90deg, transparent, var(--silver) 30%, var(--silver-bright) 50%, var(--silver) 70%, transparent);
+  opacity: 0.3;
   z-index: 2;
   pointer-events: none;
 }
@@ -194,13 +196,13 @@ body {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 2px solid var(--gold);
+  border: 2px solid var(--silver-bright);
   opacity: 0.7;
   animation: ringPulse 3s ease-in-out infinite;
 }
 .rune-emblem-ring.inner {
   inset: 8px;
-  border-color: var(--gold-2);
+  border-color: var(--silver);
   opacity: 0.4;
   animation-delay: 1s;
 }
@@ -237,9 +239,10 @@ body {
   background: linear-gradient(90deg, var(--gold-dim), transparent);
 }
 .rune-sep-diamond {
-  width: 6px;
-  height: 6px;
-  background: var(--gold);
+  width: 7px;
+  height: 7px;
+  background: var(--emerald-glass);
+  border: 1px solid var(--emerald-bright);
   transform: rotate(45deg);
-  opacity: 0.7;
+  box-shadow: 0 0 6px var(--emerald-glass);
 }

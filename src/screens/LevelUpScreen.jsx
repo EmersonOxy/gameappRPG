@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Plus, ArrowRight, Sparkles } from "lucide-react";
 import { useGame } from "../context/GameContext.jsx";
 import { STATS } from "../constants/stats.js";
+import VictorianCorner from "../components/ornaments/VictorianCorner.jsx";
 import "./LevelUpScreen.css";
 
 export default function LevelUpScreen() {
@@ -10,10 +11,10 @@ export default function LevelUpScreen() {
 
   return (
     <div className="levelup-screen">
-      <div className="rune-corner tl" />
-      <div className="rune-corner tr" />
-      <div className="rune-corner bl" />
-      <div className="rune-corner br" />
+      <VictorianCorner pos="tl" />
+      <VictorianCorner pos="tr" />
+      <VictorianCorner pos="bl" />
+      <VictorianCorner pos="br" />
       <div className="rune-divider top" />
       <div className="rune-divider bottom" />
 

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Sword } from "lucide-react";
+import VictorianCorner from "../components/ornaments/VictorianCorner.jsx";
 import "./StartScreen.css";
 
 export default function StartScreen() {
@@ -8,10 +9,10 @@ export default function StartScreen() {
   return (
     <div className="start-screen">
       {/* Corner ornaments */}
-      <div className="rune-corner tl" />
-      <div className="rune-corner tr" />
-      <div className="rune-corner bl" />
-      <div className="rune-corner br" />
+      <VictorianCorner pos="tl" metal="gold" gem="quartz" />
+      <VictorianCorner pos="tr" metal="gold" gem="quartz" />
+      <VictorianCorner pos="bl" metal="gold" gem="quartz" />
+      <VictorianCorner pos="br" metal="gold" gem="quartz" />
 
       {/* Horizontal dividers */}
       <div className="rune-divider top" />
