@@ -14,12 +14,29 @@
 }
 
 .shop-header {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 5px;
   text-align: center;
 }
+
+.shop-header::before,
+.shop-header::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  width: 6px;
+  height: 6px;
+  transform: rotate(45deg);
+  background: var(--emerald-glass);
+  border: 1px solid var(--emerald-bright);
+  box-shadow: 0 0 5px var(--emerald-glass);
+  pointer-events: none;
+}
+.shop-header::before { left: 6px; }
+.shop-header::after { right: 6px; }
 
 .shop-title {
   font-family: 'Cinzel', serif;
@@ -172,14 +189,16 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 1px;
-  border: none;
+  border: 1px solid var(--gold-dark);
   border-radius: 3px;
   cursor: pointer;
   color: #1a0d00;
   background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
   box-shadow:
+    0 0 0 1px rgba(200, 153, 58, 0.35),
     0 4px 0 var(--gold-dark),
     0 8px 18px rgba(200, 153, 58, 0.18),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
   transition: transform 0.06s ease, box-shadow 0.06s ease;
 }
@@ -190,8 +209,8 @@
 }
 
 .shop-buy:disabled {
-  opacity: 0.4;
   cursor: default;
+  filter: grayscale(0.55) brightness(0.6);
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
 }
 

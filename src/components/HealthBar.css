@@ -60,19 +60,45 @@
   background: linear-gradient(180deg, #e74c3c 0%, #c0392b 50%, #8b1c1c 100%);
   box-shadow: 0 0 10px rgba(231, 76, 60, 0.45);
   transition: width 0.12s linear;
+  overflow: hidden;
 }
 
-/* Gloss de "líquido" — brilho na superfície + sombra no fundo */
+/* Líquido — "tinta densa" se movendo (manchas claras deformando devagar) */
+.health-fill::before {
+  content: "";
+  position: absolute;
+  top: -120%;
+  left: -60%;
+  width: 220%;
+  height: 340%;
+  z-index: 1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(ellipse at 25% 45%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.9) 20%, transparent 60%),
+    radial-gradient(ellipse at 65% 55%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 25%, transparent 65%),
+    radial-gradient(ellipse at 45% 35%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.7) 15%, transparent 55%);
+  background-size: 160px 110px, 200px 140px, 130px 90px;
+  background-repeat: repeat-x;
+  filter: blur(1.5px);
+  mix-blend-mode: overlay;
+  animation: ink-flow 14s ease-in-out infinite alternate;
+}
+
+/* Líquido — varredura de brilho por cima */
 .health-fill::after {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 2;
   background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.28) 0%,
-    rgba(255, 255, 255, 0.05) 42%,
-    rgba(0, 0, 0, 0.14) 100%
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 45%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.2) 55%,
+    transparent 100%
   );
+  animation: bar-shimmer 4s infinite ease-in-out;
   pointer-events: none;
 }
 
@@ -133,6 +159,25 @@
 .health-bar.vertical .health-recent,
 .health-bar.vertical .health-fill {
   transition: height 0.12s linear;
+}
+
+/* Líquido na vertical: manchas menores + varredura de cima pra baixo */
+.health-bar.vertical .health-fill::before {
+  background-size: 44px 64px, 56px 76px, 38px 52px;
+  background-repeat: repeat;
+  animation-duration: 10s;
+}
+
+.health-bar.vertical .health-fill::after {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 45%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.2) 55%,
+    transparent 100%
+  );
+  animation: bar-shimmer-v 4s infinite ease-in-out;
 }
 
 .health-bar.vertical.reverse .health-max,

@@ -19,9 +19,9 @@
   background:
     linear-gradient(180deg, #18140e 0%, #0e0b07 100%);
   border-bottom: 1px solid var(--border-bright);
-  /* Inner highlight line — LoR metallic sheen */
+  /* Inner highlight line — silver sheen */
   box-shadow:
-    0 1px 0 rgba(200, 153, 58, 0.08) inset,
+    0 1px 0 rgba(214, 220, 236, 0.08) inset,
     0 4px 16px rgba(0, 0, 0, 0.5);
 }
 

@@ -37,19 +37,45 @@
   left: 0;
   bottom: 0;
   transition: width var(--fill-dur, 0.4s) ease;
+  overflow: hidden;
 }
 
-/* Gloss de "líquido" — brilho na superfície + sombra no fundo */
+/* Líquido — "tinta densa" se movendo */
+.resource-fill::before {
+  content: "";
+  position: absolute;
+  top: -120%;
+  left: -60%;
+  width: 220%;
+  height: 340%;
+  z-index: 1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(ellipse at 25% 45%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.9) 20%, transparent 60%),
+    radial-gradient(ellipse at 65% 55%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 25%, transparent 65%),
+    radial-gradient(ellipse at 45% 35%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.7) 15%, transparent 55%);
+  background-size: 160px 110px, 200px 140px, 130px 90px;
+  background-repeat: repeat-x;
+  filter: blur(1.5px);
+  mix-blend-mode: overlay;
+  animation: ink-flow 14s ease-in-out infinite alternate;
+}
+
+/* Líquido — varredura de brilho por cima */
 .resource-fill::after {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 2;
   background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.25) 0%,
-    rgba(255, 255, 255, 0.04) 42%,
-    rgba(0, 0, 0, 0.12) 100%
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 45%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.2) 55%,
+    transparent 100%
   );
+  animation: bar-shimmer 4s infinite ease-in-out;
   pointer-events: none;
 }
 
@@ -121,6 +147,25 @@
 .resource-bar.vertical.reverse .resource-fill {
   top: 0;
   bottom: auto;
+}
+
+/* Líquido na vertical: manchas menores + varredura de cima pra baixo */
+.resource-bar.vertical .resource-fill::before {
+  background-size: 44px 64px, 56px 76px, 38px 52px;
+  background-repeat: repeat;
+  animation-duration: 10s;
+}
+
+.resource-bar.vertical .resource-fill::after {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 45%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.2) 55%,
+    transparent 100%
+  );
+  animation: bar-shimmer-v 4s infinite ease-in-out;
 }
 
 .resource-tick.v {

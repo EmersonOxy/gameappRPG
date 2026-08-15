@@ -17,12 +17,29 @@
 
 /* ---- Header ---- */
 .skill-tree-header {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 5px;
   text-align: center;
 }
+
+.skill-tree-header::before,
+.skill-tree-header::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  width: 6px;
+  height: 6px;
+  transform: rotate(45deg);
+  background: var(--quartz-glass);
+  border: 1px solid var(--quartz-bright);
+  box-shadow: 0 0 5px var(--quartz-glass);
+  pointer-events: none;
+}
+.skill-tree-header::before { left: 6px; }
+.skill-tree-header::after { right: 6px; }
 
 .skill-tree-title {
   font-family: 'Cinzel', serif;
@@ -450,10 +467,12 @@
 .btn-detail.primary {
   color: #1a0d00;
   background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
-  border: none;
+  border: 1px solid var(--gold-dark);
   box-shadow:
+    0 0 0 1px rgba(200, 153, 58, 0.35),
     0 5px 0 var(--gold-dark),
     0 10px 26px rgba(200, 153, 58, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
@@ -463,8 +482,8 @@
 }
 
 .btn-detail.disabled {
-  opacity: 0.55;
   cursor: default;
+  filter: grayscale(0.55) brightness(0.6);
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
 }
 
