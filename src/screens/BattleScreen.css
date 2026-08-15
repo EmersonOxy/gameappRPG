@@ -97,6 +97,98 @@
   50%       { box-shadow: 0 0 18px rgba(231, 76, 60, 0.85); }
 }
 
+/* ---- Pause button ---- */
+.pause-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--gold-dim);
+  background: rgba(10, 10, 16, 0.72);
+  color: var(--gold-2);
+  cursor: pointer;
+  z-index: 9;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  transition: transform 0.08s ease, filter 0.12s ease;
+}
+
+.pause-button:hover { filter: brightness(1.25); }
+.pause-button:active { transform: scale(0.92); }
+
+/* ---- Pause overlay ---- */
+.pause-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(5, 4, 8, 0.75) 0%, rgba(0, 0, 0, 0.94) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 40;
+  animation: overlayFadeIn 0.25s ease;
+}
+
+.pause-card {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 34px 26px 26px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #18140e 0%, #0d0b08 100%);
+  border: 1px solid rgba(200, 153, 58, 0.4);
+  box-shadow:
+    0 0 0 1px rgba(200, 153, 58, 0.08),
+    0 30px 80px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(200, 153, 58, 0.1);
+  animation: cardSlideIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.pause-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gold-bright);
+  background: radial-gradient(circle at 35% 30%, #fff0b0, #c8993a 55%, #7a5518);
+  box-shadow: 0 0 40px rgba(200, 153, 58, 0.4);
+}
+
+.pause-title {
+  font-family: 'Cinzel', serif;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-bright);
+}
+
+.pause-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+.pause-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 8px;
+}
+
 /* ---- Enemy zone ---- */
 .enemy-wrap {
   position: absolute;

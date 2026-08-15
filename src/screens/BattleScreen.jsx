@@ -14,6 +14,8 @@ import {
   Package,
   Gem,
   X,
+  Pause,
+  Play,
 } from "lucide-react";
 import HealthBar from "../components/HealthBar.jsx";
 import ResourceBar from "../components/ResourceBar.jsx";
@@ -135,6 +137,7 @@ export default function BattleScreen() {
   const [inventoryOpen, setInventoryOpen] = useState(false);
   const [itemPopup, setItemPopup] = useState(null);
   const [battleId, setBattleId] = useState(0);
+  const [paused, setPaused] = useState(false);
 
   const staminaRegenMs = REGEN_BASE_INTERVAL / playerStaminaRegen;
   const enemyStaminaRegenMs = REGEN_BASE_INTERVAL / ENEMY_STAMINA_REGEN;
@@ -484,6 +487,8 @@ export default function BattleScreen() {
 
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
+  const pausedRef = useRef(paused);
+  pausedRef.current = paused;
   const playerMaxHpRef = useRef(playerMaxHpCurrent);
   playerMaxHpRef.current = playerMaxHpCurrent;
 
@@ -500,6 +505,8 @@ export default function BattleScreen() {
       const now = Date.now();
       const dt = Math.min((now - last) / 1000, 1);
       last = now;
+
+      if (pausedRef.current) return;
 
       const p = phaseRef.current;
       if (p === "player" || p === "resolve") {
@@ -559,7 +566,7 @@ export default function BattleScreen() {
   }, [phase, timeLeft]);
 
   useEffect(() => {
-    if (phase !== "player") return;
+    if (phase !== "player" || paused) return;
     const canAttack = playerStamina >= ATK_COST;
     const canDefend = playerStamina >= DEF_COST;
     const canSpecial = playerFury >= FURY_MAX;
@@ -570,7 +577,7 @@ export default function BattleScreen() {
       const t = setTimeout(() => resolveTurn("skip"), 800);
       return () => clearTimeout(t);
     }
-  }, [phase, playerStamina, playerFury, playerManaCurrent, equippedSkills]);
+  }, [phase, paused, playerStamina, playerFury, playerManaCurrent, equippedSkills]);
 
   function nextBattle() {
     setBattleId((b) => b + 1);
@@ -617,6 +624,15 @@ export default function BattleScreen() {
     setPhase("dice");
   }
 
+  function surrender() {
+    setPaused(false);
+    setDefeatReason("surrender");
+    const gained = addReward(0, DEFEAT_XP);
+    setReward({ gold: 0, xp: DEFEAT_XP });
+    setLeveledUp(gained > 0);
+    setPhase("defeat");
+  }
+
   const disabled = phase !== "player";
   const canAttack = playerStamina >= ATK_COST;
   const canDefend = playerStamina >= DEF_COST;
@@ -639,6 +655,39 @@ export default function BattleScreen() {
         />
       </div>
       <div className="battle-divider" />
+
+      {(phase === "dice" || phase === "player") && !paused && (
+        <button
+          className="pause-button"
+          onClick={() => setPaused(true)}
+          aria-label="Pausar batalha"
+        >
+          <Pause size={18} />
+        </button>
+      )}
+
+      {paused && (
+        <div className="pause-overlay">
+          <div className="pause-card">
+            <div className="pause-icon">
+              <Pause size={26} />
+            </div>
+            <h2 className="pause-title">Pausa</h2>
+            <p className="pause-sub">A batalha está pausada</p>
+            <div className="pause-actions">
+              <button
+                className="btn-result primary btn-3d"
+                onClick={() => setPaused(false)}
+              >
+                <Play size={18} /> Continuar
+              </button>
+              <button className="btn-result" onClick={surrender}>
+                <LogOut size={18} /> Sair (derrota)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Vertical bars — enemy (top half, espelhado do player) */}
       {/* Left enemy: vida (com fury-pips) + estamina sobreposta */}
@@ -1065,7 +1114,11 @@ export default function BattleScreen() {
               <Skull size={42} />
             </div>
             <h2 className="result-title lose">
-              {defeatReason === "timeout" ? "Tempo esgotado!" : "Derrota!"}
+              {defeatReason === "timeout"
+                ? "Tempo esgotado!"
+                : defeatReason === "surrender"
+                ? "Você desistiu!"
+                : "Derrota!"}
             </h2>
             <div className="rune-sep">
               <div className="rune-sep-line" />

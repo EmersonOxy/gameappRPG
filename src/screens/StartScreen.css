@@ -94,6 +94,21 @@
 }
 
 /* ---- CTA Button — LoR-style physical press ---- */
+.start-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 6px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.start-menu .btn-start {
+  margin-top: 0;
+  width: 100%;
+  justify-content: center;
+}
+
 .btn-start {
   position: relative;
   display: inline-flex;
@@ -151,5 +166,30 @@
     0 var(--btn-depth) 0 var(--gold-dark),
     0 12px 32px rgba(234, 184, 80, 0.5),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Secondary (Novo Jogo) — steel/silver, quieter than gold CTA */
+.btn-start.secondary {
+  color: var(--text-bright);
+  background: linear-gradient(180deg, #2a2f3a 0%, #1a1e27 100%);
+  border: 1px solid var(--silver-dark);
+  outline: 1px solid var(--silver);
+  box-shadow:
+    0 0 0 1px rgba(190, 196, 214, 0.25),
+    0 var(--btn-depth) 0 #0a0c12,
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.btn-start.secondary::after {
+  display: none;
+}
+
+.btn-start.secondary:hover {
+  box-shadow:
+    0 var(--btn-depth) 0 #0a0c12,
+    0 12px 32px rgba(190, 196, 214, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 

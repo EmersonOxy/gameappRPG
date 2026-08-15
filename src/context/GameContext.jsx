@@ -107,6 +107,23 @@ export function GameProvider({ children }) {
   const [skillsEquipped, setSkillsEquipped] = useState(initial.skillsEquipped);
   const [itemsOwned, setItemsOwned] = useState(initial.itemsOwned);
 
+  const hasProgress =
+    totalXp > 0 ||
+    gold > 0 ||
+    statPoints > 0 ||
+    skillsOwned.length > 0 ||
+    Object.keys(itemsOwned).length > 0;
+
+  function resetProgress() {
+    setGold(0);
+    setTotalXp(0);
+    setStats({ ...INITIAL_STATS });
+    setStatPoints(0);
+    setSkillsOwned([]);
+    setSkillsEquipped([]);
+    setItemsOwned({});
+  }
+
   useEffect(() => {
     localStorage.setItem(
       STORAGE_KEY,
@@ -221,6 +238,8 @@ export function GameProvider({ children }) {
         totalXp,
         stats,
         statPoints,
+        hasProgress,
+        resetProgress,
         addReward,
         upgradeStat,
         skillsOwned,

@@ -1,10 +1,17 @@
 import { useNavigate } from "react-router-dom";
-import { Sword } from "lucide-react";
+import { Sword, RotateCw } from "lucide-react";
 import VictorianCorner from "../components/ornaments/VictorianCorner.jsx";
+import { useGame } from "../context/GameContext.jsx";
 import "./StartScreen.css";
 
 export default function StartScreen() {
   const navigate = useNavigate();
+  const { hasProgress, resetProgress } = useGame();
+
+  function handleNewGame() {
+    resetProgress();
+    navigate("/home");
+  }
 
   return (
     <div className="start-screen">
@@ -41,10 +48,21 @@ export default function StartScreen() {
 
         <p className="game-tagline">Sua aventura começa aqui</p>
 
-        <button className="btn-start btn-3d" onClick={() => navigate("/home")}>
-          <Sword size={18} />
-          Iniciar
-        </button>
+        <div className="start-menu">
+          {hasProgress && (
+            <button className="btn-start btn-3d" onClick={() => navigate("/home")}>
+              <RotateCw size={18} />
+              Continuar
+            </button>
+          )}
+          <button
+            className={"btn-start btn-3d" + (hasProgress ? " secondary" : "")}
+            onClick={handleNewGame}
+          >
+            <Sword size={18} />
+            Novo Jogo
+          </button>
+        </div>
       </div>
     </div>
   );
