@@ -31,6 +31,7 @@ const MANA_REGEN_BASE_INTERVAL = 8000;
 const ATK_COST = 3;
 const DEF_COST = 2;
 const ENEMY_SPECIAL_MULT = 2;
+const CRIT_CURRENT_PCT = 0.5;
 const MATCH_TIME = 45;
 const DEFEAT_XP = 1;
 const CRYSTAL_MAX = 5;
@@ -257,13 +258,18 @@ export default function BattleScreen() {
       const newPlayerMaxHp = Math.max(1, playerMaxHpCurrent - playerCritDmg);
       const newEnemyMaxHp = Math.max(1, enemyMaxHpCurrent - enemyCritDmg);
 
+      const playerCritCurrentDmg = Math.floor(playerCritDmg * CRIT_CURRENT_PCT);
+      const enemyCritCurrentDmg = Math.floor(enemyCritDmg * CRIT_CURRENT_PCT);
+
       const newEnemyHp = Math.max(
         0,
-        Math.min(newEnemyMaxHp, enemyHp) - enemyDmg
+        Math.min(newEnemyMaxHp, enemyHp) - enemyDmg - enemyCritCurrentDmg
       );
       const newPlayerHp = Math.max(
         0,
-        Math.min(newPlayerMaxHp, playerHp + skillHeal) - playerDmg
+        Math.min(newPlayerMaxHp, playerHp + skillHeal) -
+          playerDmg -
+          playerCritCurrentDmg
       );
       setPlayerMaxHpCurrent(newPlayerMaxHp);
       setEnemyMaxHpCurrent(newEnemyMaxHp);

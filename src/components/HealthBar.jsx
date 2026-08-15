@@ -20,6 +20,7 @@ export default function HealthBar({
   const [shaking, setShaking] = useState(false);
   const [healOn, setHealOn] = useState(false);
   const [ghostPct, setGhostPct] = useState((hp / max) * 100);
+  const [recentHp, setRecentHp] = useState(null);
   const prevHp = usePrevious(hp);
 
   useEffect(() => {
@@ -29,6 +30,7 @@ export default function HealthBar({
     return () => clearTimeout(t);
   }, [hitKey]);
 
+  // Cura: prévia verde preenche antes, vermelho cobre depois
   useEffect(() => {
     setGhostPct((hp / max) * 100);
     if (prevHp == null || hp <= prevHp) {
@@ -40,8 +42,22 @@ export default function HealthBar({
     return () => clearTimeout(t);
   }, [hp, prevHp, max]);
 
+  // Dano na vida atual: barra branca veloz mostrando o pedaço perdido
+  useEffect(() => {
+    if (prevHp == null || hp >= prevHp) return;
+    setRecentHp(prevHp);
+    const t1 = setTimeout(() => setRecentHp(hp), 150);
+    const t2 = setTimeout(() => setRecentHp(null), 500);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [hp, prevHp, max]);
+
   const fillPct = (hp / max) * 100;
   const maxPct = (currentMax / max) * 100;
+  const recentPct =
+    recentHp != null ? Math.max(0, ((recentHp - hp) / max) * 100) : 0;
 
   const ticks = [];
   for (let i = 0; i < max; i++) {
@@ -82,6 +98,19 @@ export default function HealthBar({
             vertical ? { height: ghostPct + "%" } : { width: ghostPct + "%" }
           }
         />
+        {recentHp != null && (
+          <div
+            className="health-recent"
+            style={
+              vertical
+                ? {
+                    [reverse ? "top" : "bottom"]: fillPct + "%",
+                    height: recentPct + "%",
+                  }
+                : { left: fillPct + "%", width: recentPct + "%" }
+            }
+          />
+        )}
         <div
           className="health-fill"
           style={vertical ? { height: fillPct + "%" } : { width: fillPct + "%" }}
