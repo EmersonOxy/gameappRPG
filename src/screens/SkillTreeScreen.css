@@ -1,15 +1,14 @@
 /* ======================================
-   SKILL TREE — LoR-Inspired Ability Tree
-   Hierarquia:
-   L1: skill equipada (equipped) — único nó com glow em repouso
-   L2: skill disponível (available), custos/descrições
-   L3: frames de branch, conectores, ícones de nó
+   SKILL TREE — arvore de raizes + popup
+   L1: skill equipada (glow) / popup aberto
+   L2: objetos 3D das habilidades
+   L3: curvas de raiz, frames de branch
    ====================================== */
 .skill-tree-view {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 16px 14px 14px;
+  gap: 14px;
+  padding: 16px 12px 14px;
   background:
     radial-gradient(ellipse 90% 50% at 50% 0%, rgba(200, 153, 58, 0.04) 0%, transparent 60%),
     linear-gradient(180deg, #0c0a06 0%, #08090d 100%);
@@ -38,6 +37,7 @@
   box-shadow: 0 0 5px var(--quartz-glass);
   pointer-events: none;
 }
+
 .skill-tree-header::before { left: 6px; }
 .skill-tree-header::after { right: 6px; }
 
@@ -62,40 +62,53 @@
   align-items: center;
   gap: 6px;
   margin-top: 4px;
-  padding: 5px 12px;
+  padding: 4px 12px;
   border-radius: 999px;
   font-size: 10.5px;
   font-weight: 800;
   letter-spacing: 0.5px;
-  color: var(--text-bright);
+  color: var(--gold-2);
   background: rgba(0, 0, 0, 0.4);
-  border: 1px solid var(--border-bright);
-}
-
-.equipped-chip.branch-sombrio {
-  color: #ffb09a;
-  border-color: rgba(212, 64, 48, 0.5);
-}
-
-.equipped-chip.branch-sagrado {
-  color: #8ff5e4;
-  border-color: rgba(45, 212, 191, 0.4);
-}
-
-.equipped-chip.branch-magico {
-  color: #a8d4ff;
-  border-color: rgba(90, 150, 220, 0.45);
+  border: 1px solid rgba(200, 153, 58, 0.45);
 }
 
 .equipped-chip.empty {
   color: var(--text-dim);
+  border-color: var(--border);
 }
 
-/* ---- Branches ---- */
+.equipped-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.equipped-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.equipped-dot.branch-sombrio {
+  background: #ff9d8a;
+  box-shadow: 0 0 4px rgba(255, 157, 138, 0.6);
+}
+
+.equipped-dot.branch-sagrado {
+  background: #8ff5e4;
+  box-shadow: 0 0 4px rgba(143, 245, 228, 0.6);
+}
+
+.equipped-dot.branch-magico {
+  background: #9cc7ff;
+  box-shadow: 0 0 4px rgba(156, 199, 255, 0.6);
+}
+
+/* ---- Branches (raizes) ---- */
 .skill-branches {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .skill-branch {
@@ -125,7 +138,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .branch-title {
@@ -147,82 +160,107 @@
   color: var(--text-dim);
 }
 
-.branch-row {
-  display: flex;
-  align-items: flex-start;
+/* Palco das raizes: mesma area que o SVG, nos posicionados em % */
+.branch-roots {
+  position: relative;
+  height: 210px;
 }
 
-.branch-node-wrap {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  min-width: 0;
+.root-stage {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  top: 26px;
+  bottom: 22px;
 }
 
-.branch-connector {
-  height: 2px;
-  flex: 1;
-  background: rgba(200, 153, 58, 0.14);
-  margin: 0 2px;
-  border-radius: 1px;
+.root-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.branch-connector.on {
-  background: linear-gradient(90deg, rgba(200, 153, 58, 0.65), rgba(200, 153, 58, 0.35));
-  box-shadow: 0 0 6px rgba(200, 153, 58, 0.35);
+.root-line {
+  fill: none;
+  stroke: rgba(200, 153, 58, 0.15);
+  stroke-width: 3;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
 }
 
-/* ---- Nodes ---- */
+.root-line.on {
+  stroke: rgba(200, 153, 58, 0.8);
+  filter: drop-shadow(0 0 5px rgba(200, 153, 58, 0.45));
+}
+
+/* ---- Nos orgânicos ---- */
 .skill-node {
+  position: absolute;
+  transform: translate(-50%, -50%) rotate(var(--node-rot, 0deg));
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 5px;
-  width: 76px;
-  min-height: 118px;
-  padding: 6px 2px;
-  border-radius: 4px;
-  border: 1px solid rgba(200, 153, 58, 0.25);
-  background: linear-gradient(180deg, #1a1610, #0e0c08);
-  color: var(--text-dim);
+  gap: 3px;
+  width: 72px;
+  padding: 2px 0;
+  background: none;
+  border: none;
   cursor: pointer;
-  transition: transform 0.06s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
-.skill-node:active {
-  transform: scale(0.95);
+.skill-node .skill3d {
+  transition: transform 0.18s ease;
 }
 
-/* 3D cube icon — spins on hover/tap */
-.skill-node .cube3d {
-  flex-shrink: 0;
-  transform: rotateX(-14deg) rotateY(0deg);
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+.skill-node:hover .skill3d {
+  transform: scale(1.08);
 }
 
-.skill-node:hover .cube3d,
-.skill-node:focus-visible .cube3d {
-  transform: rotateX(-14deg) rotateY(180deg);
+.skill-node:focus-visible {
+  outline: 2px solid rgba(200, 153, 58, 0.6);
+  outline-offset: 3px;
+  border-radius: 8px;
 }
 
-.skill-node .node-name {
-  font-size: 8.5px;
-  font-weight: 700;
+.skill-node.selected .skill3d {
+  transform: scale(1.1);
+}
+
+.skill-node.selected {
+  filter: drop-shadow(0 0 6px rgba(200, 153, 58, 0.55));
+}
+
+.node-name {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
   line-height: 1.15;
   text-align: center;
-  min-height: 20px;
-  display: flex;
-  align-items: center;
-  max-width: 68px;
+  color: var(--text-dim);
+  max-width: 70px;
 }
 
-.skill-node .node-element {
+.skill-node.owned .node-name,
+.skill-node.equipped .node-name {
+  color: var(--text-bright);
+}
+
+.skill-node.equipped .node-name {
+  color: var(--gold-bright);
+}
+
+.skill-node.locked,
+.skill-node.locked-level {
+  opacity: 0.55;
+}
+
+.node-element {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 14px;
+  width: 16px;
+  height: 13px;
   border-radius: 999px;
   border: 1px solid currentColor;
   background: rgba(0, 0, 0, 0.35);
@@ -233,218 +271,104 @@
 .element-mare { color: #7ec8ff; }
 .element-vendaval { color: #9de8d2; }
 
-.skill-node .node-chip {
-  font-size: 7.5px;
-  font-weight: 800;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
-  padding: 2px 4px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  white-space: nowrap;
-  max-width: 58px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Disponível — Camada 2 (presente, mas não dominante)
-   Pulsação constante REMOVIDA: economiza atenção visual para o equipped (L1).
-   Borda mais clara sinaliza disponibilidade sem gritar. */
-.skill-node.available {
-  border-color: rgba(200, 153, 58, 0.5);
-  color: var(--gold-2);
-}
-
-.skill-node.available:hover {
-  box-shadow: 0 0 10px rgba(200, 153, 58, 0.25);
-}
-
-.skill-node.available .node-chip {
-  color: var(--gold-2);
-  border-color: rgba(200, 153, 58, 0.4);
-  background: rgba(200, 153, 58, 0.07);
-}
-
-/* Animação de pulsação preservada apenas para o equipped (L1) via .skill-node.equipped */
-
-/* Owned — branch color fill */
-.skill-node.owned,
-.skill-node.equipped {
-  color: var(--text-bright);
-}
-
-.branch-sombrio .skill-node.owned,
-.branch-sombrio .skill-node.equipped {
-  border-color: rgba(212, 64, 48, 0.6);
-  background: linear-gradient(180deg, #2a1410, #160b08);
-}
-
-.branch-sagrado .skill-node.owned,
-.branch-sagrado .skill-node.equipped {
-  border-color: rgba(45, 212, 191, 0.45);
-  background: linear-gradient(180deg, #0e201d, #08120f);
-}
-
-.branch-magico .skill-node.owned,
-.branch-magico .skill-node.equipped {
-  border-color: rgba(90, 150, 220, 0.5);
-  background: linear-gradient(180deg, #0f1a2e, #080f1e);
-}
-
-.skill-node.equipped {
-  box-shadow:
-    0 0 14px rgba(200, 153, 58, 0.45),
-    inset 0 0 0 1px rgba(200, 153, 58, 0.45);
-}
-
-.skill-node.equipped .node-chip {
-  color: var(--gold-bright);
-  border-color: rgba(200, 153, 58, 0.6);
-  background: rgba(200, 153, 58, 0.12);
-}
-
-/* Cube face tints by state/branch */
-.skill-node.available .cube3d-face {
-  background: linear-gradient(135deg, #f7e6b8 0%, #e6cd8e 100%);
-  border-color: rgba(200, 153, 58, 0.6);
-}
-
-.branch-sombrio .skill-node.owned .cube3d-face,
-.branch-sombrio .skill-node.equipped .cube3d-face {
-  background: linear-gradient(135deg, #8a2e1e 0%, #4a1410 100%);
-  border-color: rgba(212, 64, 48, 0.55);
-}
-
-.branch-sagrado .skill-node.owned .cube3d-face,
-.branch-sagrado .skill-node.equipped .cube3d-face {
-  background: linear-gradient(135deg, #123f38 0%, #081f1b 100%);
-  border-color: rgba(45, 212, 191, 0.45);
-}
-
-.branch-magico .skill-node.owned .cube3d-face,
-.branch-magico .skill-node.equipped .cube3d-face {
-  background: linear-gradient(135deg, #1c3a5c 0%, #0a1a2e 100%);
-  border-color: rgba(90, 150, 220, 0.5);
-}
-
-.skill-node.selected {
-  outline: 2px solid rgba(200, 153, 58, 0.55);
-  outline-offset: 1px;
-}
-
-/* Locked — Camada 3 (máximo rebaixamento: quase apagado) */
-.skill-node.locked,
-.skill-node.locked-level {
-  opacity: 0.4;
-  cursor: pointer;
-}
-
-/* ---- Detail panel (sticky bottom) ---- */
-.skill-detail {
-  position: sticky;
-  bottom: 0;
-  z-index: 5;
-  margin: 0 -14px -14px;
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  background: linear-gradient(180deg, #16120b, #0d0a06);
-  border-top: 1px solid var(--border-bright);
-  box-shadow: 0 -12px 30px rgba(0, 0, 0, 0.7);
-}
-
-.detail-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.detail-icon {
-  flex-shrink: 0;
-  width: 42px;
-  height: 42px;
+/* ---- Popup (Clash Royale style) ---- */
+.skill-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  color: var(--gold-2);
-  background: rgba(200, 153, 58, 0.08);
-  border: 1px solid rgba(200, 153, 58, 0.3);
+  padding: 26px;
+  background: rgba(3, 4, 7, 0.78);
+  animation: modalFade 0.18s ease;
 }
 
-.detail-icon.branch-sombrio {
-  color: #ff9d8a;
-  border-color: rgba(212, 64, 48, 0.5);
-  background: rgba(212, 64, 48, 0.08);
-}
-
-.detail-icon.branch-sagrado {
-  color: #8ff5e4;
-  border-color: rgba(45, 212, 191, 0.4);
-  background: rgba(45, 212, 191, 0.07);
-}
-
-.detail-icon.branch-magico {
-  color: #9cc7ff;
-  border-color: rgba(90, 150, 220, 0.45);
-  background: rgba(90, 150, 220, 0.08);
-}
-
-.detail-title {
-  flex: 1;
-  min-width: 0;
+.skill-modal {
+  position: relative;
+  width: 100%;
+  max-width: 330px;
+  max-height: 86vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  gap: 10px;
+  padding: 22px 18px 18px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #18130c, #0d0a06);
+  border: 1px solid var(--border-bright);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.75),
+    inset 0 0 0 1px rgba(200, 206, 222, 0.06);
+  animation: modalIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.detail-name {
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.45);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.modal-close:hover {
+  color: var(--text-bright);
+  border-color: var(--border-bright);
+}
+
+.modal-art {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 14px;
+  border-bottom: 1px dashed rgba(200, 153, 58, 0.28);
+}
+
+.modal-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.modal-name {
   font-family: 'Cinzel', serif;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 700;
   color: var(--text-bright);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  text-align: center;
 }
 
-.detail-branch {
+.modal-meta {
   font-size: 10px;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
   color: var(--text-dim);
+  text-align: center;
 }
 
-.detail-own-chip {
-  flex-shrink: 0;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 4px 10px;
-}
-
-.detail-own-chip.equipped {
-  color: var(--gold-bright);
-  border-color: rgba(200, 153, 58, 0.6);
-  background: rgba(200, 153, 58, 0.1);
-}
-
-.detail-desc {
+.modal-desc {
   font-size: 12px;
-  line-height: 1.45;
+  line-height: 1.5;
   color: var(--text);
+  text-align: center;
 }
 
-.detail-costs {
+.modal-costs {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .cost-chip {
@@ -474,18 +398,18 @@
   border: 1px solid currentColor;
 }
 
-.detail-req {
+.modal-req {
   font-size: 10.5px;
   font-weight: 700;
   color: #ffb0a0;
   letter-spacing: 0.5px;
 }
 
-.detail-req.ok {
+.modal-req.ok {
   color: var(--text-dim);
 }
 
-.detail-warn {
+.modal-warn {
   font-size: 10.5px;
   font-weight: 800;
   color: #ffd97a;
@@ -495,11 +419,12 @@
   padding: 5px 10px;
 }
 
-.detail-actions {
+.modal-actions {
+  width: 100%;
   margin-top: 2px;
 }
 
-.btn-detail {
+.btn-modal {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -521,7 +446,7 @@
   transition: transform 0.06s ease, box-shadow 0.06s ease;
 }
 
-.btn-detail.primary {
+.btn-modal.primary {
   color: #1a0d00;
   background:
     radial-gradient(circle 4px at 9px 9px, var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
@@ -540,17 +465,20 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
-.btn-detail.disabled {
+.btn-modal.disabled {
   cursor: default;
   filter: grayscale(0.55) brightness(0.6);
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
 }
 
-.detail-hint {
-  text-align: center;
-  font-size: 11.5px;
-  color: var(--text-dim);
-  padding: 10px 0;
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(26px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes modalFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* ---- Toast ---- */
@@ -559,7 +487,7 @@
   bottom: 84px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 60;
+  z-index: 80;
   background: rgba(10, 10, 14, 0.96);
   border: 1px solid rgba(200, 153, 58, 0.5);
   color: var(--text-bright);

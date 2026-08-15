@@ -1,15 +1,19 @@
 import { useEffect, useRef, useState } from "react";
-import { Lock, Coins, Droplets, Check } from "lucide-react";
+import { Check, Coins, Droplets, Lock, X } from "lucide-react";
 import { useGame } from "../context/GameContext.jsx";
 import {
-  SKILLS,
   SKILL_BRANCHES,
   getSkill,
   getBranchSkills,
 } from "../constants/skills.js";
 import { getElement } from "../constants/elements.js";
-import Cube3D from "../components/Cube3D.jsx";
+import Skill3D from "../components/Skill3D.jsx";
 import "./SkillTreeScreen.css";
+
+function rootPath(a, b) {
+  const mx = (a.x + b.x) / 2;
+  return `M ${a.x} ${a.y} C ${mx} ${a.y}, ${mx} ${b.y}, ${b.x} ${b.y}`;
+}
 
 export default function SkillTreeScreen() {
   const {
@@ -34,8 +38,7 @@ export default function SkillTreeScreen() {
     toastTimer.current = setTimeout(() => setToast(null), 2000);
   }
 
-  const selected = SKILLS.find((s) => s.id === selectedId) || null;
-  const SelectedIcon = selected ? selected.icon : null;
+  const selected = getSkill(selectedId);
   const ElementIcon = selected ? getElement(selected.element).icon : null;
 
   function nodeState(skill) {
@@ -77,23 +80,39 @@ export default function SkillTreeScreen() {
     showToast(on ? "Habilidade removida da seleção!" : "Habilidade selecionada!");
   }
 
+  const selectedLocked =
+    selected &&
+    (nodeState(selected) === "locked" || nodeState(selected) === "locked-level");
+
   return (
     <div className="skill-tree-view">
       <div className="skill-tree-header">
         <h2 className="skill-tree-title">Habilidades</h2>
-        <span className="skill-tree-sub">Compre com ouro e selecione para a batalha</span>
-        {equippedSkills.length > 0 ? (
-          <div className="equipped-chip">
-            <span>
-              Selecionadas ({equippedSkills.length}):{" "}
-              {equippedSkills.map((s) => s.name).join(", ")}
-            </span>
-          </div>
-        ) : (
-          <div className="equipped-chip empty">
+        <span className="skill-tree-sub">
+          Compre com ouro e selecione para a batalha
+        </span>
+        <div
+          className={
+            "equipped-chip" + (equippedSkills.length === 0 ? " empty" : "")
+          }
+        >
+          {equippedSkills.length > 0 ? (
+            <>
+              <Check size={11} />
+              <span>Selecionadas: {equippedSkills.length}</span>
+              <span className="equipped-dots">
+                {equippedSkills.map((s) => (
+                  <span
+                    key={s.id}
+                    className={"equipped-dot branch-" + s.branch}
+                  />
+                ))}
+              </span>
+            </>
+          ) : (
             <span>Nenhuma habilidade selecionada</span>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <div className="skill-branches">
@@ -105,108 +124,108 @@ export default function SkillTreeScreen() {
                 <span className="branch-title">{branch.label}</span>
                 <span className="branch-tag">{branch.tagline}</span>
               </div>
-              <div className="branch-row">
-                {skills.map((skill, i) => {
-                  const state = nodeState(skill);
-                  const NodeIcon =
-                    state === "locked" || state === "locked-level"
-                      ? Lock
-                      : skill.icon;
-                  const ElementIcon = getElement(skill.element).icon;
-                  return (
-                    <div className="branch-node-wrap" key={skill.id}>
-                      {i > 0 && (
-                        <div
+              <div className="branch-roots">
+                <div className="root-stage">
+                  <svg
+                    className="root-lines"
+                    viewBox="0 0 100 100"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                  >
+                    {skills.slice(0, -1).map((skill, i) => {
+                      const next = skills[i + 1];
+                      return (
+                        <path
+                          key={skill.id}
+                          d={rootPath(skill, next)}
                           className={
-                            "branch-connector" +
-                            (skillsOwned.includes(skill.id) ? " on" : "")
+                            "root-line" +
+                            (skillsOwned.includes(next.id) ? " on" : "")
                           }
                         />
-                      )}
+                      );
+                    })}
+                  </svg>
+                  {skills.map((skill) => {
+                    const state = nodeState(skill);
+                    const locked =
+                      state === "locked" || state === "locked-level";
+                    const NodeElementIcon = getElement(skill.element).icon;
+                    return (
                       <button
+                        key={skill.id}
                         className={
                           "skill-node " +
                           state +
                           (selectedId === skill.id ? " selected" : "")
                         }
+                        style={{
+                          left: skill.x + "%",
+                          top: skill.y + "%",
+                          "--node-rot": skill.rot + "deg",
+                        }}
                         onClick={() => setSelectedId(skill.id)}
                       >
-                        <Cube3D
-                          width={66}
-                          height={30}
-                          depth={10}
-                          spinning
-                          faces={<NodeIcon size={14} />}
-                        />
+                        <Skill3D skill={skill} size={54} locked={locked} />
                         <span className="node-name">{skill.name}</span>
                         <span
-                          className={
-                            "node-element element-" + skill.element
-                          }
+                          className={"node-element element-" + skill.element}
                           title={getElement(skill.element).label}
                         >
-                          <ElementIcon size={10} />
-                        </span>
-                        <span className="node-chip">
-                          {state === "equipped"
-                            ? "Selecionada"
-                            : state === "owned"
-                            ? "Pronta"
-                            : state === "locked" || state === "locked-level"
-                            ? lockReason(skill)
-                            : skill.goldCost + " ouro"}
+                          <NodeElementIcon size={9} />
                         </span>
                       </button>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
           );
         })}
       </div>
 
-      <div className="skill-detail">
-        {selected && SelectedIcon ? (
-          <>
-            <div className="detail-head">
-              <div className={"detail-icon branch-" + selected.branch}>
-                <SelectedIcon size={22} />
-              </div>
-              <div className="detail-title">
-                <span className="detail-name">{selected.name}</span>
-                <span className="detail-branch">
-                  {SKILL_BRANCHES[selected.branch].label} ·{" "}
-                  {getElement(selected.element).label} · Nv {selected.levelReq}
-                </span>
-              </div>
-              {skillsOwned.includes(selected.id) && (
-                <span
-                  className={
-                    "detail-own-chip" +
-                    (skillsEquipped.includes(selected.id) ? " equipped" : "")
-                  }
-                >
-                  {skillsEquipped.includes(selected.id) ? "Selecionada" : "Comprada"}
-                </span>
-              )}
+      {selected && (
+        <div
+          className="skill-modal-overlay"
+          onClick={() => setSelectedId(null)}
+        >
+          <div className="skill-modal" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="modal-close"
+              onClick={() => setSelectedId(null)}
+              aria-label="Fechar"
+            >
+              <X size={18} />
+            </button>
+            <div className={"modal-art branch-" + selected.branch}>
+              <Skill3D skill={selected} size={124} locked={selectedLocked} />
             </div>
-            <p className="detail-desc">{selected.description}</p>
-            <div className="detail-costs">
+            <div className="modal-title">
+              <span className="modal-name">{selected.name}</span>
+              <span className="modal-meta">
+                {SKILL_BRANCHES[selected.branch].label} ·{" "}
+                {getElement(selected.element).label} · Nv {selected.levelReq}
+              </span>
+            </div>
+            <p className="modal-desc">{selected.description}</p>
+            <div className="modal-costs">
               <span className="cost-chip gold">
                 <Coins size={13} /> {selected.goldCost} ouro
               </span>
               <span className="cost-chip mana">
                 <Droplets size={13} /> {selected.manaCost} de mana
               </span>
-              <span className={"cost-chip element element-" + selected.element}>
+              <span
+                className={"cost-chip element element-" + selected.element}
+              >
                 <ElementIcon size={13} /> {getElement(selected.element).label}
               </span>
             </div>
             {selected.parent && (
               <span
                 className={
-                  "detail-req" + (skillsOwned.includes(selected.parent) ? " ok" : "")
+                  "modal-req" +
+                  (skillsOwned.includes(selected.parent) ? " ok" : "")
                 }
               >
                 Requer: {getSkill(selected.parent).name}
@@ -214,42 +233,46 @@ export default function SkillTreeScreen() {
               </span>
             )}
             {!skillsOwned.includes(selected.id) && level < selected.levelReq && (
-              <span className="detail-req">
+              <span className="modal-req">
                 Requer nível {selected.levelReq} (você está no {level})
               </span>
             )}
-            {skillsOwned.includes(selected.id) && playerMana < selected.manaCost && (
-              <span className="detail-warn">
-                Sua mana: {playerMana} — insuficiente
-              </span>
-            )}
-            <div className="detail-actions">
+            {skillsOwned.includes(selected.id) &&
+              playerMana < selected.manaCost && (
+                <span className="modal-warn">
+                  Sua mana: {playerMana} — insuficiente
+                </span>
+              )}
+            <div className="modal-actions">
               {skillsOwned.includes(selected.id) ? (
                 skillsEquipped.includes(selected.id) ? (
-                  <button className="btn-detail" onClick={handleToggle}>
+                  <button className="btn-modal" onClick={handleToggle}>
                     <Check size={16} /> Remover seleção
                   </button>
                 ) : (
-                  <button className="btn-detail primary btn-3d" onClick={handleToggle}>
+                  <button
+                    className="btn-modal primary btn-3d"
+                    onClick={handleToggle}
+                  >
                     Selecionar
                   </button>
                 )
-              ) : nodeState(selected) === "locked" ||
-                nodeState(selected) === "locked-level" ? (
-                <button className="btn-detail disabled" disabled>
+              ) : selectedLocked ? (
+                <button className="btn-modal disabled" disabled>
                   <Lock size={16} /> {lockReason(selected)}
                 </button>
               ) : (
-                <button className="btn-detail primary btn-3d" onClick={handleBuy}>
+                <button
+                  className="btn-modal primary btn-3d"
+                  onClick={handleBuy}
+                >
                   <Coins size={16} /> Comprar por {selected.goldCost}
                 </button>
               )}
             </div>
-          </>
-        ) : (
-          <p className="detail-hint">Toque em uma habilidade para ver os detalhes</p>
-        )}
-      </div>
+          </div>
+        </div>
+      )}
 
       {toast && <div className="skill-toast">{toast}</div>}
     </div>
