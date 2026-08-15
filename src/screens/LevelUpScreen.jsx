@@ -72,7 +72,7 @@ export default function LevelUpScreen() {
 
         <button
           className="btn-continue btn-3d"
-          onClick={() => navigate("/battle")}
+          onClick={() => navigate("/home/map")}
           disabled={statPoints > 0}
         >
           <ArrowRight size={18} />

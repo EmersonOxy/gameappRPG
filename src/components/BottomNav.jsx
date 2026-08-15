@@ -1,9 +1,10 @@
 import { NavLink } from "react-router-dom";
-import { Home, Sparkles, Store, User } from "lucide-react";
+import { Home, Sparkles, Store, User, Map } from "lucide-react";
 import "./BottomNav.css";
 
 const tabs = [
   { to: "/home", label: "Início", icon: Home, end: true },
+  { to: "/home/map", label: "Mapa", icon: Map },
   { to: "/home/skills", label: "Habilidades", icon: Sparkles },
   { to: "/home/shop", label: "Loja", icon: Store },
   { to: "/home/profile", label: "Perfil", icon: User },

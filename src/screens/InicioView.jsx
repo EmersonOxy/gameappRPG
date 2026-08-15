@@ -5,7 +5,7 @@ import "./InicioView.css";
 
 export default function InicioView() {
   const navigate = useNavigate();
-  const { gold, xp, level, playerAtk, playerDef, difficulty, statPoints } =
+  const { gold, xp, level, playerAtk, playerDef, statPoints, currentMap } =
     useGame();
 
   return (
@@ -52,7 +52,7 @@ export default function InicioView() {
           <div className="inicio-section-line right" />
         </div>
 
-        <button className="btn-battle btn-3d" onClick={() => navigate("/battle")}>
+        <button className="btn-battle btn-3d" onClick={() => navigate("/home/map")}>
           <Swords size={22} />
           Batalhar
         </button>
@@ -67,7 +67,9 @@ export default function InicioView() {
           </button>
         )}
 
-        <span className="inicio-threat">Ameaça · Nível {difficulty}</span>
+        <span className="inicio-threat">
+          Região · {currentMap.name} · Nv. {currentMap.minLevel}–{currentMap.maxLevel}
+        </span>
       </div>
     </div>
   );

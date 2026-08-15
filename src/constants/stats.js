@@ -9,7 +9,7 @@ import {
   Waves,
 } from "lucide-react";
 
-export const POINTS_PER_LEVEL = 1;
+export const POINTS_PER_LEVEL = 2;
 
 export const STATS = [
   {

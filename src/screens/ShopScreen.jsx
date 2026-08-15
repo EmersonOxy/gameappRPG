@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import { Coins, Gem, Clock } from "lucide-react";
 import { useGame } from "../context/GameContext.jsx";
 import { ITEMS } from "../constants/items.js";
-import Cube3D from "../components/Cube3D.jsx";
 import "./ShopScreen.css";
 
 export default function ShopScreen() {
@@ -38,12 +37,11 @@ export default function ShopScreen() {
 
       <div className="shop-list">
         {ITEMS.map((item) => {
-          const Icon = item.icon;
           const owned = itemsOwned[item.id] || 0;
           return (
             <div className={"shop-card branch-" + item.branch} key={item.id}>
               <div className={"shop-icon branch-" + item.branch}>
-                <Cube3D size={40} spinning faces={<Icon size={18} />} />
+                <img src={item.sprite} alt={item.name} />
               </div>
               <div className="shop-info">
                 <span className="shop-name">{item.name}</span>

@@ -2,6 +2,15 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { STATS, INITIAL_STATS, POINTS_PER_LEVEL } from "../constants/stats.js";
 import { SKILLS, getSkill } from "../constants/skills.js";
 import { ITEMS } from "../constants/items.js";
+import {
+  MAPS,
+  getMap,
+  getMapIndex,
+  pickNormalEnemy,
+  computeEnemyStats,
+  BOSS_STAT_POINTS,
+} from "../constants/maps.js";
+import { getEnemy } from "../constants/enemies.js";
 
 const STORAGE_KEY = "gameapprpg:progress";
 
@@ -20,6 +29,7 @@ function levelFromTotalXp(totalXp) {
 }
 
 const VALID_SKILL_IDS = new Set(SKILLS.map((s) => s.id));
+const VALID_MAP_IDS = new Set(MAPS.map((m) => m.id));
 
 function sanitizeSkills(list) {
   if (!Array.isArray(list)) return [];
@@ -39,20 +49,43 @@ function sanitizeItems(obj) {
   return result;
 }
 
+function sanitizeClearedMaps(list) {
+  if (!Array.isArray(list)) return [];
+  return list.filter((id) => VALID_MAP_IDS.has(id));
+}
+
+function sanitizeMapProgress(obj) {
+  const result = {};
+  if (obj && typeof obj === "object") {
+    for (const id of Object.keys(obj)) {
+      if (VALID_MAP_IDS.has(id)) {
+        const n = Math.floor(Number(obj[id]));
+        if (n > 0) result[id] = n;
+      }
+    }
+  }
+  return result;
+}
+
+function defaultProgress() {
+  return {
+    gold: 0,
+    totalXp: 0,
+    stats: { ...INITIAL_STATS },
+    statPoints: 0,
+    skillsOwned: [],
+    skillsEquipped: [],
+    itemsOwned: {},
+    currentMapId: MAPS[0].id,
+    clearedMaps: [],
+    mapProgress: {},
+  };
+}
+
 function loadProgress() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      return {
-        gold: 0,
-        totalXp: 0,
-        stats: { ...INITIAL_STATS },
-        statPoints: 0,
-        skillsOwned: [],
-        skillsEquipped: [],
-        itemsOwned: {},
-      };
-    }
+    if (!raw) return defaultProgress();
     const data = JSON.parse(raw);
     const stats = { ...INITIAL_STATS };
     if (data.stats) {
@@ -73,6 +106,9 @@ function loadProgress() {
     }
     skillsEquipped = skillsEquipped.filter((id) => skillsOwned.includes(id));
     const itemsOwned = sanitizeItems(data.itemsOwned);
+    const currentMapId = VALID_MAP_IDS.has(data.currentMapId)
+      ? data.currentMapId
+      : MAPS[0].id;
     return {
       gold: Number(data.gold) || 0,
       totalXp,
@@ -81,17 +117,12 @@ function loadProgress() {
       skillsOwned,
       skillsEquipped,
       itemsOwned,
+      currentMapId,
+      clearedMaps: sanitizeClearedMaps(data.clearedMaps),
+      mapProgress: sanitizeMapProgress(data.mapProgress),
     };
   } catch {
-    return {
-      gold: 0,
-      totalXp: 0,
-      stats: { ...INITIAL_STATS },
-      statPoints: 0,
-      skillsOwned: [],
-      skillsEquipped: [],
-      itemsOwned: {},
-    };
+    return defaultProgress();
   }
 }
 
@@ -106,13 +137,18 @@ export function GameProvider({ children }) {
   const [skillsOwned, setSkillsOwned] = useState(initial.skillsOwned);
   const [skillsEquipped, setSkillsEquipped] = useState(initial.skillsEquipped);
   const [itemsOwned, setItemsOwned] = useState(initial.itemsOwned);
+  const [currentMapId, setCurrentMapId] = useState(initial.currentMapId);
+  const [clearedMaps, setClearedMaps] = useState(initial.clearedMaps);
+  const [mapProgress, setMapProgress] = useState(initial.mapProgress);
 
   const hasProgress =
     totalXp > 0 ||
     gold > 0 ||
     statPoints > 0 ||
     skillsOwned.length > 0 ||
-    Object.keys(itemsOwned).length > 0;
+    Object.keys(itemsOwned).length > 0 ||
+    clearedMaps.length > 0 ||
+    Object.keys(mapProgress).length > 0;
 
   function resetProgress() {
     setGold(0);
@@ -122,6 +158,9 @@ export function GameProvider({ children }) {
     setSkillsOwned([]);
     setSkillsEquipped([]);
     setItemsOwned({});
+    setCurrentMapId(MAPS[0].id);
+    setClearedMaps([]);
+    setMapProgress({});
   }
 
   useEffect(() => {
@@ -135,9 +174,23 @@ export function GameProvider({ children }) {
         skillsOwned,
         skillsEquipped,
         itemsOwned,
+        currentMapId,
+        clearedMaps,
+        mapProgress,
       })
     );
-  }, [gold, totalXp, stats, statPoints, skillsOwned, skillsEquipped, itemsOwned]);
+  }, [
+    gold,
+    totalXp,
+    stats,
+    statPoints,
+    skillsOwned,
+    skillsEquipped,
+    itemsOwned,
+    currentMapId,
+    clearedMaps,
+    mapProgress,
+  ]);
 
   function addReward(goldGain, xpGain) {
     const nextTotalXp = totalXp + xpGain;
@@ -213,16 +266,58 @@ export function GameProvider({ children }) {
   const playerMana = 4 + stats.mana * 4;
   const playerManaRegen = stats.regenmana;
 
-  const enemyMaxHp =
-    5 + Math.floor((level - 1) / 2) + Math.floor((level - 1) / 3);
-  const enemyAtk = 2 + Math.floor((level - 1) / 2);
-  const enemyDef = 2 + Math.floor((level - 1) / 2);
-  const enemyMana = 4 + Math.floor((level - 1) / 2) * 2;
+  const currentMap = getMap(currentMapId) || MAPS[0];
+  const currentMapIndex = getMapIndex(currentMap.id);
 
-  const goldBase = 1 + Math.floor((level - 1) / 2);
-  const goldExtra = 2 + Math.floor((level - 1) / 2);
-  const xpBase = 1 + Math.floor((level - 1) / 3);
-  const xpExtra = 2 + Math.floor((level - 1) / 3);
+  function isMapUnlocked(mapId) {
+    const idx = getMapIndex(mapId);
+    if (idx <= 0) return true;
+    const prev = MAPS[idx - 1].id;
+    return clearedMaps.includes(prev);
+  }
+
+  function selectMap(mapId) {
+    if (!getMap(mapId)) return false;
+    if (!isMapUnlocked(mapId)) return false;
+    setCurrentMapId(mapId);
+    return true;
+  }
+
+  function getMapWins(mapId) {
+    return mapProgress[mapId] || 0;
+  }
+
+  function getBattleSetup() {
+    const wins = getMapWins(currentMap.id);
+    const isBoss = wins >= currentMap.fightsToBoss;
+    const enemy = isBoss
+      ? getEnemy(currentMap.boss)
+      : pickNormalEnemy(currentMap);
+    const safeEnemy = enemy || pickNormalEnemy(currentMap) || getEnemy(currentMap.boss);
+    const statsResult = computeEnemyStats(safeEnemy, currentMap, isBoss);
+    return { enemy: safeEnemy, isBoss, ...statsResult };
+  }
+
+  function advanceMap(wonBoss) {
+    if (wonBoss) {
+      const alreadyCleared = clearedMaps.includes(currentMap.id);
+      if (!alreadyCleared) {
+        setClearedMaps((prev) => [...prev, currentMap.id]);
+        setStatPoints((p) => p + BOSS_STAT_POINTS);
+      }
+      setMapProgress((prev) => {
+        const next = { ...prev };
+        delete next[currentMap.id];
+        return next;
+      });
+      return { firstClear: !alreadyCleared };
+    }
+    setMapProgress((prev) => ({
+      ...prev,
+      [currentMap.id]: (prev[currentMap.id] || 0) + 1,
+    }));
+    return { firstClear: false };
+  }
 
   const equippedSkills = skillsEquipped
     .map((id) => getSkill(id))
@@ -250,7 +345,6 @@ export function GameProvider({ children }) {
         itemsOwned,
         buyItem,
         useItem,
-        difficulty: level,
         playerMaxHp,
         playerAtk,
         playerDef,
@@ -259,14 +353,15 @@ export function GameProvider({ children }) {
         playerFuryMult,
         playerMana,
         playerManaRegen,
-        enemyMaxHp,
-        enemyAtk,
-        enemyDef,
-        enemyMana,
-        goldBase,
-        goldExtra,
-        xpBase,
-        xpExtra,
+        currentMap,
+        currentMapIndex,
+        clearedMaps,
+        mapProgress,
+        isMapUnlocked,
+        selectMap,
+        getMapWins,
+        getBattleSetup,
+        advanceMap,
       }}
     >
       {children}

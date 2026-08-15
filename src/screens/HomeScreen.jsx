@@ -4,21 +4,24 @@ import Placeholder from "../components/Placeholder.jsx";
 import InicioView from "./InicioView.jsx";
 import SkillTreeScreen from "./SkillTreeScreen.jsx";
 import ShopScreen from "./ShopScreen.jsx";
+import MapScreen from "./MapScreen.jsx";
 import { useGame } from "../context/GameContext.jsx";
+import playerSprite from "../assets/sprites/player.svg";
 import "./HomeScreen.css";
 
 const PLAYER_NAME = "Aventureiro";
 
 export default function HomeScreen() {
   const { gold, xp, level, xpPerLevel } = useGame();
-  const initials = PLAYER_NAME.slice(0, 1).toUpperCase();
 
   return (
     <div className="home-screen">
       <header className="top-bar">
         <div className="top-bar-main">
           <div className="player-info">
-            <div className="avatar">{initials}</div>
+            <div className="avatar">
+              <img src={playerSprite} alt="Aventureiro" />
+            </div>
             <div className="player-text">
               <span className="player-name">{PLAYER_NAME}</span>
               <span className="player-level">Nível {level}</span>
@@ -41,6 +44,7 @@ export default function HomeScreen() {
       <main className="home-content">
         <Routes>
           <Route index element={<InicioView />} />
+          <Route path="map" element={<MapScreen />} />
           <Route path="skills" element={<SkillTreeScreen />} />
           <Route path="shop" element={<ShopScreen />} />
           <Route path="profile" element={<Placeholder title="Perfil" />} />

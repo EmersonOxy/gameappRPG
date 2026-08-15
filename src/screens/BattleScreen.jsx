@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Skull,
-  User,
   Swords,
   Shield,
   Zap,
@@ -16,6 +15,8 @@ import {
   X,
   Pause,
   Play,
+  Crown,
+  Map,
 } from "lucide-react";
 import HealthBar from "../components/HealthBar.jsx";
 import ResourceBar from "../components/ResourceBar.jsx";
@@ -24,6 +25,7 @@ import Coin3D from "../components/Coin3D.jsx";
 import VictorianCorner from "../components/ornaments/VictorianCorner.jsx";
 import { useGame } from "../context/GameContext.jsx";
 import { ITEMS, getItem } from "../constants/items.js";
+import playerSprite from "../assets/sprites/player.svg";
 import "./BattleScreen.css";
 
 const FURY_MAX = 5;
@@ -77,7 +79,6 @@ export default function BattleScreen() {
   const navigate = useNavigate();
   const {
     addReward,
-    difficulty,
     playerMaxHp,
     playerAtk,
     playerDef,
@@ -86,27 +87,23 @@ export default function BattleScreen() {
     playerFuryMult,
     playerMana,
     playerManaRegen,
-    enemyMaxHp,
-    enemyAtk,
-    enemyDef,
-    enemyMana,
     equippedSkills,
     itemsOwned,
     useItem,
-    goldBase,
-    goldExtra,
-    xpBase,
-    xpExtra,
+    getBattleSetup,
+    advanceMap,
+    currentMap,
   } = useGame();
+  const [battle, setBattle] = useState(() => getBattleSetup());
   const [playerHp, setPlayerHp] = useState(playerMaxHp);
-  const [enemyHp, setEnemyHp] = useState(enemyMaxHp);
+  const [enemyHp, setEnemyHp] = useState(battle.maxHp);
   const [playerFury, setPlayerFury] = useState(0);
   const [enemyFury, setEnemyFury] = useState(0);
   const [playerStamina, setPlayerStamina] = useState(playerStaminaMax);
   const [enemyStamina, setEnemyStamina] = useState(ENEMY_STAMINA_MAX);
   const [playerManaCurrent, setPlayerManaCurrent] = useState(playerMana);
   const [playerMaxHpCurrent, setPlayerMaxHpCurrent] = useState(playerMaxHp);
-  const [enemyMaxHpCurrent, setEnemyMaxHpCurrent] = useState(enemyMaxHp);
+  const [enemyMaxHpCurrent, setEnemyMaxHpCurrent] = useState(battle.maxHp);
   const [playerShield, setPlayerShield] = useState(0);
   const [enemyStunned, setEnemyStunned] = useState(false);
   const [enemyStunFlash, setEnemyStunFlash] = useState(false);
@@ -210,7 +207,7 @@ export default function BattleScreen() {
           if (Math.random() < missChance(playerLuck)) {
             skillMiss = true;
           } else {
-            let d = rollDamage(playerAtk, enemyDef) * fx.mult;
+            let d = rollDamage(playerAtk, battle.def) * fx.mult;
             if (enemyAction === "defend") d = d / 2;
             enemyDmg = d;
           }
@@ -233,12 +230,12 @@ export default function BattleScreen() {
         if (Math.random() < missChance(playerLuck)) {
           playerMiss = true;
         } else {
-          let d = rollDamage(playerAtk, enemyDef);
+          let d = rollDamage(playerAtk, battle.def);
           if (enemyAction === "defend") d = d / 2;
           enemyDmg = d;
         }
       } else if (playerSpecial) {
-        let d = rollDamage(playerAtk, enemyDef) * playerFuryMult;
+        let d = rollDamage(playerAtk, battle.def) * playerFuryMult;
         if (enemyAction === "defend") d = d / 2;
         enemyCritDmg = d;
       }
@@ -247,12 +244,12 @@ export default function BattleScreen() {
         if (Math.random() < missChance(enemyLuck)) {
           enemyMiss = true;
         } else {
-          let d = rollDamage(enemyAtk, playerDef);
+          let d = rollDamage(battle.atk, playerDef);
           if (playerAction === "defend") d = d / 2;
           playerDmg = d;
         }
       } else if (enemySpecial) {
-        let d = rollDamage(enemyAtk, playerDef) * ENEMY_SPECIAL_MULT;
+        let d = rollDamage(battle.atk, playerDef) * ENEMY_SPECIAL_MULT;
         if (playerAction === "defend") d = d / 2;
         playerCritDmg = d;
       }
@@ -400,7 +397,7 @@ export default function BattleScreen() {
             const fx = item.effect;
             let text = "";
             if (fx.type === "damage") {
-              const dmg = fx.base + Math.floor(difficulty / 2);
+              const dmg = fx.base + Math.floor(battle.threatLevel / 2);
               eHp = Math.max(0, eHp - dmg);
               text = `${dmg} de dano`;
             } else if (fx.type === "heal") {
@@ -433,10 +430,16 @@ export default function BattleScreen() {
           setPlayerHp(pHp);
 
           if (eHp <= 0) {
-            const goldGain = rollReward(goldBase, goldExtra);
-            const xpGain = rollReward(xpBase, xpExtra);
+            const goldGain = rollReward(battle.goldBase, battle.goldExtra);
+            const xpGain = rollReward(battle.xpBase, battle.xpExtra);
             const gained = addReward(goldGain, xpGain);
-            setReward({ gold: goldGain, xp: xpGain });
+            const advance = advanceMap(battle.isBoss);
+            setReward({
+              gold: goldGain,
+              xp: xpGain,
+              boss: battle.isBoss,
+              firstClear: advance.firstClear,
+            });
             setLeveledUp(gained > 0);
             setPhase("victory");
           } else if (pHp <= 0) {
@@ -580,13 +583,15 @@ export default function BattleScreen() {
   }, [phase, paused, playerStamina, playerFury, playerManaCurrent, equippedSkills]);
 
   function nextBattle() {
+    const next = getBattleSetup();
+    setBattle(next);
     setBattleId((b) => b + 1);
     setPlayerHit(0);
     setEnemyHit(0);
     setPlayerHp(playerMaxHp);
-    setEnemyHp(enemyMaxHp);
+    setEnemyHp(next.maxHp);
     setPlayerMaxHpCurrent(playerMaxHp);
-    setEnemyMaxHpCurrent(enemyMaxHp);
+    setEnemyMaxHpCurrent(next.maxHp);
     setPlayerFury(0);
     setEnemyFury(0);
     setPlayerStamina(playerStaminaMax);
@@ -619,7 +624,7 @@ export default function BattleScreen() {
     setEnemyLuck(null);
     setTimeLeft(MATCH_TIME);
     setDefeatReason("defeated");
-    setReward({ gold: 0, xp: 0 });
+    setReward({ gold: 0, xp: 0, boss: false, firstClear: false });
     setLeveledUp(false);
     setPhase("dice");
   }
@@ -710,7 +715,7 @@ export default function BattleScreen() {
             <HealthBar
               key={battleId}
               hp={enemyHp}
-              max={enemyMaxHp}
+              max={battle.maxHp}
               currentMax={enemyMaxHpCurrent}
               hitKey={enemyHit}
               vertical
@@ -732,8 +737,8 @@ export default function BattleScreen() {
       <div className="arena-stack right enemy">
         <div className="vbar mana">
           <ResourceBar
-            value={enemyMana}
-            max={enemyMana}
+            value={battle.mana}
+            max={battle.mana}
             fill={MANA_FILL}
             tick={MANA_TICK}
             vertical
@@ -794,9 +799,12 @@ export default function BattleScreen() {
       </div>
 
       <div className={"enemy-wrap" + (enemyMoving ? " attacking" : "")}>
-        <div className="threat-badge">Ameaça Nível {difficulty}</div>
+        <div className={"threat-badge" + (battle.isBoss ? " boss" : "")}>
+          {battle.isBoss && <Crown size={11} />}
+          {battle.isBoss ? "Chefe · " : ""}Ameaça Nível {battle.threatLevel}
+        </div>
         <div className="sprite enemy-sprite">
-          <Skull size={64} />
+          <img src={battle.enemy.sprite} alt={battle.enemy.name} />
           {enemyBlocking && (
             <div className="block-flash">
               <Shield size={52} />
@@ -813,13 +821,14 @@ export default function BattleScreen() {
             </div>
           )}
         </div>
+        <div className="enemy-name">{battle.enemy.name}</div>
       </div>
 
       <div
         className={"player-sprite-holder" + (playerMoving ? " attacking" : "")}
       >
         <div className="sprite player-sprite">
-          <User size={56} />
+          <img src={playerSprite} alt="Aventureiro" />
           {playerShield > 0 && (
             <div className="shield-badge">
               <Shield size={13} />
@@ -961,12 +970,11 @@ export default function BattleScreen() {
               {ITEMS.map((item) => {
                 const qty = itemsOwned[item.id] || 0;
                 if (qty <= 0) return null;
-                const Icon = item.icon;
                 const canUse = crystals >= item.crystalCost;
                 return (
                   <div className={"bag-item branch-" + item.branch} key={item.id}>
                     <div className={"bag-item-icon branch-" + item.branch}>
-                      <Icon size={18} />
+                      <img src={item.sprite} alt={item.name} />
                     </div>
                     <div className="bag-item-info">
                       <span className="bag-item-name">
@@ -1058,13 +1066,17 @@ export default function BattleScreen() {
             <div className="result-icon win coin">
               <Coin3D size={96} />
             </div>
-            <h2 className="result-title win">Vitória!</h2>
+            <h2 className="result-title win">
+              {reward.boss ? "Chefe Derrotado!" : "Vitória!"}
+            </h2>
             <div className="rune-sep">
               <div className="rune-sep-line" />
               <div className="rune-sep-diamond" />
               <div className="rune-sep-line right" />
             </div>
-            <p className="result-subtitle">Recompensas</p>
+            <p className="result-subtitle">
+              {reward.boss ? `${currentMap.name} concluída` : "Recompensas"}
+            </p>
             <div className="reward-row">
               <div className="reward-chip gold">
                 <Coins size={18} />
@@ -1075,6 +1087,11 @@ export default function BattleScreen() {
                 <span>+{reward.xp} XP</span>
               </div>
             </div>
+            {reward.firstClear && (
+              <div className="levelup-chip">
+                <Crown size={16} /> Bônus de chefe: +3 pontos de status
+              </div>
+            )}
             {leveledUp && (
               <div className="levelup-chip">
                 <Sparkles size={16} /> Novo nível! Pontos de status disponíveis
@@ -1086,11 +1103,21 @@ export default function BattleScreen() {
               </button>
               <button
                 className="btn-result primary btn-3d"
-                onClick={leveledUp ? () => navigate("/levelup") : nextBattle}
+                onClick={
+                  leveledUp
+                    ? () => navigate("/levelup")
+                    : reward.boss
+                    ? () => navigate("/home/map")
+                    : nextBattle
+                }
               >
                 {leveledUp ? (
                   <>
                     <Sparkles size={18} /> Distribuir pontos
+                  </>
+                ) : reward.boss ? (
+                  <>
+                    <Map size={18} /> Voltar ao mapa
                   </>
                 ) : (
                   <>

@@ -25,6 +25,19 @@ GameappRPG — RPG web de batalha por turnos em React 18 + Vite.
 - `npm run build` para validar que o código compila.
 - `git status --short` e `git diff --stat` antes de qualquer commit.
 
+## Git — ao final de toda atualização (obrigatório)
+
+- SEMPRE fazer commit E push ao terminar qualquer atualização/tarefa.
+- Sequência: `npm run build` → `git status`/`git diff` → `git add` → `git commit` → `git push`.
+- Se houver mudanças de outra sessão que não são da tarefa, avisar o usuário
+  antes de incluí-las no commit.
+
+## Estilo de comunicação (obrigatório)
+
+- Explicar planos e alterações SEMPRE de forma didática, como um professor para
+  alguém que está aprendendo agora.
+- Usar pouquíssimas referências a código; priorizar analogias e linguagem simples.
+
 ## Estrutura
 
 - `src/context/GameContext.jsx` — estado global (ouro, XP, nível, stats, dificuldade).

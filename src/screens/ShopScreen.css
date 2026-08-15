@@ -111,6 +111,13 @@
   border: none;
 }
 
+.shop-icon img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.55));
+}
+
 .shop-icon .cube3d-face {
   border-radius: 5px;
 }
