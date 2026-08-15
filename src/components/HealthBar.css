@@ -38,6 +38,7 @@
   bottom: 0;
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 0 8px #ffffff;
+  transition: width 0.12s linear;
 }
 
 .health-heal-ghost {
@@ -56,6 +57,7 @@
   bottom: 0;
   background: linear-gradient(180deg, #e74c3c 0%, #c0392b 50%, #8b1c1c 100%);
   box-shadow: 0 0 10px rgba(231, 76, 60, 0.45);
+  transition: width 0.12s linear;
 }
 
 .tick {
@@ -67,11 +69,11 @@
 }
 
 .tick.filled {
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.18);
 }
 
 .tick.empty {
-  background: rgba(200, 153, 58, 0.2);
+  background: rgba(200, 153, 58, 0.07);
 }
 
 @keyframes healthShake {
@@ -107,6 +109,11 @@
   left: 0;
   right: 0;
   bottom: 0;
+}
+
+.health-bar.vertical .health-recent,
+.health-bar.vertical .health-fill {
+  transition: height 0.12s linear;
 }
 
 .health-bar.vertical.reverse .health-max,

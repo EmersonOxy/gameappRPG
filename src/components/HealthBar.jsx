@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./HealthBar.css";
 
-const TICK_MS = 55;
+const TICK_MS = 120;
 
 function usePrevious(value) {
   const ref = useRef();
