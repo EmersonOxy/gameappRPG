@@ -71,7 +71,7 @@ export default function LevelUpScreen() {
         </div>
 
         <button
-          className="btn-continue"
+          className="btn-continue btn-3d"
           onClick={() => navigate("/battle")}
           disabled={statPoints > 0}
         >

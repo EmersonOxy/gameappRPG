@@ -107,19 +107,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  color: var(--gold-2);
-  background: rgba(200, 153, 58, 0.07);
-  /* L3: borda quase invisível — o ícone é ambientação, não informação */
-  border: 1px solid var(--l3-border);
+  background: transparent;
+  border: none;
 }
 
-.shop-icon.branch-mana    { color: #8fe8e0; border-color: rgba(45, 212, 191, 0.2);  background: rgba(45, 212, 191, 0.06); }
-.shop-icon.branch-estamina{ color: #a8d4ff; border-color: rgba(90, 150, 220, 0.2); background: rgba(90, 150, 220, 0.06); }
-.shop-icon.branch-vida    { color: #ff9d8a; border-color: rgba(212, 64, 48, 0.25);  background: rgba(212, 64, 48, 0.06); }
-.shop-icon.branch-furia   { color: #ffb37a; border-color: rgba(240, 117, 31, 0.25); background: rgba(240, 117, 31, 0.06); }
-.shop-icon.branch-escudo  { color: #c8b7ff; border-color: rgba(150, 120, 220, 0.2); background: rgba(150, 120, 220, 0.06); }
-.shop-icon.branch-dano    { color: #ff9d8a; border-color: rgba(212, 64, 48, 0.25);  background: rgba(212, 64, 48, 0.06); }
+.shop-icon .cube3d-face {
+  border-radius: 5px;
+}
+
+.shop-icon.branch-mana     { color: #8fe8e0; }
+.shop-icon.branch-estamina { color: #a8d4ff; }
+.shop-icon.branch-vida     { color: #ff9d8a; }
+.shop-icon.branch-furia    { color: #ffb37a; }
+.shop-icon.branch-escudo   { color: #c8b7ff; }
+.shop-icon.branch-dano     { color: #ff9d8a; }
+
+.shop-icon.branch-mana .cube3d-face     { background: linear-gradient(135deg, #123f38 0%, #081f1b 100%); border-color: rgba(45, 212, 191, 0.4); }
+.shop-icon.branch-estamina .cube3d-face { background: linear-gradient(135deg, #1c3a5c 0%, #0a1a2e 100%); border-color: rgba(90, 150, 220, 0.4); }
+.shop-icon.branch-vida .cube3d-face     { background: linear-gradient(135deg, #6b2620 0%, #3a1210 100%); border-color: rgba(212, 64, 48, 0.4); }
+.shop-icon.branch-furia .cube3d-face    { background: linear-gradient(135deg, #7a3a12 0%, #3a1a08 100%); border-color: rgba(240, 117, 31, 0.4); }
+.shop-icon.branch-escudo .cube3d-face   { background: linear-gradient(135deg, #3a2a5c 0%, #1a1230 100%); border-color: rgba(150, 120, 220, 0.4); }
+.shop-icon.branch-dano .cube3d-face     { background: linear-gradient(135deg, #6b2620 0%, #3a1210 100%); border-color: rgba(212, 64, 48, 0.4); }
 
 .shop-info {
   flex: 1;
@@ -203,16 +211,10 @@
     linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
   box-shadow:
     0 0 0 1px rgba(200, 153, 58, 0.35),
-    0 4px 0 var(--gold-dark),
+    0 var(--btn-depth) 0 var(--gold-dark),
     0 8px 18px rgba(200, 153, 58, 0.18),
     inset 0 0 0 1px rgba(255, 255, 255, 0.14),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  transition: transform 0.06s ease, box-shadow 0.06s ease;
-}
-
-.shop-buy:active {
-  transform: translateY(3px);
-  box-shadow: 0 1px 0 var(--gold-dark), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .shop-buy:disabled {

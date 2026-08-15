@@ -230,11 +230,10 @@
   cursor: pointer;
   box-shadow:
     0 0 0 1px rgba(200, 153, 58, 0.4),
-    0 6px 0 var(--gold-dark),
+    0 var(--btn-depth) 0 var(--gold-dark),
     0 10px 30px rgba(200, 153, 58, 0.25),
     inset 0 0 0 1px rgba(255, 255, 255, 0.16),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  transition: transform 0.07s ease, box-shadow 0.07s ease;
   overflow: hidden;
 }
 
@@ -253,17 +252,9 @@
   35%, 100% { left: 130%; }
 }
 
-.btn-battle:active {
-  transform: translateY(5px);
-  box-shadow:
-    0 1px 0 var(--gold-dark),
-    0 4px 12px rgba(200, 153, 58, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
-}
-
 .btn-battle:hover:not(:active) {
   box-shadow:
-    0 6px 0 var(--gold-dark),
+    0 var(--btn-depth) 0 var(--gold-dark),
     0 14px 40px rgba(234, 184, 80, 0.45),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }

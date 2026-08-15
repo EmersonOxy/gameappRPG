@@ -1,0 +1,60 @@
+/* ======================================
+   CUBE3D — generic CSS 3D cube
+   Reusable across the app (skill nodes, shop icons, dice).
+   Face order: 0 front, 1 back, 2 right, 3 left, 4 top, 5 bottom.
+   ====================================== */
+.cube-scene {
+  position: relative;
+  perspective: 700px;
+}
+
+.cube-scene.spinning .cube3d {
+  animation: cubeSpin 9s linear infinite;
+}
+
+.cube3d {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.cube3d-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backface-visibility: hidden;
+  /* Default antique ivory/gold cube face (LoR theme) */
+  background: linear-gradient(135deg, #f5edd8 0%, #e2d2b4 100%);
+  border-radius: 6px;
+  border: 1px solid rgba(200, 153, 58, 0.55);
+  box-shadow:
+    inset 0 0 10px rgba(120, 85, 24, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.cube3d-face-0 {
+  transform: translateZ(calc(var(--cube-size) / 2));
+}
+.cube3d-face-1 {
+  transform: rotateY(180deg) translateZ(calc(var(--cube-size) / 2));
+}
+.cube3d-face-2 {
+  transform: rotateY(90deg) translateZ(calc(var(--cube-size) / 2));
+}
+.cube3d-face-3 {
+  transform: rotateY(-90deg) translateZ(calc(var(--cube-size) / 2));
+}
+.cube3d-face-4 {
+  transform: rotateX(90deg) translateZ(calc(var(--cube-size) / 2));
+}
+.cube3d-face-5 {
+  transform: rotateX(-90deg) translateZ(calc(var(--cube-size) / 2));
+}
+
+@keyframes cubeSpin {
+  from { transform: rotateX(-18deg) rotateY(0deg); }
+  to   { transform: rotateX(-18deg) rotateY(360deg); }
+}

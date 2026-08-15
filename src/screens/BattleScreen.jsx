@@ -6,7 +6,6 @@ import {
   Swords,
   Shield,
   Zap,
-  Trophy,
   Coins,
   Sparkles,
   RotateCw,
@@ -19,6 +18,7 @@ import {
 import HealthBar from "../components/HealthBar.jsx";
 import ResourceBar from "../components/ResourceBar.jsx";
 import DiceRoll from "../components/DiceRoll.jsx";
+import Coin3D from "../components/Coin3D.jsx";
 import VictorianCorner from "../components/ornaments/VictorianCorner.jsx";
 import { useGame } from "../context/GameContext.jsx";
 import { ITEMS, getItem } from "../constants/items.js";
@@ -984,12 +984,12 @@ export default function BattleScreen() {
               {rolled && <span className="luck-label">Sorte: {playerLuck}</span>}
             </div>
             {!rolled ? (
-              <button className="btn-roll" onClick={handleRoll} disabled={rolling}>
+              <button className="btn-roll btn-3d" onClick={handleRoll} disabled={rolling}>
                 Rolar
               </button>
             ) : (
               <button
-                className="btn-roll primary"
+                className="btn-roll primary btn-3d"
                 onClick={() => setPhase("player")}
               >
                 Começar batalha
@@ -1006,8 +1006,8 @@ export default function BattleScreen() {
           <VictorianCorner pos="bl" metal="gold" gem="quartz" />
           <VictorianCorner pos="br" metal="gold" gem="quartz" />
           <div className="result-card">
-            <div className="result-icon win">
-              <Trophy size={42} />
+            <div className="result-icon win coin">
+              <Coin3D size={96} />
             </div>
             <h2 className="result-title win">Vitória!</h2>
             <div className="rune-sep">
@@ -1036,7 +1036,7 @@ export default function BattleScreen() {
                 <LogOut size={18} /> Sair
               </button>
               <button
-                className="btn-result primary"
+                className="btn-result primary btn-3d"
                 onClick={leveledUp ? () => navigate("/levelup") : nextBattle}
               >
                 {leveledUp ? (
@@ -1093,7 +1093,7 @@ export default function BattleScreen() {
                 <LogOut size={18} /> Sair
               </button>
               <button
-                className="btn-result primary"
+                className="btn-result primary btn-3d"
                 onClick={leveledUp ? () => navigate("/levelup") : nextBattle}
               >
                 {leveledUp ? (

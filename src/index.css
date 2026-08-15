@@ -116,6 +116,9 @@
      -------------------------------------------------- */
   --l3-opacity:     0.25;
   --l3-border:      rgba(200, 206, 222, 0.11); /* quase invisível, estrutura apenas */
+
+  /* Profundidade física dos botões 3D */
+  --btn-depth:      6px;
 }
 
 html,
@@ -269,4 +272,28 @@ body {
 @keyframes bar-shimmer-v {
   0%   { transform: translateY(-100%); }
   100% { transform: translateY(100%); }
+}
+
+/* ======================================
+   BTN-3D — botão físico (afunda + compressão)
+   Usar junto da classe .btn-3d nos botões dourados principais.
+   A profundidade é definida por --btn-depth (ver :root).
+   ====================================== */
+.btn-3d {
+  transform-origin: center bottom;
+  transition:
+    transform 0.09s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.09s ease,
+    filter 0.12s ease;
+}
+
+.btn-3d:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.btn-3d:active:not(:disabled) {
+  transform: translateY(var(--btn-depth)) scale(1.02, 0.94);
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }

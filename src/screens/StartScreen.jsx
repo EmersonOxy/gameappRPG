@@ -41,7 +41,7 @@ export default function StartScreen() {
 
         <p className="game-tagline">Sua aventura começa aqui</p>
 
-        <button className="btn-start" onClick={() => navigate("/home")}>
+        <button className="btn-start btn-3d" onClick={() => navigate("/home")}>
           <Sword size={18} />
           Iniciar
         </button>

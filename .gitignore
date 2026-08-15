@@ -4,3 +4,4 @@ dist
 *.local
 
 dev.log
+gemini-code-*.html

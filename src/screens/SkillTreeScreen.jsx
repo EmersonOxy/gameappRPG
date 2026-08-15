@@ -7,6 +7,7 @@ import {
   getSkill,
   getBranchSkills,
 } from "../constants/skills.js";
+import Cube3D from "../components/Cube3D.jsx";
 import "./SkillTreeScreen.css";
 
 export default function SkillTreeScreen() {
@@ -127,7 +128,7 @@ export default function SkillTreeScreen() {
                         }
                         onClick={() => setSelectedId(skill.id)}
                       >
-                        <NodeIcon size={20} />
+                        <Cube3D size={42} faces={<NodeIcon size={18} />} />
                         <span className="node-name">{skill.name}</span>
                         <span className="node-chip">
                           {state === "equipped"
@@ -208,7 +209,7 @@ export default function SkillTreeScreen() {
                     <Check size={16} /> Remover seleção
                   </button>
                 ) : (
-                  <button className="btn-detail primary" onClick={handleToggle}>
+                  <button className="btn-detail primary btn-3d" onClick={handleToggle}>
                     Selecionar
                   </button>
                 )
@@ -218,7 +219,7 @@ export default function SkillTreeScreen() {
                   <Lock size={16} /> {lockReason(selected)}
                 </button>
               ) : (
-                <button className="btn-detail primary" onClick={handleBuy}>
+                <button className="btn-detail primary btn-3d" onClick={handleBuy}>
                   <Coins size={16} /> Comprar por {selected.goldCost}
                 </button>
               )}

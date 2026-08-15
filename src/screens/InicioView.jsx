@@ -52,7 +52,7 @@ export default function InicioView() {
           <div className="inicio-section-line right" />
         </div>
 
-        <button className="btn-battle" onClick={() => navigate("/battle")}>
+        <button className="btn-battle btn-3d" onClick={() => navigate("/battle")}>
           <Swords size={22} />
           Batalhar
         </button>

@@ -667,7 +667,7 @@
 }
 
 .btn-action:not(:disabled):active {
-  transform: translateY(4px);
+  transform: translateY(4px) scale(1.02, 0.95);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.5) !important;
   animation: none;
 }
@@ -761,6 +761,10 @@
   background: radial-gradient(circle at 35% 30%, #fff0b0, #c8993a 55%, #7a5518);
   color: #2a1a00;
   animation: iconGlowWin 2s ease-in-out infinite;
+}
+
+.result-icon.win.coin {
+  background: transparent;
 }
 
 .result-icon.lose {
@@ -888,7 +892,7 @@
 }
 
 .btn-result:hover { filter: brightness(1.1); }
-.btn-result:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.5); }
+.btn-result:not(.primary):active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.5); }
 
 .btn-result.primary {
   color: #1a0d00;
@@ -903,18 +907,13 @@
   outline-offset: 2px;
   box-shadow:
     0 0 0 1px rgba(200, 153, 58, 0.35),
-    0 5px 0 var(--gold-dark),
+    0 var(--btn-depth) 0 var(--gold-dark),
     0 10px 28px rgba(200, 153, 58, 0.2),
     inset 0 0 0 1px rgba(255, 255, 255, 0.14),
     inset 0 1px 0 rgba(255, 255, 255, 0.28);
   font-family: 'Cinzel', serif;
   font-size: 14px;
   letter-spacing: 2px;
-}
-
-.btn-result.primary:active {
-  transform: translateY(4px);
-  box-shadow: 0 1px 0 var(--gold-dark), 0 4px 12px rgba(200,153,58,0.15), inset 0 1px 0 rgba(255,255,255,0.15);
 }
 
 /* ========================================
@@ -1060,11 +1059,10 @@
     linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
   box-shadow:
     0 0 0 1px rgba(200, 153, 58, 0.35),
-    0 5px 0 var(--gold-dark),
+    0 var(--btn-depth) 0 var(--gold-dark),
     0 10px 26px rgba(200, 153, 58, 0.25),
     inset 0 0 0 1px rgba(255, 255, 255, 0.14),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  transition: transform 0.07s ease, box-shadow 0.07s ease;
   overflow: hidden;
 }
 
@@ -1086,11 +1084,6 @@
 
 .btn-roll:disabled { cursor: default; animation: none; filter: grayscale(0.55) brightness(0.6); }
 .btn-roll:disabled::after { display: none; }
-
-.btn-roll:not(:disabled):active {
-  transform: translateY(4px);
-  box-shadow: 0 1px 0 var(--gold-dark), 0 4px 10px rgba(200,153,58,0.15), inset 0 1px 0 rgba(255,255,255,0.15);
-}
 
 @keyframes shadowPulse {
   0%   { transform: scale(0.45); opacity: 0.5; }

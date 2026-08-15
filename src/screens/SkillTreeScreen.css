@@ -178,9 +178,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 5px;
   width: 62px;
-  min-height: 80px;
+  min-height: 118px;
   padding: 6px 2px;
   border-radius: 4px;
   border: 1px solid rgba(200, 153, 58, 0.25);
@@ -192,6 +192,18 @@
 
 .skill-node:active {
   transform: scale(0.95);
+}
+
+/* 3D cube icon — spins on hover/tap */
+.skill-node .cube3d {
+  flex-shrink: 0;
+  transform: rotateX(-14deg) rotateY(0deg);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.skill-node:hover .cube3d,
+.skill-node:focus-visible .cube3d {
+  transform: rotateX(-14deg) rotateY(180deg);
 }
 
 .skill-node .node-name {
@@ -274,6 +286,30 @@
   color: var(--gold-bright);
   border-color: rgba(200, 153, 58, 0.6);
   background: rgba(200, 153, 58, 0.12);
+}
+
+/* Cube face tints by state/branch */
+.skill-node.available .cube3d-face {
+  background: linear-gradient(135deg, #f7e6b8 0%, #e6cd8e 100%);
+  border-color: rgba(200, 153, 58, 0.6);
+}
+
+.branch-fogo .skill-node.owned .cube3d-face,
+.branch-fogo .skill-node.equipped .cube3d-face {
+  background: linear-gradient(135deg, #8a2e1e 0%, #4a1410 100%);
+  border-color: rgba(212, 64, 48, 0.55);
+}
+
+.branch-sagrado .skill-node.owned .cube3d-face,
+.branch-sagrado .skill-node.equipped .cube3d-face {
+  background: linear-gradient(135deg, #123f38 0%, #081f1b 100%);
+  border-color: rgba(45, 212, 191, 0.45);
+}
+
+.branch-gelo .skill-node.owned .cube3d-face,
+.branch-gelo .skill-node.equipped .cube3d-face {
+  background: linear-gradient(135deg, #1c3a5c 0%, #0a1a2e 100%);
+  border-color: rgba(90, 150, 220, 0.5);
 }
 
 .skill-node.selected {
@@ -477,15 +513,10 @@
   outline-offset: 1px;
   box-shadow:
     0 0 0 1px rgba(200, 153, 58, 0.35),
-    0 5px 0 var(--gold-dark),
+    0 var(--btn-depth) 0 var(--gold-dark),
     0 10px 26px rgba(200, 153, 58, 0.2),
     inset 0 0 0 1px rgba(255, 255, 255, 0.14),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.btn-detail.primary:active {
-  transform: translateY(4px);
-  box-shadow: 0 1px 0 var(--gold-dark), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .btn-detail.disabled {
