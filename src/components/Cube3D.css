@@ -36,22 +36,22 @@
 }
 
 .cube3d-face-0 {
-  transform: translateZ(calc(var(--cube-size) / 2));
+  transform: translateZ(calc(var(--cube-depth) / 2));
 }
 .cube3d-face-1 {
-  transform: rotateY(180deg) translateZ(calc(var(--cube-size) / 2));
+  transform: rotateY(180deg) translateZ(calc(var(--cube-depth) / 2));
 }
 .cube3d-face-2 {
-  transform: rotateY(90deg) translateZ(calc(var(--cube-size) / 2));
+  transform: rotateY(90deg) translateZ(calc(var(--cube-depth) / 2));
 }
 .cube3d-face-3 {
-  transform: rotateY(-90deg) translateZ(calc(var(--cube-size) / 2));
+  transform: rotateY(-90deg) translateZ(calc(var(--cube-depth) / 2));
 }
 .cube3d-face-4 {
-  transform: rotateX(90deg) translateZ(calc(var(--cube-size) / 2));
+  transform: rotateX(90deg) translateZ(calc(var(--cube-depth) / 2));
 }
 .cube3d-face-5 {
-  transform: rotateX(-90deg) translateZ(calc(var(--cube-size) / 2));
+  transform: rotateX(-90deg) translateZ(calc(var(--cube-depth) / 2));
 }
 
 @keyframes cubeSpin {

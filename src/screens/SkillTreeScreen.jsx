@@ -7,6 +7,7 @@ import {
   getSkill,
   getBranchSkills,
 } from "../constants/skills.js";
+import { getElement } from "../constants/elements.js";
 import Cube3D from "../components/Cube3D.jsx";
 import "./SkillTreeScreen.css";
 
@@ -35,6 +36,7 @@ export default function SkillTreeScreen() {
 
   const selected = SKILLS.find((s) => s.id === selectedId) || null;
   const SelectedIcon = selected ? selected.icon : null;
+  const ElementIcon = selected ? getElement(selected.element).icon : null;
 
   function nodeState(skill) {
     if (skillsOwned.includes(skill.id)) {
@@ -110,6 +112,7 @@ export default function SkillTreeScreen() {
                     state === "locked" || state === "locked-level"
                       ? Lock
                       : skill.icon;
+                  const ElementIcon = getElement(skill.element).icon;
                   return (
                     <div className="branch-node-wrap" key={skill.id}>
                       {i > 0 && (
@@ -128,8 +131,22 @@ export default function SkillTreeScreen() {
                         }
                         onClick={() => setSelectedId(skill.id)}
                       >
-                        <Cube3D size={42} faces={<NodeIcon size={18} />} />
+                        <Cube3D
+                          width={66}
+                          height={30}
+                          depth={10}
+                          spinning
+                          faces={<NodeIcon size={14} />}
+                        />
                         <span className="node-name">{skill.name}</span>
+                        <span
+                          className={
+                            "node-element element-" + skill.element
+                          }
+                          title={getElement(skill.element).label}
+                        >
+                          <ElementIcon size={10} />
+                        </span>
                         <span className="node-chip">
                           {state === "equipped"
                             ? "Selecionada"
@@ -159,7 +176,8 @@ export default function SkillTreeScreen() {
               <div className="detail-title">
                 <span className="detail-name">{selected.name}</span>
                 <span className="detail-branch">
-                  Ramo {SKILL_BRANCHES[selected.branch].label} · Nv {selected.levelReq}
+                  {SKILL_BRANCHES[selected.branch].label} ·{" "}
+                  {getElement(selected.element).label} · Nv {selected.levelReq}
                 </span>
               </div>
               {skillsOwned.includes(selected.id) && (
@@ -180,6 +198,9 @@ export default function SkillTreeScreen() {
               </span>
               <span className="cost-chip mana">
                 <Droplets size={13} /> {selected.manaCost} de mana
+              </span>
+              <span className={"cost-chip element element-" + selected.element}>
+                <ElementIcon size={13} /> {getElement(selected.element).label}
               </span>
             </div>
             {selected.parent && (

@@ -72,7 +72,7 @@
   border: 1px solid var(--border-bright);
 }
 
-.equipped-chip.branch-fogo {
+.equipped-chip.branch-sombrio {
   color: #ffb09a;
   border-color: rgba(212, 64, 48, 0.5);
 }
@@ -82,7 +82,7 @@
   border-color: rgba(45, 212, 191, 0.4);
 }
 
-.equipped-chip.branch-gelo {
+.equipped-chip.branch-magico {
   color: #a8d4ff;
   border-color: rgba(90, 150, 220, 0.45);
 }
@@ -136,9 +136,9 @@
   text-transform: uppercase;
 }
 
-.branch-fogo .branch-title { color: #ff9d8a; }
+.branch-sombrio .branch-title { color: #ff9d8a; }
 .branch-sagrado .branch-title { color: #8ff5e4; }
-.branch-gelo .branch-title { color: #9cc7ff; }
+.branch-magico .branch-title { color: #9cc7ff; }
 
 .branch-tag {
   font-size: 9px;
@@ -179,7 +179,7 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
-  width: 62px;
+  width: 76px;
   min-height: 118px;
   padding: 6px 2px;
   border-radius: 4px;
@@ -214,8 +214,24 @@
   min-height: 20px;
   display: flex;
   align-items: center;
-  max-width: 58px;
+  max-width: 68px;
 }
+
+.skill-node .node-element {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 14px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.element-magma { color: #ff8a5c; }
+.element-rocha { color: #d8b48a; }
+.element-mare { color: #7ec8ff; }
+.element-vendaval { color: #9de8d2; }
 
 .skill-node .node-chip {
   font-size: 7.5px;
@@ -258,8 +274,8 @@
   color: var(--text-bright);
 }
 
-.branch-fogo .skill-node.owned,
-.branch-fogo .skill-node.equipped {
+.branch-sombrio .skill-node.owned,
+.branch-sombrio .skill-node.equipped {
   border-color: rgba(212, 64, 48, 0.6);
   background: linear-gradient(180deg, #2a1410, #160b08);
 }
@@ -270,8 +286,8 @@
   background: linear-gradient(180deg, #0e201d, #08120f);
 }
 
-.branch-gelo .skill-node.owned,
-.branch-gelo .skill-node.equipped {
+.branch-magico .skill-node.owned,
+.branch-magico .skill-node.equipped {
   border-color: rgba(90, 150, 220, 0.5);
   background: linear-gradient(180deg, #0f1a2e, #080f1e);
 }
@@ -294,8 +310,8 @@
   border-color: rgba(200, 153, 58, 0.6);
 }
 
-.branch-fogo .skill-node.owned .cube3d-face,
-.branch-fogo .skill-node.equipped .cube3d-face {
+.branch-sombrio .skill-node.owned .cube3d-face,
+.branch-sombrio .skill-node.equipped .cube3d-face {
   background: linear-gradient(135deg, #8a2e1e 0%, #4a1410 100%);
   border-color: rgba(212, 64, 48, 0.55);
 }
@@ -306,8 +322,8 @@
   border-color: rgba(45, 212, 191, 0.45);
 }
 
-.branch-gelo .skill-node.owned .cube3d-face,
-.branch-gelo .skill-node.equipped .cube3d-face {
+.branch-magico .skill-node.owned .cube3d-face,
+.branch-magico .skill-node.equipped .cube3d-face {
   background: linear-gradient(135deg, #1c3a5c 0%, #0a1a2e 100%);
   border-color: rgba(90, 150, 220, 0.5);
 }
@@ -358,7 +374,7 @@
   border: 1px solid rgba(200, 153, 58, 0.3);
 }
 
-.detail-icon.branch-fogo {
+.detail-icon.branch-sombrio {
   color: #ff9d8a;
   border-color: rgba(212, 64, 48, 0.5);
   background: rgba(212, 64, 48, 0.08);
@@ -370,7 +386,7 @@
   background: rgba(45, 212, 191, 0.07);
 }
 
-.detail-icon.branch-gelo {
+.detail-icon.branch-magico {
   color: #9cc7ff;
   border-color: rgba(90, 150, 220, 0.45);
   background: rgba(90, 150, 220, 0.08);
@@ -451,6 +467,11 @@
   color: #8fe8e0;
   background: rgba(45, 212, 191, 0.07);
   border: 1px solid rgba(45, 212, 191, 0.25);
+}
+
+.cost-chip.element {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid currentColor;
 }
 
 .detail-req {

@@ -25,6 +25,8 @@ import Coin3D from "../components/Coin3D.jsx";
 import VictorianCorner from "../components/ornaments/VictorianCorner.jsx";
 import { useGame } from "../context/GameContext.jsx";
 import { ITEMS, getItem } from "../constants/items.js";
+import { getElement, getElementalMultiplier } from "../constants/elements.js";
+import { getEnemySkill, pickEnemyItem } from "../constants/enemySkills.js";
 import playerSprite from "../assets/sprites/player.svg";
 import "./BattleScreen.css";
 
@@ -43,6 +45,13 @@ const MATCH_TIME = 45;
 const DEFEAT_XP = 1;
 const CRYSTAL_MAX = 5;
 const CRYSTAL_REFILL_TURNS = 2;
+const DODGE_FACTOR = 0.03;
+const DODGE_SPECIAL_FACTOR = 0.5;
+const ENEMY_SKILL_CHANCE = 0.35;
+const ENEMY_BOSS_SKILL_CHANCE = 0.55;
+const ENEMY_ITEM_CHANCE = 0.45;
+const ENEMY_ITEM_COOLDOWN = 4;
+const ENEMY_ITEM_HP_PCT = 0.35;
 
 const STAMINA_FILL = "linear-gradient(180deg, #6fb1ff, #357abd)";
 const STAMINA_TICK = "#245a8f";
@@ -65,6 +74,11 @@ function rollDie() {
 
 function missChance(luck) {
   return (6 - luck) * 0.05;
+}
+
+function dodgeChance(luck, special) {
+  const base = luck * DODGE_FACTOR;
+  return special ? base * DODGE_SPECIAL_FACTOR : base;
 }
 
 function critCurrentTransfer(critDmg) {
@@ -102,12 +116,19 @@ export default function BattleScreen() {
   const [playerStamina, setPlayerStamina] = useState(playerStaminaMax);
   const [enemyStamina, setEnemyStamina] = useState(ENEMY_STAMINA_MAX);
   const [playerManaCurrent, setPlayerManaCurrent] = useState(playerMana);
+  const [enemyManaCurrent, setEnemyManaCurrent] = useState(battle.mana);
   const [playerMaxHpCurrent, setPlayerMaxHpCurrent] = useState(playerMaxHp);
   const [enemyMaxHpCurrent, setEnemyMaxHpCurrent] = useState(battle.maxHp);
   const [playerShield, setPlayerShield] = useState(0);
+  const [enemyShield, setEnemyShield] = useState(0);
   const [enemyStunned, setEnemyStunned] = useState(false);
+  const [playerStunned, setPlayerStunned] = useState(false);
   const [enemyStunFlash, setEnemyStunFlash] = useState(false);
+  const [playerStunFlash, setPlayerStunFlash] = useState(false);
   const [skillFlash, setSkillFlash] = useState(null);
+  const [enemySkillFlash, setEnemySkillFlash] = useState(null);
+  const [enemyItemPopup, setEnemyItemPopup] = useState(null);
+  const [enemyItemCooldown, setEnemyItemCooldown] = useState(0);
   const [phase, setPhase] = useState("dice");
   const [playerMoving, setPlayerMoving] = useState(false);
   const [enemyMoving, setEnemyMoving] = useState(false);
@@ -115,6 +136,8 @@ export default function BattleScreen() {
   const [enemyBlocking, setEnemyBlocking] = useState(false);
   const [playerMissed, setPlayerMissed] = useState(false);
   const [enemyMissed, setEnemyMissed] = useState(false);
+  const [playerDodged, setPlayerDodged] = useState(false);
+  const [enemyDodged, setEnemyDodged] = useState(false);
   const [playerCrit, setPlayerCrit] = useState(false);
   const [enemyCrit, setEnemyCrit] = useState(false);
   const [playerHit, setPlayerHit] = useState(0);
@@ -139,10 +162,12 @@ export default function BattleScreen() {
   const staminaRegenMs = REGEN_BASE_INTERVAL / playerStaminaRegen;
   const enemyStaminaRegenMs = REGEN_BASE_INTERVAL / ENEMY_STAMINA_REGEN;
   const manaRegenMs = MANA_REGEN_BASE_INTERVAL / playerManaRegen;
+  const enemyManaRegenMs = MANA_REGEN_BASE_INTERVAL;
 
   const [staminaProgress, setStaminaProgress] = useState(0);
   const [enemyStaminaProgress, setEnemyStaminaProgress] = useState(0);
   const [manaProgress, setManaProgress] = useState(0);
+  const [enemyManaProgress, setEnemyManaProgress] = useState(0);
 
   function handleRoll() {
     if (phase !== "dice" || rolling) return;
@@ -159,29 +184,90 @@ export default function BattleScreen() {
   }
 
   function chooseEnemyAction(stunned) {
-    if (stunned) return "stunned";
-    if (enemyFury >= FURY_MAX) return "special";
+    if (stunned) return { action: "stunned", skill: null, item: null };
+    if (enemyFury >= FURY_MAX) {
+      return { action: "special", skill: null, item: null };
+    }
     const canAttack = enemyStamina >= ATK_COST;
     const canDefend = enemyStamina >= DEF_COST;
-    if (canAttack && canDefend) return Math.random() < 0.3 ? "defend" : "attack";
-    if (canAttack) return "attack";
-    if (canDefend) return "defend";
-    return "skip";
+    const hpPct = enemyMaxHpCurrent > 0 ? enemyHp / enemyMaxHpCurrent : 1;
+    const enemySkills = (battle.enemy.skills || [])
+      .map(getEnemySkill)
+      .filter(Boolean);
+    const affordableSkills = enemySkills.filter(
+      (s) => enemyManaCurrent >= s.manaCost
+    );
+
+    if (
+      battle.enemy.canUseItems &&
+      enemyItemCooldown <= 0 &&
+      hpPct < ENEMY_ITEM_HP_PCT &&
+      Math.random() < ENEMY_ITEM_CHANCE
+    ) {
+      return { action: "item", skill: null, item: pickEnemyItem() };
+    }
+
+    if (affordableSkills.length > 0) {
+      const skillChance = battle.isBoss
+        ? ENEMY_BOSS_SKILL_CHANCE
+        : ENEMY_SKILL_CHANCE;
+      if (Math.random() < skillChance) {
+        const defensive = affordableSkills.filter(
+          (s) =>
+            s.effect.type === "shield" || s.effect.type === "heal"
+        );
+        const offensive = affordableSkills.filter(
+          (s) =>
+            s.effect.type !== "shield" && s.effect.type !== "heal"
+        );
+        const pool =
+          hpPct < 0.4 && defensive.length > 0
+            ? defensive
+            : offensive.length > 0
+            ? offensive
+            : affordableSkills;
+        const skill = pool[Math.floor(Math.random() * pool.length)];
+        return { action: "skill", skill, item: null };
+      }
+    }
+
+    if (canAttack && canDefend) {
+      return {
+        action: Math.random() < 0.3 ? "defend" : "attack",
+        skill: null,
+        item: null,
+      };
+    }
+    if (canAttack) return { action: "attack", skill: null, item: null };
+    if (canDefend) return { action: "defend", skill: null, item: null };
+    return { action: "skip", skill: null, item: null };
   }
 
-  function resolveTurn(playerAction, skill) {
+  function resolveTurn(playerActionIn, skill) {
+    let playerAction = playerActionIn;
     const stunned = enemyStunned;
+    const playerStunnedNow = playerStunned;
+    if (playerStunnedNow) {
+      playerAction = "skip";
+      setPlayerStunned(false);
+    }
     const enemyAction = chooseEnemyAction(stunned);
     setPhase("resolve");
     if (stunned) setEnemyStunned(false);
+    const enemySkill =
+      enemyAction.action === "skill" ? enemyAction.skill : null;
+    const enemyItem = enemyAction.action === "item" ? enemyAction.item : null;
     const playerAttacks =
       playerAction === "attack" ||
       playerAction === "special" ||
       playerAction === "skill";
-    const enemyAttacks = enemyAction === "attack" || enemyAction === "special";
+    const enemyAttacks =
+      enemyAction.action === "attack" ||
+      enemyAction.action === "special" ||
+      (enemySkill && enemySkill.effect.type === "damage");
     setPlayerMoving(playerAttacks);
     setEnemyMoving(enemyAttacks);
-    setEnemyStunFlash(enemyAction === "stunned");
+    setEnemyStunFlash(enemyAction.action === "stunned");
 
     const delay = playerAttacks || enemyAttacks ? LUNGE : 300;
 
@@ -192,23 +278,35 @@ export default function BattleScreen() {
       let enemyCritDmg = 0;
       let playerMiss = false;
       let enemyMiss = false;
+      let playerDodge = false;
+      let enemyDodge = false;
       let skillMiss = false;
       let skillHeal = 0;
       let skillShield = 0;
       let skillStun = false;
       let skillDrainStamina = 0;
       let skillDrainFury = 0;
+      let enemyHealGain = 0;
+      let enemyShieldGain = 0;
+      let enemySkillStunPlayer = false;
+      let enemyDrainPlayerStamina = 0;
+      let enemyFuryGain = 0;
       const playerSpecial = playerAction === "special";
-      const enemySpecial = enemyAction === "special";
+      const enemySpecial = enemyAction.action === "special";
 
       if (skill) {
         const fx = skill.effect;
         if (fx.type === "damage") {
           if (Math.random() < missChance(playerLuck)) {
             skillMiss = true;
+          } else if (Math.random() < dodgeChance(enemyLuck, false)) {
+            enemyDodge = true;
           } else {
-            let d = rollDamage(playerAtk, battle.def) * fx.mult;
-            if (enemyAction === "defend") d = d / 2;
+            let d =
+              rollDamage(playerAtk, battle.def) *
+              fx.mult *
+              getElementalMultiplier(skill.element, battle.enemy.element);
+            if (enemyAction.action === "defend") d = d / 2;
             enemyDmg = d;
           }
           if (fx.drainStamina) skillDrainStamina = fx.drainStamina;
@@ -229,29 +327,72 @@ export default function BattleScreen() {
       if (playerAction === "attack") {
         if (Math.random() < missChance(playerLuck)) {
           playerMiss = true;
+        } else if (Math.random() < dodgeChance(enemyLuck, false)) {
+          enemyDodge = true;
         } else {
           let d = rollDamage(playerAtk, battle.def);
-          if (enemyAction === "defend") d = d / 2;
+          if (enemyAction.action === "defend") d = d / 2;
           enemyDmg = d;
         }
       } else if (playerSpecial) {
-        let d = rollDamage(playerAtk, battle.def) * playerFuryMult;
-        if (enemyAction === "defend") d = d / 2;
-        enemyCritDmg = d;
+        if (Math.random() < dodgeChance(enemyLuck, true)) {
+          enemyDodge = true;
+        } else {
+          let d = rollDamage(playerAtk, battle.def) * playerFuryMult;
+          if (enemyAction.action === "defend") d = d / 2;
+          enemyCritDmg = d;
+        }
       }
 
-      if (enemyAction === "attack") {
+      if (enemySkill) {
+        const fx = enemySkill.effect;
+        if (fx.type === "damage") {
+          if (Math.random() < missChance(enemyLuck)) {
+            enemyMiss = true;
+          } else if (Math.random() < dodgeChance(playerLuck, false)) {
+            playerDodge = true;
+          } else {
+            let d = rollDamage(battle.atk, playerDef) * fx.mult;
+            if (playerAction === "defend") d = d / 2;
+            playerDmg = d;
+          }
+        } else if (fx.type === "shield") {
+          enemyShieldGain = fx.base + Math.floor(battle.def * fx.defFactor);
+        } else if (fx.type === "heal") {
+          enemyHealGain = fx.base + Math.floor(enemyMaxHpCurrent * fx.pct);
+        } else if (fx.type === "stun") {
+          enemySkillStunPlayer = true;
+        }
+        if (fx.drainStamina) enemyDrainPlayerStamina = fx.drainStamina;
+      } else if (enemyItem) {
+        const fx = enemyItem.effect;
+        if (fx.type === "heal") {
+          enemyHealGain = Math.floor(enemyMaxHpCurrent * fx.pct);
+        } else if (fx.type === "shield") {
+          enemyShieldGain = fx.amount;
+        } else if (fx.type === "fury") {
+          enemyFuryGain = fx.amount;
+        }
+      }
+
+      if (enemyAction.action === "attack") {
         if (Math.random() < missChance(enemyLuck)) {
           enemyMiss = true;
+        } else if (Math.random() < dodgeChance(playerLuck, false)) {
+          playerDodge = true;
         } else {
           let d = rollDamage(battle.atk, playerDef);
           if (playerAction === "defend") d = d / 2;
           playerDmg = d;
         }
       } else if (enemySpecial) {
-        let d = rollDamage(battle.atk, playerDef) * ENEMY_SPECIAL_MULT;
-        if (playerAction === "defend") d = d / 2;
-        playerCritDmg = d;
+        if (Math.random() < dodgeChance(playerLuck, true)) {
+          playerDodge = true;
+        } else {
+          let d = rollDamage(battle.atk, playerDef) * ENEMY_SPECIAL_MULT;
+          if (playerAction === "defend") d = d / 2;
+          playerCritDmg = d;
+        }
       }
 
       let shieldLeft = playerShield;
@@ -262,6 +403,14 @@ export default function BattleScreen() {
         shieldLeft -= absorbed;
       }
       setPlayerShield(shieldLeft);
+
+      let enemyShieldTotal = enemyShield + enemyShieldGain;
+      if (enemyDmg > 0 && enemyShieldTotal > 0) {
+        const absorbed = Math.min(enemyShieldTotal, enemyDmg);
+        enemyDmg -= absorbed;
+        enemyShieldTotal -= absorbed;
+      }
+      setEnemyShield(enemyShieldTotal);
 
       const newPlayerMaxHp = Math.max(1, playerMaxHpCurrent - playerCritDmg);
       const newEnemyMaxHp = Math.max(1, enemyMaxHpCurrent - enemyCritDmg);
@@ -283,7 +432,9 @@ export default function BattleScreen() {
 
       const newEnemyHp = Math.max(
         0,
-        Math.min(newEnemyMaxHp, enemyHp) - enemyDmg - enemyCritCurrentDmg
+        Math.min(newEnemyMaxHp, enemyHp + enemyHealGain) -
+          enemyDmg -
+          enemyCritCurrentDmg
       );
       const newPlayerHp = Math.max(
         0,
@@ -318,7 +469,7 @@ export default function BattleScreen() {
             FURY_MAX,
             playerFury + (playerDmg > 0 || playerCritDmg > 0 ? 1 : 0)
           );
-      const newEnemyFury = enemySpecial
+      let newEnemyFury = enemySpecial
         ? 0
         : Math.min(
             FURY_MAX,
@@ -329,6 +480,9 @@ export default function BattleScreen() {
                 skillDrainFury
             )
           );
+      if (enemyFuryGain > 0) {
+        newEnemyFury = Math.min(FURY_MAX, newEnemyFury + enemyFuryGain);
+      }
       setPlayerFury(newPlayerFury);
       setEnemyFury(newEnemyFury);
 
@@ -339,12 +493,14 @@ export default function BattleScreen() {
           ? DEF_COST
           : 0;
       const enemyCost =
-        enemyAction === "attack"
+        enemyAction.action === "attack"
           ? ATK_COST
-          : enemyAction === "defend"
+          : enemyAction.action === "defend"
           ? DEF_COST
           : 0;
-      setPlayerStamina((s) => Math.max(0, s - playerCost));
+      setPlayerStamina((s) =>
+        Math.max(0, s - playerCost - enemyDrainPlayerStamina)
+      );
       setEnemyStamina((s) =>
         Math.max(0, s - enemyCost - skillDrainStamina)
       );
@@ -352,33 +508,62 @@ export default function BattleScreen() {
       if (skill) {
         setPlayerManaCurrent(Math.max(0, playerManaCurrent - skill.manaCost));
       }
+      if (enemySkill) {
+        setEnemyManaCurrent((m) => Math.max(0, m - enemySkill.manaCost));
+      }
 
       setPlayerBlocking(playerAction === "defend");
-      setEnemyBlocking(enemyAction === "defend");
+      setEnemyBlocking(enemyAction.action === "defend");
       setPlayerMissed(playerMiss || skillMiss);
       setEnemyMissed(enemyMiss);
+      setPlayerDodged(playerDodge);
+      setEnemyDodged(enemyDodge);
       setPlayerCrit(enemySpecial);
       setEnemyCrit(playerSpecial);
-      setSkillFlash(skill && !skillMiss ? skill : null);
+      setSkillFlash(skill && !skillMiss && !enemyDodge ? skill : null);
+      setEnemySkillFlash(
+        enemySkill && !enemyMiss && !playerDodge ? enemySkill : null
+      );
       if (skillStun) setEnemyStunned(true);
+      if (enemySkillStunPlayer) {
+        setPlayerStunned(true);
+        setPlayerStunFlash(true);
+      }
+      if (enemyItem) {
+        const fx = enemyItem.effect;
+        let text = "";
+        if (fx.type === "heal") text = `+${enemyHealGain} de vida`;
+        else if (fx.type === "shield") text = `+${fx.amount} de escudo`;
+        else if (fx.type === "fury") text = `+${fx.amount} de fúria`;
+        setEnemyItemPopup({ name: enemyItem.name, text });
+      }
 
       setTimeout(() => {
         setPlayerBlocking(false);
         setEnemyBlocking(false);
         setPlayerMissed(false);
         setEnemyMissed(false);
+        setPlayerDodged(false);
+        setEnemyDodged(false);
         setPlayerCrit(false);
         setEnemyCrit(false);
         setPlayerMoving(false);
         setEnemyMoving(false);
         setEnemyStunFlash(false);
+        setPlayerStunFlash(false);
         setSkillFlash(null);
+        setEnemySkillFlash(null);
 
         setTimeout(() => {
           const nextTurn = turnCount + 1;
           setTurnCount(nextTurn);
           if (nextTurn > 0 && nextTurn % CRYSTAL_REFILL_TURNS === 0) {
             setCrystals(CRYSTAL_MAX);
+          }
+          if (enemyAction.action === "item") {
+            setEnemyItemCooldown(ENEMY_ITEM_COOLDOWN);
+          } else {
+            setEnemyItemCooldown((c) => Math.max(0, c - 1));
           }
 
           let eHp = newEnemyHp;
@@ -458,6 +643,7 @@ export default function BattleScreen() {
 
   function handleAction(action, skill) {
     if (phase !== "player") return;
+    if (playerStunned) return;
     if (action === "attack" && playerStamina < ATK_COST) return;
     if (action === "defend" && playerStamina < DEF_COST) return;
     if (action === "special" && playerFury < FURY_MAX) return;
@@ -502,7 +688,13 @@ export default function BattleScreen() {
   }, [itemPopup]);
 
   useEffect(() => {
-    const progress = { stamina: 0, enemy: 0, mana: 0 };
+    if (!enemyItemPopup) return;
+    const t = setTimeout(() => setEnemyItemPopup(null), 1800);
+    return () => clearTimeout(t);
+  }, [enemyItemPopup]);
+
+  useEffect(() => {
+    const progress = { stamina: 0, enemy: 0, mana: 0, enemyMana: 0 };
     let last = Date.now();
     const id = setInterval(() => {
       const now = Date.now();
@@ -548,14 +740,27 @@ export default function BattleScreen() {
         setPlayerManaCurrent((m) => Math.min(playerMana, m + manaAdd));
       }
       setManaProgress(Math.min(1, progress.mana));
+
+      progress.enemyMana += (dt * 1000) / enemyManaRegenMs;
+      let enemyManaAdd = 0;
+      while (progress.enemyMana >= 1) {
+        progress.enemyMana -= 1;
+        enemyManaAdd += 1;
+      }
+      if (enemyManaAdd > 0) {
+        setEnemyManaCurrent((m) => Math.min(battle.mana, m + enemyManaAdd));
+      }
+      setEnemyManaProgress(Math.min(1, progress.enemyMana));
     }, 100);
     return () => clearInterval(id);
   }, [
     staminaRegenMs,
     enemyStaminaRegenMs,
     manaRegenMs,
+    enemyManaRegenMs,
     playerStaminaMax,
     playerMana,
+    battle.mana,
   ]);
 
   useEffect(() => {
@@ -576,11 +781,22 @@ export default function BattleScreen() {
     const canSkill = equippedSkills.some(
       (s) => playerManaCurrent >= s.manaCost
     );
-    if (!canAttack && !canDefend && !canSpecial && !canSkill) {
+    if (
+      playerStunned ||
+      (!canAttack && !canDefend && !canSpecial && !canSkill)
+    ) {
       const t = setTimeout(() => resolveTurn("skip"), 800);
       return () => clearTimeout(t);
     }
-  }, [phase, paused, playerStamina, playerFury, playerManaCurrent, equippedSkills]);
+  }, [
+    phase,
+    paused,
+    playerStunned,
+    playerStamina,
+    playerFury,
+    playerManaCurrent,
+    equippedSkills,
+  ]);
 
   function nextBattle() {
     const next = getBattleSetup();
@@ -597,24 +813,34 @@ export default function BattleScreen() {
     setPlayerStamina(playerStaminaMax);
     setEnemyStamina(ENEMY_STAMINA_MAX);
     setPlayerManaCurrent(playerMana);
+    setEnemyManaCurrent(next.mana);
     setStaminaProgress(0);
     setEnemyStaminaProgress(0);
     setManaProgress(0);
+    setEnemyManaProgress(0);
     setCrystals(CRYSTAL_MAX);
     setTurnCount(0);
     setPendingItems([]);
     setInventoryOpen(false);
     setItemPopup(null);
+    setEnemyItemPopup(null);
     setPlayerShield(0);
+    setEnemyShield(0);
     setEnemyStunned(false);
+    setPlayerStunned(false);
     setEnemyStunFlash(false);
+    setPlayerStunFlash(false);
     setSkillFlash(null);
+    setEnemySkillFlash(null);
+    setEnemyItemCooldown(0);
     setPlayerMoving(false);
     setEnemyMoving(false);
     setPlayerBlocking(false);
     setEnemyBlocking(false);
     setPlayerMissed(false);
     setEnemyMissed(false);
+    setPlayerDodged(false);
+    setEnemyDodged(false);
     setPlayerCrit(false);
     setEnemyCrit(false);
     setRolled(false);
@@ -638,12 +864,14 @@ export default function BattleScreen() {
     setPhase("defeat");
   }
 
-  const disabled = phase !== "player";
+  const disabled = phase !== "player" || playerStunned;
   const canAttack = playerStamina >= ATK_COST;
   const canDefend = playerStamina >= DEF_COST;
   const canSpecial = playerFury >= FURY_MAX;
   const timePct = (timeLeft / MATCH_TIME) * 100;
   const PopupIcon = itemPopup ? itemPopup.icon : null;
+  const EnemyElement = getElement(battle.enemy.element);
+  const EnemyElementIcon = EnemyElement.icon;
 
   return (
     <div className="battle-screen">
@@ -737,10 +965,11 @@ export default function BattleScreen() {
       <div className="arena-stack right enemy">
         <div className="vbar mana">
           <ResourceBar
-            value={battle.mana}
+            value={enemyManaCurrent}
             max={battle.mana}
             fill={MANA_FILL}
             tick={MANA_TICK}
+            progress={enemyManaProgress}
             vertical
             reverse
           />
@@ -805,12 +1034,19 @@ export default function BattleScreen() {
         </div>
         <div className="sprite enemy-sprite">
           <img src={battle.enemy.sprite} alt={battle.enemy.name} />
+          {enemyShield > 0 && (
+            <div className="shield-badge">
+              <Shield size={13} />
+              {Math.ceil(enemyShield)}
+            </div>
+          )}
           {enemyBlocking && (
             <div className="block-flash">
               <Shield size={52} />
             </div>
           )}
           {enemyMissed && <div className="miss-flash left">Errou!</div>}
+          {enemyDodged && <div className="dodge-flash left">Esquivou!</div>}
           {enemyCrit && <div className="crit-flash left">Crítico!</div>}
           {enemyStunFlash && <div className="stun-flash left">Congelado!</div>}
           {skillFlash && (
@@ -820,8 +1056,29 @@ export default function BattleScreen() {
               {skillFlash.name}!
             </div>
           )}
+          {enemySkillFlash && (
+            <div
+              className={"skill-flash left element-" + enemySkillFlash.element}
+            >
+              {enemySkillFlash.name}!
+            </div>
+          )}
         </div>
-        <div className="enemy-name">{battle.enemy.name}</div>
+        <div className="enemy-name-row">
+          <div className="enemy-name">{battle.enemy.name}</div>
+          <span className={"enemy-element element-" + battle.enemy.element}>
+            <EnemyElementIcon size={11} /> {EnemyElement.label}
+          </span>
+          {enemyLuck && <span className="enemy-luck">Sorte {enemyLuck}</span>}
+        </div>
+        {enemyItemPopup && (
+          <div className="enemy-item-popup">
+            <span className="enemy-item-popup-name">{enemyItemPopup.name}</span>
+            <span className="enemy-item-popup-effect">
+              {enemyItemPopup.text}
+            </span>
+          </div>
+        )}
       </div>
 
       <div
@@ -841,7 +1098,9 @@ export default function BattleScreen() {
             </div>
           )}
           {playerMissed && <div className="miss-flash right">Errou!</div>}
+          {playerDodged && <div className="dodge-flash right">Esquivou!</div>}
           {playerCrit && <div className="crit-flash right">Crítico!</div>}
+          {playerStunFlash && <div className="stun-flash right">Congelado!</div>}
         </div>
       </div>
 
@@ -850,6 +1109,7 @@ export default function BattleScreen() {
           <div className="battle-skills">
             {equippedSkills.map((skill) => {
               const SkillIcon = skill.icon;
+              const SkillElementIcon = getElement(skill.element).icon;
               const skillDisabled =
                 disabled || playerManaCurrent < skill.manaCost;
               return (
@@ -863,6 +1123,14 @@ export default function BattleScreen() {
                 >
                   <SkillIcon size={18} />
                   <span className="skill-btn-name">{skill.name}</span>
+                  <span
+                    className={
+                      "skill-element element-" + skill.element
+                    }
+                    title={getElement(skill.element).label}
+                  >
+                    <SkillElementIcon size={10} />
+                  </span>
                   <span className="skill-cost">
                     <Droplets size={11} />
                     {skill.manaCost}
@@ -1026,7 +1294,9 @@ export default function BattleScreen() {
               <div className="rune-sep-diamond" />
               <div className="rune-sep-line right" />
             </div>
-            <p className="dice-subtitle">A sorte define sua chance de errar</p>
+            <p className="dice-subtitle">
+              A sorte define sua chance de errar e esquivar
+            </p>
           </div>
 
           <div className="dice-stage">

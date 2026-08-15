@@ -254,6 +254,81 @@
   white-space: nowrap;
 }
 
+/* Linha de identificação do inimigo: nome + elemento + sorte */
+.enemy-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* Badge do elemento do inimigo */
+.enemy-element {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid currentColor;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.enemy-luck {
+  display: inline-flex;
+  align-items: center;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* Popup de item usado pelo inimigo */
+.enemy-item-popup {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 7px 14px;
+  border-radius: 6px;
+  background: rgba(10, 12, 16, 0.95);
+  border: 1px solid rgba(45, 212, 191, 0.45);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  animation: itemPopupIn 0.25s ease;
+  z-index: 6;
+}
+
+.enemy-item-popup-name {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #8ff5e4;
+}
+
+.enemy-item-popup-effect {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+@keyframes itemPopupIn {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
 /* Badge de chefe — promovido a L1 quando é o chefão */
 .threat-badge.boss {
   display: inline-flex;
@@ -430,9 +505,42 @@
   right: calc(100% + 12px);
 }
 
-.skill-flash.branch-fogo    { color: #ffb09a; }
+.skill-flash.branch-sombrio    { color: #ffb09a; }
 .skill-flash.branch-sagrado { color: #8ff5e4; }
-.skill-flash.branch-gelo    { color: #a8d4ff; }
+.skill-flash.branch-magico    { color: #a8d4ff; }
+
+/* Elemental skill flashes (enemy skills) */
+.skill-flash.element-magma    { color: #ff8a5c; }
+.skill-flash.element-rocha    { color: #d8b48a; }
+.skill-flash.element-mare     { color: #7ec8ff; }
+.skill-flash.element-vendaval { color: #9de8d2; }
+
+/* Element colors (badges, chips, flashes) */
+.element-magma    { color: #ff8a5c; }
+.element-rocha    { color: #d8b48a; }
+.element-mare     { color: #7ec8ff; }
+.element-vendaval { color: #9de8d2; }
+
+/* Dodge flash — sortudo desvia do golpe */
+.dodge-flash {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  pointer-events: none;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: #7be3b6;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+  animation: dodgePop 0.5s ease;
+}
+
+@keyframes dodgePop {
+  0%   { transform: translateY(-50%) scale(0.4) rotate(-8deg); opacity: 0; }
+  55%  { transform: translateY(-50%) scale(1.25) rotate(4deg); opacity: 1; }
+  100% { transform: translateY(-50%) scale(1) rotate(0deg); opacity: 1; }
+}
 
 /* Shield badge — Camada 2 (recurso ativo)
    Glow de entrada via animação (blockPop já tem), sem glow permanente.
@@ -464,13 +572,19 @@
 
 /* Enemy texts — left side of the sprite / screen */
 .miss-flash.left,
-.crit-flash.left {
+.crit-flash.left,
+.dodge-flash.left {
   right: calc(100% + 12px);
 }
 
 /* Player texts — right side of the sprite / screen */
 .miss-flash.right,
-.crit-flash.right {
+.crit-flash.right,
+.dodge-flash.right {
+  left: calc(100% + 12px);
+}
+
+.stun-flash.right {
   left: calc(100% + 12px);
 }
 
@@ -675,6 +789,11 @@
   padding: 0 10px;
 }
 
+/* Habilidades com chip de elemento precisam de um pouco mais de espaço */
+.battle-skills .btn-action.skill {
+  min-width: 134px;
+}
+
 .btn-action {
   flex: 1;
   display: inline-flex;
@@ -746,7 +865,7 @@
   color: #fff;
 }
 
-.btn-action.skill.branch-fogo {
+.btn-action.skill.branch-sombrio {
   background: linear-gradient(180deg, #d44030 0%, #8b1c1c 100%);
   box-shadow: 0 4px 0 #571010;
 }
@@ -756,7 +875,7 @@
   box-shadow: 0 4px 0 #08423c;
 }
 
-.btn-action.skill.branch-gelo {
+.btn-action.skill.branch-magico {
   background: linear-gradient(180deg, #4a90d9 0%, #1f4a7a 100%);
   box-shadow: 0 4px 0 #122e4d;
 }
@@ -766,6 +885,19 @@
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 66px;
+}
+
+/* Chip do elemento da habilidade (aparência de carta) */
+.skill-element {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 16px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  background: rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
 }
 
 .skill-cost {
