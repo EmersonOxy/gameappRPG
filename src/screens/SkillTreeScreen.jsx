@@ -148,24 +148,21 @@ export default function SkillTreeScreen() {
       e.preventDefault();
       interactedRef.current = true;
       const v = viewRef.current;
-      if (e.ctrlKey) {
-        const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
-        const rect = el.getBoundingClientRect();
-        const px = e.clientX - rect.left;
-        const py = e.clientY - rect.top;
-        const scale = clamp(v.scale * factor, 0.3, 2.5);
-        const wx = (px - v.x) / v.scale;
-        const wy = (py - v.y) / v.scale;
-        updateView(() => ({ scale, x: px - wx * scale, y: py - wy * scale }));
-      } else {
-        updateView(() => ({ ...v, x: v.x - e.deltaX, y: v.y - e.deltaY }));
-      }
+      const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+      const rect = el.getBoundingClientRect();
+      const px = e.clientX - rect.left;
+      const py = e.clientY - rect.top;
+      const scale = clamp(v.scale * factor, 0.3, 2.5);
+      const wx = (px - v.x) / v.scale;
+      const wy = (py - v.y) / v.scale;
+      updateView(() => ({ scale, x: px - wx * scale, y: py - wy * scale }));
     };
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
   }, []);
 
   function onPointerDown(e) {
+    if (e.button !== 0) return;
     pointersRef.current.set(e.pointerId, {
       x: e.clientX,
       y: e.clientY,
