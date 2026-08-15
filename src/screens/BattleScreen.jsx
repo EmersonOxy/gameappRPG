@@ -31,7 +31,9 @@ const MANA_REGEN_BASE_INTERVAL = 8000;
 const ATK_COST = 3;
 const DEF_COST = 2;
 const ENEMY_SPECIAL_MULT = 2;
-const CRIT_CURRENT_PCT = 0.5;
+const DANGER_MIN = 0.02;
+const DANGER_MAX = 0.11;
+const HEAL_WINDOW = 650;
 const MATCH_TIME = 45;
 const DEFEAT_XP = 1;
 const CRYSTAL_MAX = 5;
@@ -58,6 +60,10 @@ function rollDie() {
 
 function missChance(luck) {
   return (6 - luck) * 0.05;
+}
+
+function critCurrentTransfer(critDmg) {
+  return Math.round(critDmg * (0.01 + Math.random() * 0.09));
 }
 
 const LUNGE = 900;
@@ -127,6 +133,7 @@ export default function BattleScreen() {
   const [pendingItems, setPendingItems] = useState([]);
   const [inventoryOpen, setInventoryOpen] = useState(false);
   const [itemPopup, setItemPopup] = useState(null);
+  const [battleId, setBattleId] = useState(0);
 
   const staminaRegenMs = REGEN_BASE_INTERVAL / playerStaminaRegen;
   const enemyStaminaRegenMs = REGEN_BASE_INTERVAL / ENEMY_STAMINA_REGEN;
@@ -258,8 +265,20 @@ export default function BattleScreen() {
       const newPlayerMaxHp = Math.max(1, playerMaxHpCurrent - playerCritDmg);
       const newEnemyMaxHp = Math.max(1, enemyMaxHpCurrent - enemyCritDmg);
 
-      const playerCritCurrentDmg = Math.floor(playerCritDmg * CRIT_CURRENT_PCT);
-      const enemyCritCurrentDmg = Math.floor(enemyCritDmg * CRIT_CURRENT_PCT);
+      let playerCritCurrentDmg = 0;
+      if (playerCritDmg > 0 && playerHp < newPlayerMaxHp) {
+        const ratio = playerMaxHpCurrent > 0 ? playerHp / playerMaxHpCurrent : 0;
+        if (ratio >= DANGER_MIN && ratio <= DANGER_MAX) {
+          playerCritCurrentDmg = critCurrentTransfer(playerCritDmg);
+        }
+      }
+      let enemyCritCurrentDmg = 0;
+      if (enemyCritDmg > 0 && enemyHp < newEnemyMaxHp) {
+        const ratio = enemyMaxHpCurrent > 0 ? enemyHp / enemyMaxHpCurrent : 0;
+        if (ratio >= DANGER_MIN && ratio <= DANGER_MAX) {
+          enemyCritCurrentDmg = critCurrentTransfer(enemyCritDmg);
+        }
+      }
 
       const newEnemyHp = Math.max(
         0,
@@ -271,12 +290,26 @@ export default function BattleScreen() {
           playerDmg -
           playerCritCurrentDmg
       );
+
       setPlayerMaxHpCurrent(newPlayerMaxHp);
       setEnemyMaxHpCurrent(newEnemyMaxHp);
       setEnemyHp(newEnemyHp);
-      setPlayerHp(newPlayerHp);
       if (enemyDmg > 0 || enemyCritDmg > 0) setEnemyHit(Date.now());
-      if (playerDmg > 0 || playerCritDmg > 0) setPlayerHit(Date.now());
+
+      const playerDamageTotal = playerDmg + playerCritCurrentDmg;
+      if (skillHeal > 0) {
+        const healedHp = Math.min(newPlayerMaxHp, playerHp + skillHeal);
+        setPlayerHp(healedHp);
+        if (playerDamageTotal > 0) {
+          setTimeout(() => {
+            setPlayerHp(newPlayerHp);
+            setPlayerHit(Date.now());
+          }, HEAL_WINDOW);
+        }
+      } else {
+        setPlayerHp(newPlayerHp);
+        if (playerDamageTotal > 0) setPlayerHit(Date.now());
+      }
 
       const newPlayerFury = playerSpecial
         ? 0
@@ -539,6 +572,9 @@ export default function BattleScreen() {
   }, [phase, playerStamina, playerFury, playerManaCurrent, equippedSkills]);
 
   function nextBattle() {
+    setBattleId((b) => b + 1);
+    setPlayerHit(0);
+    setEnemyHit(0);
     setPlayerHp(playerMaxHp);
     setEnemyHp(enemyMaxHp);
     setPlayerMaxHpCurrent(playerMaxHp);
@@ -622,6 +658,7 @@ export default function BattleScreen() {
           {/* Vida: por cima, com segmentos de fúria grudados na lateral */}
           <div className="vbar vida">
             <HealthBar
+              key={battleId}
               hp={enemyHp}
               max={enemyMaxHp}
               currentMax={enemyMaxHpCurrent}
@@ -673,6 +710,7 @@ export default function BattleScreen() {
           {/* Vida: por cima, com segmentos de fúria grudados na lateral */}
           <div className="vbar vida">
             <HealthBar
+              key={battleId}
               hp={playerHp}
               max={playerMaxHp}
               currentMax={playerMaxHpCurrent}

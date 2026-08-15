@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import "./HealthBar.css";
 
+const TICK_MS = 55;
+
 function usePrevious(value) {
   const ref = useRef();
   useEffect(() => {
@@ -18,10 +20,39 @@ export default function HealthBar({
   reverse = false,
 }) {
   const [shaking, setShaking] = useState(false);
-  const [healOn, setHealOn] = useState(false);
-  const [ghostPct, setGhostPct] = useState((hp / max) * 100);
-  const [recentHp, setRecentHp] = useState(null);
+  const [displayHp, setDisplayHp] = useState(hp);
+  const [whiteHp, setWhiteHp] = useState(hp);
+  const [healTarget, setHealTarget] = useState(null);
+
   const prevHp = usePrevious(hp);
+
+  const stepTimer = useRef(null);
+  const displayRef = useRef(displayHp);
+  displayRef.current = displayHp;
+  const whiteRef = useRef(whiteHp);
+  whiteRef.current = whiteHp;
+
+  function stepTo(setter, from, to, onDone) {
+    if (stepTimer.current) clearInterval(stepTimer.current);
+    if (from === to) {
+      setter(to);
+      if (onDone) onDone();
+      return;
+    }
+    let current = from;
+    const dir = to > from ? 1 : -1;
+    stepTimer.current = setInterval(() => {
+      current += dir;
+      const reached = (dir > 0 && current >= to) || (dir < 0 && current <= to);
+      if (reached) current = to;
+      setter(current);
+      if (reached) {
+        clearInterval(stepTimer.current);
+        stepTimer.current = null;
+        if (onDone) onDone();
+      }
+    }, TICK_MS);
+  }
 
   useEffect(() => {
     if (!hitKey) return;
@@ -30,34 +61,30 @@ export default function HealthBar({
     return () => clearTimeout(t);
   }, [hitKey]);
 
-  // Cura: prévia verde preenche antes, vermelho cobre depois
   useEffect(() => {
-    setGhostPct((hp / max) * 100);
-    if (prevHp == null || hp <= prevHp) {
-      setHealOn(false);
-      return;
-    }
-    setHealOn(true);
-    const t = setTimeout(() => setHealOn(false), 900);
-    return () => clearTimeout(t);
-  }, [hp, prevHp, max]);
-
-  // Dano na vida atual: barra branca veloz mostrando o pedaço perdido
-  useEffect(() => {
-    if (prevHp == null || hp >= prevHp) return;
-    setRecentHp(prevHp);
-    const t1 = setTimeout(() => setRecentHp(hp), 150);
-    const t2 = setTimeout(() => setRecentHp(null), 500);
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
+      if (stepTimer.current) clearInterval(stepTimer.current);
     };
-  }, [hp, prevHp, max]);
+  }, []);
 
-  const fillPct = (hp / max) * 100;
+  useEffect(() => {
+    if (prevHp == null || hp === prevHp) return;
+    if (hp < prevHp) {
+      setHealTarget(null);
+      setDisplayHp(hp);
+      stepTo(setWhiteHp, whiteRef.current, hp);
+    } else {
+      setHealTarget(hp);
+      setWhiteHp(hp);
+      stepTo(setDisplayHp, displayRef.current, hp, () => setHealTarget(null));
+    }
+  }, [hp, prevHp]);
+
+  const fillPct = (Math.min(displayHp, currentMax) / max) * 100;
+  const whitePct = (Math.min(whiteHp, currentMax) / max) * 100;
   const maxPct = (currentMax / max) * 100;
-  const recentPct =
-    recentHp != null ? Math.max(0, ((recentHp - hp) / max) * 100) : 0;
+  const healPct =
+    healTarget != null ? (Math.min(healTarget, currentMax) / max) * 100 : null;
 
   const ticks = [];
   for (let i = 0; i < max; i++) {
@@ -93,28 +120,23 @@ export default function HealthBar({
           style={vertical ? { height: maxPct + "%" } : { width: maxPct + "%" }}
         />
         <div
-          className={"health-heal-ghost" + (healOn ? " on" : "")}
+          className="health-recent"
           style={
-            vertical ? { height: ghostPct + "%" } : { width: ghostPct + "%" }
+            vertical ? { height: whitePct + "%" } : { width: whitePct + "%" }
           }
         />
+        {healPct != null && (
+          <div
+            className="health-heal-ghost"
+            style={
+              vertical ? { height: healPct + "%" } : { width: healPct + "%" }
+            }
+          />
+        )}
         <div
           className="health-fill"
           style={vertical ? { height: fillPct + "%" } : { width: fillPct + "%" }}
         />
-        {recentHp != null && (
-          <div
-            className="health-recent"
-            style={
-              vertical
-                ? {
-                    [reverse ? "top" : "bottom"]: fillPct + "%",
-                    height: recentPct + "%",
-                  }
-                : { left: fillPct + "%", width: recentPct + "%" }
-            }
-          />
-        )}
         {ticks}
       </div>
     </div>
