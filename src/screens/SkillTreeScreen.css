@@ -466,8 +466,15 @@
 
 .btn-detail.primary {
   color: #1a0d00;
-  background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
+  background:
+    radial-gradient(circle 4px at 9px 9px, var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
+    radial-gradient(circle 4px at calc(100% - 9px) 9px, var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
+    radial-gradient(circle 4px at 9px calc(100% - 9px), var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
+    radial-gradient(circle 4px at calc(100% - 9px) calc(100% - 9px), var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
+    linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
   border: 1px solid var(--gold-dark);
+  outline: 1px solid var(--gold-2);
+  outline-offset: 1px;
   box-shadow:
     0 0 0 1px rgba(200, 153, 58, 0.35),
     0 5px 0 var(--gold-dark),

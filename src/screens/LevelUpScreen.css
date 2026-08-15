@@ -204,10 +204,17 @@
   width: 34px;
   height: 34px;
   border: 1px solid var(--gold-dark);
+  outline: 1px solid var(--gold-2);
+  outline-offset: 1px;
   border-radius: 3px;
   cursor: pointer;
   color: #1a0d00;
-  background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
+  background:
+    radial-gradient(circle 3px at 7px 7px, var(--emerald-glass) 0 2px, var(--emerald-bright) 2.4px 2.8px, transparent 3px),
+    radial-gradient(circle 3px at calc(100% - 7px) 7px, var(--emerald-glass) 0 2px, var(--emerald-bright) 2.4px 2.8px, transparent 3px),
+    radial-gradient(circle 3px at 7px calc(100% - 7px), var(--emerald-glass) 0 2px, var(--emerald-bright) 2.4px 2.8px, transparent 3px),
+    radial-gradient(circle 3px at calc(100% - 7px) calc(100% - 7px), var(--emerald-glass) 0 2px, var(--emerald-bright) 2.4px 2.8px, transparent 3px),
+    linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
   box-shadow:
     0 0 0 1px rgba(200, 153, 58, 0.35),
     0 3px 0 var(--gold-dark),
@@ -242,10 +249,17 @@
   letter-spacing: 2px;
   text-transform: uppercase;
   border: 1px solid var(--gold-dark);
+  outline: 1px solid var(--gold-2);
+  outline-offset: 2px;
   border-radius: 3px;
   cursor: pointer;
   color: #1a0d00;
-  background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
+  background:
+    radial-gradient(circle 5px at 10px 10px, var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
+    radial-gradient(circle 5px at calc(100% - 10px) 10px, var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
+    radial-gradient(circle 5px at 10px calc(100% - 10px), var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
+    radial-gradient(circle 5px at calc(100% - 10px) calc(100% - 10px), var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
+    linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
   box-shadow:
     0 0 0 1px rgba(200, 153, 58, 0.35),
     0 5px 0 var(--gold-dark),

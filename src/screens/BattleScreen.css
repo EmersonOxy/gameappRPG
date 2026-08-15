@@ -579,8 +579,15 @@
    ÚNICO botão que mantém glow de profundidade em repouso.
    Isso o destaca de todos os outros botões — é o ponto focal L1. */
 .btn-action.attack {
-  background: linear-gradient(180deg, #d44030 0%, #8b1c1c 100%);
+  background:
+    radial-gradient(circle 4px at 8px 8px, var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
+    radial-gradient(circle 4px at calc(100% - 8px) 8px, var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
+    radial-gradient(circle 4px at 8px calc(100% - 8px), var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
+    radial-gradient(circle 4px at calc(100% - 8px) calc(100% - 8px), var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
+    linear-gradient(180deg, #d44030 0%, #8b1c1c 100%);
   border: 1px solid #571010;
+  outline: 1px solid var(--gold-2);
+  outline-offset: 1px;
   box-shadow:
     0 0 0 1px rgba(200, 153, 58, 0.35),
     0 5px 0 #571010,
@@ -885,8 +892,15 @@
 
 .btn-result.primary {
   color: #1a0d00;
-  background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
+  background:
+    radial-gradient(circle 5px at 10px 10px, var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
+    radial-gradient(circle 5px at calc(100% - 10px) 10px, var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
+    radial-gradient(circle 5px at 10px calc(100% - 10px), var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
+    radial-gradient(circle 5px at calc(100% - 10px) calc(100% - 10px), var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
+    linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
   border: 1px solid var(--gold-dark);
+  outline: 1px solid var(--gold-2);
+  outline-offset: 2px;
   box-shadow:
     0 0 0 1px rgba(200, 153, 58, 0.35),
     0 5px 0 var(--gold-dark),
@@ -1033,10 +1047,17 @@
   letter-spacing: 3px;
   text-transform: uppercase;
   border: 1px solid var(--gold-dark);
+  outline: 1px solid var(--gold-2);
+  outline-offset: 2px;
   border-radius: 3px;
   cursor: pointer;
   color: #1a0d00;
-  background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
+  background:
+    radial-gradient(circle 5px at 10px 10px, var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
+    radial-gradient(circle 5px at calc(100% - 10px) 10px, var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
+    radial-gradient(circle 5px at 10px calc(100% - 10px), var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
+    radial-gradient(circle 5px at calc(100% - 10px) calc(100% - 10px), var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
+    linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
   box-shadow:
     0 0 0 1px rgba(200, 153, 58, 0.35),
     0 5px 0 var(--gold-dark),

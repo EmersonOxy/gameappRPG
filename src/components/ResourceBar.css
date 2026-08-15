@@ -40,7 +40,7 @@
   overflow: hidden;
 }
 
-/* Líquido — "tinta densa" se movendo */
+/* Líquido — "tinta densa" se movendo (manchas irregulares, lento) */
 .resource-fill::before {
   content: "";
   position: absolute;
@@ -51,17 +51,17 @@
   z-index: 1;
   pointer-events: none;
   background-image:
-    radial-gradient(ellipse at 25% 45%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.9) 20%, transparent 60%),
-    radial-gradient(ellipse at 65% 55%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 25%, transparent 65%),
-    radial-gradient(ellipse at 45% 35%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.7) 15%, transparent 55%);
-  background-size: 160px 110px, 200px 140px, 130px 90px;
-  background-repeat: repeat-x;
-  filter: blur(1.5px);
+    radial-gradient(ellipse at 18% 30%, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.55) 22%, transparent 62%),
+    radial-gradient(ellipse at 74% 62%, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.5) 28%, transparent 66%),
+    radial-gradient(ellipse at 38% 74%, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.45) 18%, transparent 58%);
+  background-size: 150px 130px, 210px 160px, 120px 100px;
+  background-repeat: repeat;
+  filter: blur(2px);
   mix-blend-mode: overlay;
-  animation: ink-flow 14s ease-in-out infinite alternate;
+  animation: ink-flow 24s ease-in-out infinite;
 }
 
-/* Líquido — varredura de brilho por cima */
+/* Líquido — varredura de brilho assimétrica e suave */
 .resource-fill::after {
   content: "";
   position: absolute;
@@ -70,12 +70,11 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.2) 45%,
-    rgba(255, 255, 255, 0.35) 50%,
-    rgba(255, 255, 255, 0.2) 55%,
+    rgba(255, 255, 255, 0.08) 45%,
+    rgba(255, 255, 255, 0.16) 72%,
     transparent 100%
   );
-  animation: bar-shimmer 4s infinite ease-in-out;
+  animation: bar-shimmer 8s ease-in-out infinite;
   pointer-events: none;
 }
 
@@ -151,21 +150,20 @@
 
 /* Líquido na vertical: manchas menores + varredura de cima pra baixo */
 .resource-bar.vertical .resource-fill::before {
-  background-size: 44px 64px, 56px 76px, 38px 52px;
+  background-size: 42px 70px, 56px 88px, 36px 60px;
   background-repeat: repeat;
-  animation-duration: 10s;
+  animation-duration: 28s;
 }
 
 .resource-bar.vertical .resource-fill::after {
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.2) 45%,
-    rgba(255, 255, 255, 0.35) 50%,
-    rgba(255, 255, 255, 0.2) 55%,
+    rgba(255, 255, 255, 0.08) 55%,
+    rgba(255, 255, 255, 0.16) 78%,
     transparent 100%
   );
-  animation: bar-shimmer-v 4s infinite ease-in-out;
+  animation: bar-shimmer-v 10s ease-in-out infinite;
 }
 
 .resource-tick.v {
