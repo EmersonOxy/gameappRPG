@@ -195,13 +195,14 @@ export default function SkillTreeScreen() {
             const skills = getBranchSkills(key);
             return (
               <g key={key} className={"tree-branch branch-" + key}>
-                {cfg.path.map((p, i) => {
-                  const seg = [i === 0 ? CENTER : cfg.path[i - 1], p];
-                  const on = skillsOwned.includes(skills[i].id);
+                {skills.map((skill, i) => {
+                  const prev = i === 0 ? CENTER : cfg.stubs[i - 1].attach;
+                  const end = cfg.stubs[i].attach;
+                  const on = skillsOwned.includes(skill.id);
                   return (
                     <path
-                      key={i}
-                      d={smoothPath(seg)}
+                      key={skill.id}
+                      d={smoothPath([prev, end])}
                       className={"branch-path" + (on ? " on" : "")}
                     />
                   );
