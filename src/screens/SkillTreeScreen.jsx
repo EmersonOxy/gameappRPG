@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Check, Coins, Droplets, Lock, X } from "lucide-react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Check, Coins, Droplets, Lock, Maximize2, X } from "lucide-react";
 import { useGame } from "../context/GameContext.jsx";
 import {
   SKILL_BRANCHES,
@@ -80,6 +80,10 @@ function pct(v, max) {
   return (v / max) * 100 + "%";
 }
 
+function clamp(v, min, max) {
+  return Math.min(max, Math.max(min, v));
+}
+
 export default function SkillTreeScreen() {
   const {
     gold,
@@ -96,6 +100,190 @@ export default function SkillTreeScreen() {
   const toastTimer = useRef(null);
 
   useEffect(() => () => clearTimeout(toastTimer.current), []);
+
+  const viewportRef = useRef(null);
+  const viewRef = useRef({ scale: 1, x: 0, y: 0 });
+  const pointersRef = useRef(new Map());
+  const gestureRef = useRef(null);
+  const interactedRef = useRef(false);
+  const [view, setView] = useState({ scale: 1, x: 0, y: 0 });
+  const [grabbing, setGrabbing] = useState(false);
+
+  function updateView(fn) {
+    setView((prev) => {
+      const next = fn(prev);
+      viewRef.current = next;
+      return next;
+    });
+  }
+
+  function fitView() {
+    const el = viewportRef.current;
+    if (!el) return;
+    const vw = el.clientWidth;
+    const vh = el.clientHeight;
+    const scale = clamp(Math.min(vw / 640, vh / 960) * 0.96, 0.3, 1);
+    const next = {
+      scale,
+      x: (vw - 640 * scale) / 2,
+      y: (vh - 960 * scale) / 2,
+    };
+    viewRef.current = next;
+    setView(next);
+  }
+
+  useLayoutEffect(() => {
+    fitView();
+    const onResize = () => {
+      if (!interactedRef.current) fitView();
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  useEffect(() => {
+    const el = viewportRef.current;
+    if (!el) return;
+    const onWheel = (e) => {
+      e.preventDefault();
+      interactedRef.current = true;
+      const v = viewRef.current;
+      if (e.ctrlKey) {
+        const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+        const rect = el.getBoundingClientRect();
+        const px = e.clientX - rect.left;
+        const py = e.clientY - rect.top;
+        const scale = clamp(v.scale * factor, 0.3, 2.5);
+        const wx = (px - v.x) / v.scale;
+        const wy = (py - v.y) / v.scale;
+        updateView(() => ({ scale, x: px - wx * scale, y: py - wy * scale }));
+      } else {
+        updateView(() => ({ ...v, x: v.x - e.deltaX, y: v.y - e.deltaY }));
+      }
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
+  function onPointerDown(e) {
+    pointersRef.current.set(e.pointerId, {
+      x: e.clientX,
+      y: e.clientY,
+      captured: false,
+    });
+    if (pointersRef.current.size === 2) {
+      const [p1, p2] = [...pointersRef.current.values()];
+      const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+      const mid = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
+      const rect = viewportRef.current.getBoundingClientRect();
+      gestureRef.current = {
+        mode: "pinch",
+        startScale: viewRef.current.scale,
+        startDist: dist,
+        startMid: { x: mid.x - rect.left, y: mid.y - rect.top },
+        startX: viewRef.current.x,
+        startY: viewRef.current.y,
+      };
+    }
+  }
+
+  function onPointerMove(e) {
+    const map = pointersRef.current;
+    const ptr = map.get(e.pointerId);
+    if (!ptr) return;
+    const rect = viewportRef.current.getBoundingClientRect();
+    const moved = Math.hypot(e.clientX - ptr.x, e.clientY - ptr.y);
+
+    if (!ptr.captured && moved > 6) {
+      ptr.captured = true;
+      viewportRef.current.setPointerCapture(e.pointerId);
+      setGrabbing(true);
+      interactedRef.current = true;
+      if (map.size === 1) {
+        gestureRef.current = {
+          mode: "pan",
+          startX: viewRef.current.x,
+          startY: viewRef.current.y,
+          lastX: e.clientX,
+          lastY: e.clientY,
+        };
+      } else {
+        const [p1, p2] = [...map.values()];
+        const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+        const mid = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
+        gestureRef.current = {
+          mode: "pinch",
+          startScale: viewRef.current.scale,
+          startDist: dist,
+          startMid: { x: mid.x - rect.left, y: mid.y - rect.top },
+          startX: viewRef.current.x,
+          startY: viewRef.current.y,
+        };
+      }
+    }
+
+    ptr.x = e.clientX;
+    ptr.y = e.clientY;
+    if (!ptr.captured) return;
+
+    const g = gestureRef.current;
+    if (!g) return;
+
+    if (g.mode === "pan") {
+      updateView(() => ({
+        scale: viewRef.current.scale,
+        x: g.startX + (e.clientX - g.lastX),
+        y: g.startY + (e.clientY - g.lastY),
+      }));
+    } else {
+      const [p1, p2] = [...map.values()];
+      const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+      const mid = {
+        x: (p1.x + p2.x) / 2 - rect.left,
+        y: (p1.y + p2.y) / 2 - rect.top,
+      };
+      const scale = clamp(g.startScale * (dist / g.startDist), 0.3, 2.5);
+      const wx = (g.startMid.x - g.startX) / g.startScale;
+      const wy = (g.startMid.y - g.startY) / g.startScale;
+      updateView(() => ({ scale, x: mid.x - wx * scale, y: mid.y - wy * scale }));
+    }
+  }
+
+  function endPointer(e) {
+    const map = pointersRef.current;
+    const ptr = map.get(e.pointerId);
+    map.delete(e.pointerId);
+    if (ptr && ptr.captured) {
+      try {
+        viewportRef.current.releasePointerCapture(e.pointerId);
+      } catch (_) {}
+      setGrabbing(false);
+    }
+    if (map.size === 1) {
+      const [p] = [...map.values()];
+      gestureRef.current = {
+        mode: "pan",
+        startX: viewRef.current.x,
+        startY: viewRef.current.y,
+        lastX: p.x,
+        lastY: p.y,
+      };
+    } else if (map.size === 0) {
+      gestureRef.current = null;
+    }
+  }
+
+  function onDoubleClick(e) {
+    interactedRef.current = true;
+    const rect = viewportRef.current.getBoundingClientRect();
+    const px = e.clientX - rect.left;
+    const py = e.clientY - rect.top;
+    const v = viewRef.current;
+    const scale = clamp(v.scale * 1.6, 0.3, 2.5);
+    const wx = (px - v.x) / v.scale;
+    const wy = (py - v.y) / v.scale;
+    updateView(() => ({ scale, x: px - wx * scale, y: py - wy * scale }));
+  }
 
   function showToast(msg) {
     setToast(msg);
@@ -181,13 +369,27 @@ export default function SkillTreeScreen() {
         </div>
       </div>
 
-      <div className="tree-canvas">
-        <svg
-          className="tree-svg"
-          viewBox="0 0 640 960"
-          preserveAspectRatio="xMidYMid meet"
-          aria-hidden="true"
+      <div
+        className={"tree-viewport" + (grabbing ? " grabbing" : "")}
+        ref={viewportRef}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endPointer}
+        onPointerCancel={endPointer}
+        onDoubleClick={onDoubleClick}
+      >
+        <div
+          className="tree-stage"
+          style={{
+            transform: `translate3d(${view.x}px, ${view.y}px, 0) scale(${view.scale})`,
+          }}
         >
+          <svg
+            className="tree-svg"
+            viewBox="0 0 640 960"
+            preserveAspectRatio="xMidYMid meet"
+            aria-hidden="true"
+          >
           <circle className="center-ring" cx={CENTER.x} cy={CENTER.y} r={34} />
           <circle className="center-core" cx={CENTER.x} cy={CENTER.y} r={13} />
 
@@ -274,6 +476,15 @@ export default function SkillTreeScreen() {
             );
           });
         })}
+        </div>
+        <button
+          className="tree-fit"
+          onClick={fitView}
+          aria-label="Ajustar árvore na tela"
+          title="Ajustar na tela"
+        >
+          <Maximize2 size={14} />
+        </button>
       </div>
 
       {selected && (

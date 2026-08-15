@@ -4,6 +4,8 @@
    L2: nos 2D + linhas da arvore
    ====================================== */
 .skill-tree-view {
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -103,11 +105,42 @@
   box-shadow: 0 0 4px rgba(156, 199, 255, 0.6);
 }
 
-/* ---- Canvas da arvore ---- */
-.tree-canvas {
+/* ---- Viewport: pan/zoom da arvore ---- */
+.tree-viewport {
   position: relative;
-  width: 100%;
-  aspect-ratio: 640 / 960;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+  border-radius: 8px;
+}
+
+.tree-viewport.grabbing {
+  cursor: grabbing;
+}
+
+.tree-viewport::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 60px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px rgba(200, 206, 222, 0.06);
+  border-radius: 8px;
+}
+
+.tree-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 640px;
+  height: 960px;
+  transform-origin: 0 0;
+  will-change: transform;
 }
 
 .tree-svg {
@@ -116,6 +149,30 @@
   width: 100%;
   height: 100%;
   overflow: visible;
+}
+
+.tree-fit {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  z-index: 5;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--border-bright);
+  background: rgba(10, 10, 14, 0.85);
+  color: var(--gold);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.tree-fit:hover {
+  color: var(--gold-bright);
+  border-color: rgba(200, 153, 58, 0.5);
+  transform: scale(1.06);
 }
 
 /* Circulo central neutro: anel prateado + bola escura */
