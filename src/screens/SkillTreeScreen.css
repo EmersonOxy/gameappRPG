@@ -397,17 +397,6 @@
   opacity: 0.7;
 }
 
-.node-element {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 13px;
-  border-radius: 999px;
-  border: 1px solid currentColor;
-  background: rgba(0, 0, 0, 0.35);
-}
-
 .element-magma { color: #ff8a5c; }
 .element-rocha { color: #d8b48a; }
 .element-mare { color: #7ec8ff; }

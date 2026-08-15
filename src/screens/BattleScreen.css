@@ -106,10 +106,18 @@
   height: 38px;
   border: none;
   border-radius: 6px;
-  background: url(../assets/ui/icons/Square-Dark-Default/Pause.png) no-repeat center / 100% 100%;
+  background-color: #101016;
+  background-image: url(../assets/ui/icons/Square-Dark-Default/Pause.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
   cursor: pointer;
   z-index: 9;
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
   transition: transform 0.08s ease, filter 0.12s ease;
 }
 
@@ -183,8 +191,11 @@
 
 .pause-actions {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
   width: 100%;
   margin-top: 8px;
 }
@@ -831,8 +842,13 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  background-color: #16110c;
   background-repeat: no-repeat;
   background-size: 100% 100%;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
   transition: transform 0.06s ease, filter 0.15s ease;
 }
 
@@ -1097,8 +1113,11 @@
 
 .result-actions {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
   width: 100%;
   margin-top: 6px;
 }
@@ -1127,14 +1146,23 @@
 .btn-result:hover { filter: brightness(1.1); }
 .btn-result:not(.primary):active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.5); }
 
-/* Botões com arte do kit UI (Rect-Dark): ícone embutido, sem texto */
+/* Botões com arte do kit UI (Rect-Dark): ícone embutido, sem texto.
+   Mantêm a proporção da arte (76x51) para não distorcer. */
 .btn-result.ui-btn {
   border: none;
   border-radius: 5px;
+  width: auto;
+  height: 56px;
+  aspect-ratio: 76 / 51;
+  background-color: #16110c;
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100% 100%;
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .btn-result.ui-btn:hover {
@@ -1165,7 +1193,7 @@
   filter: drop-shadow(0 0 14px rgba(200, 153, 58, 0.65)) brightness(1.1);
 }
 
-.btn-result.primary {
+.btn-result.primary:not(.ui-btn) {
   color: #1a0d00;
   background:
     radial-gradient(circle 5px at 10px 10px, var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
@@ -1358,8 +1386,16 @@
   color: var(--text-bright);
   border: none;
   outline: none;
-  background: url(../assets/ui/icons/Rect-Dark-Default.png) no-repeat center / 100% 100%;
+  background-color: #16110c;
+  background-image: url(../assets/ui/icons/Rect-Dark-Default.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .btn-roll.ui-frame:hover {
@@ -1370,8 +1406,19 @@
 .btn-roll.ui-play {
   border: none;
   outline: none;
-  background: url(../assets/ui/icons/Rect-Dark-Default/Play.png) no-repeat center / 100% 100%;
+  width: auto;
+  height: 56px;
+  aspect-ratio: 76 / 51;
+  background-color: #16110c;
+  background-image: url(../assets/ui/icons/Rect-Dark-Default/Play.png);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5), 0 0 14px rgba(200, 153, 58, 0.3);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .btn-roll.ui-play:hover {

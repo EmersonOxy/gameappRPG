@@ -439,7 +439,6 @@ export default function SkillTreeScreen() {
             const keystone = i === skills.length - 1;
             const pos = cfg.stubs[i].node;
             const NodeIcon = skill.icon;
-            const NodeElementIcon = getElement(skill.element).icon;
             return (
               <button
                 key={skill.id}
@@ -463,12 +462,6 @@ export default function SkillTreeScreen() {
                   )}
                 </span>
                 <span className="node-name">{skill.name}</span>
-                <span
-                  className={"node-element element-" + skill.element}
-                  title={getElement(skill.element).label}
-                >
-                  <NodeElementIcon size={8} />
-                </span>
               </button>
             );
           });
