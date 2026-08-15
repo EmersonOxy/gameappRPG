@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>10 Botões 3D — Teste de Estilos</title>
+<title>10 Botões 3D — Estilos Distintos</title>
 <style>
   :root {
     --bg: #0b0e14;
@@ -13,10 +13,13 @@
     --gold-2: #eab850;
     --gold-bright: #ffd97a;
     --gold-dark: #7a5518;
+    --silver: #aeb4c4;
+    --silver-bright: #e8ecf5;
+    --silver-dark: #5c6270;
+    --emerald: #20c97f;
+    --emerald-bright: #8cf5c4;
     --teal: #2dd4bf;
-    --crimson: #e05050;
-    --blue: #4a90d9;
-    --purple: #9b6bff;
+    --crimson: #b83030;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -28,7 +31,7 @@
       radial-gradient(ellipse 90% 60% at 50% -10%, #1c2333 0%, transparent 60%),
       var(--bg);
     color: var(--ink);
-    padding: 40px 20px 60px;
+    padding: 40px 20px 70px;
   }
 
   h1 {
@@ -43,79 +46,67 @@
     -webkit-text-fill-color: transparent;
   }
 
-  .subtitle {
-    text-align: center;
-    color: rgba(232, 226, 213, 0.5);
-    margin-bottom: 12px;
-    font-size: 14px;
-  }
+  .subtitle { text-align: center; color: rgba(232,226,213,.5); margin-bottom: 12px; font-size: 14px; }
 
   .click-log {
     position: sticky;
     top: 12px;
     z-index: 50;
-    max-width: 360px;
+    max-width: 380px;
     margin: 0 auto 32px;
     text-align: center;
     padding: 12px 18px;
     border-radius: 999px;
-    background: rgba(20, 26, 36, 0.9);
-    border: 1px solid rgba(200, 153, 58, 0.35);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    background: rgba(20,26,36,.92);
+    border: 1px solid rgba(200,153,58,.35);
+    box-shadow: 0 10px 30px rgba(0,0,0,.5);
     font-weight: 700;
-    letter-spacing: 0.5px;
   }
-
   .click-log b { color: var(--gold-bright); }
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 28px;
-    max-width: 1100px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
+    max-width: 1120px;
     margin: 0 auto;
   }
 
   .cell {
     background: var(--card);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 14px;
-    padding: 30px 20px 24px;
+    border: 1px solid rgba(255,255,255,.06);
+    border-radius: 16px;
+    padding: 32px 20px 26px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 18px;
+    gap: 16px;
     position: relative;
     overflow: hidden;
   }
-
   .cell::before {
     content: attr(data-n);
     position: absolute;
     top: 10px; left: 14px;
     font-size: 12px;
     font-weight: 900;
-    color: rgba(255,255,255,0.22);
+    color: rgba(255,255,255,.2);
     letter-spacing: 1px;
   }
+  .cell .label { font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: rgba(232,226,213,.55); }
+  .cell .count { font-size: 11px; color: var(--teal); font-weight: 800; }
 
-  .cell .label {
-    font-size: 12px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: rgba(232,226,213,0.55);
-  }
-
-  .cell .count {
-    font-size: 11px;
-    color: var(--teal);
-    font-weight: 800;
+  .stage {
+    height: 92px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   button {
     font-family: inherit;
     font-weight: 800;
-    font-size: 15px;
+    font-size: 14px;
     letter-spacing: 1px;
     text-transform: uppercase;
     border: none;
@@ -124,291 +115,442 @@
     user-select: none;
   }
 
-  /* =====================================================
-     01 — PUSH CLÁSSICO (afunda na base)
-     ===================================================== */
-  .btn-01 {
-    padding: 0 34px;
-    height: 56px;
-    color: #fff;
-    background: linear-gradient(180deg, #4a90d9, #2b5d96);
-    border-radius: 12px;
-    box-shadow: 0 8px 0 #1c3f68, 0 14px 24px rgba(0,0,0,0.4);
-    transition: transform 0.08s ease, box-shadow 0.08s ease;
+  /* Wrapper genérico para formas com clip-path (sombra via drop-shadow) */
+  .depth {
+    display: inline-block;
+    transition: filter .1s ease;
+    will-change: filter;
   }
-  .btn-01:active {
-    transform: translateY(8px);
-    box-shadow: 0 0 0 #1c3f68, 0 4px 10px rgba(0,0,0,0.4);
+  .depth .shape {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform .09s cubic-bezier(.22,1,.36,1);
+    will-change: transform;
   }
 
   /* =====================================================
-     02 — OURO METÁLICO + VARREDURA DE BRILHO
+     01 — GEMA REAL (hexágono de ouro facetado)
      ===================================================== */
+  .depth-01 { filter: drop-shadow(0 7px 0 var(--gold-dark)) drop-shadow(0 0 16px rgba(200,153,58,.35)); animation: gemPulse 2.4s ease-in-out infinite; }
+  .btn-01 {
+    position: relative;
+    width: 190px;
+    height: 58px;
+    color: #2a1a00;
+    background: linear-gradient(160deg, #ffd97a 0%, #eab850 30%, #c8993a 55%, #7a5518 100%);
+    clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+    overflow: hidden;
+  }
+  .btn-01::before { /* facetas */
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(115deg, transparent 30%, rgba(255,255,255,.5) 31%, transparent 33%),
+      linear-gradient(115deg, transparent 46%, rgba(255,255,255,.35) 47%, transparent 49%),
+      linear-gradient(115deg, transparent 62%, rgba(255,255,255,.5) 63%, transparent 65%);
+  }
+  .btn-01::after { /* sheen */
+    content: "";
+    position: absolute; top: -20%; left: -60%;
+    width: 40%; height: 140%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.75), transparent);
+    transform: rotate(20deg);
+    animation: gemSheen 2.4s ease-in-out infinite;
+  }
+  @keyframes gemSheen { 0% { left: -60%; } 55%, 100% { left: 140%; } }
+  @keyframes gemPulse {
+    0%, 100% { filter: drop-shadow(0 7px 0 var(--gold-dark)) drop-shadow(0 0 14px rgba(200,153,58,.35)); }
+    50%      { filter: drop-shadow(0 7px 0 var(--gold-dark)) drop-shadow(0 0 42px rgba(255,217,122,.8)); }
+  }
+  .depth-01:active { filter: drop-shadow(0 1px 0 var(--gold-dark)) drop-shadow(0 0 20px rgba(255,217,122,.6)); }
+  .depth-01:active .shape { transform: translateY(6px) scale(.98,.92); }
+
+  /* =====================================================
+     02 — ESCUDO DO GUARDA (aço rebitado vitoriano)
+     ===================================================== */
+  .depth-02 { filter: drop-shadow(0 8px 0 #2a2e37) drop-shadow(0 14px 18px rgba(0,0,0,.5)); }
   .btn-02 {
     position: relative;
-    padding: 0 36px;
-    height: 56px;
-    color: #1a1000;
-    background: linear-gradient(180deg, var(--gold-bright), var(--gold-2) 45%, var(--gold));
-    border: 1px solid var(--gold-dark);
-    border-radius: 6px;
-    box-shadow: 0 6px 0 var(--gold-dark), 0 12px 26px rgba(200,153,58,0.35);
-    overflow: hidden;
-    transition: transform 0.09s cubic-bezier(0.22,1,0.36,1), box-shadow 0.09s ease;
+    width: 120px;
+    height: 92px;
+    color: #1c2027;
+    background: linear-gradient(180deg, #e8ecf5 0%, #aeb4c4 55%, #5c6270 100%);
+    clip-path: polygon(50% 0, 100% 18%, 95% 62%, 50% 100%, 5% 62%, 0 18%);
+    border: none;
+    font-size: 22px;
   }
-  .btn-02::after {
+  .btn-02::before { /* rebites dourados */
     content: "";
-    position: absolute;
-    top: 0; left: -80%;
-    width: 40%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
-    animation: shine 2.8s ease infinite;
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(5px at 25% 14%, #ffd97a 0 3px, #7a5518 4px 5px, transparent 6px),
+      radial-gradient(5px at 50% 9%,  #ffd97a 0 3px, #7a5518 4px 5px, transparent 6px),
+      radial-gradient(5px at 75% 14%, #ffd97a 0 3px, #7a5518 4px 5px, transparent 6px),
+      radial-gradient(5px at 28% 78%, #ffd97a 0 3px, #7a5518 4px 5px, transparent 6px),
+      radial-gradient(5px at 72% 78%, #ffd97a 0 3px, #7a5518 4px 5px, transparent 6px);
   }
-  @keyframes shine { 0% { left: -80%; } 45%, 100% { left: 140%; } }
-  .btn-02:hover { transform: translateY(-2px); }
-  .btn-02:active {
-    transform: translateY(6px) scale(1.02, 0.94);
-    box-shadow: 0 1px 0 var(--gold-dark), 0 6px 14px rgba(200,153,58,0.3);
-  }
+  .depth-02:active { filter: drop-shadow(0 1px 0 #2a2e37) drop-shadow(0 5px 8px rgba(0,0,0,.5)); }
+  .depth-02:active .shape { transform: translateY(8px) scale(.97); }
 
   /* =====================================================
-     03 — NEON GLOW PULSANTE
+     03 — PERGAMINHO ARCANO (scroll com rolos)
      ===================================================== */
   .btn-03 {
-    padding: 0 34px;
-    height: 56px;
-    color: #061216;
-    background: var(--teal);
+    position: relative;
+    padding: 0 26px;
+    height: 58px;
+    color: #4a3a1c;
+    background: linear-gradient(90deg, #e8dcc8, #f5edd8 50%, #d8c9a3);
+    border-radius: 4px;
+    box-shadow: 0 6px 0 #7a5a1a, 0 12px 20px rgba(0,0,0,.4), inset 0 0 0 1px rgba(122,90,26,.4);
+    transition: transform .45s cubic-bezier(.22,1,.36,1), box-shadow .09s ease;
+  }
+  .btn-03::before, .btn-03::after { /* rolos */
+    content: "";
+    position: absolute;
+    top: 4px; bottom: 4px;
+    width: 16px;
     border-radius: 999px;
-    animation: neonPulse 1.6s ease-in-out infinite;
-    transition: transform 0.08s ease;
+    background: linear-gradient(90deg, #c9b896, #8a7a5c, #c9b896);
+    box-shadow: 0 0 0 1px rgba(0,0,0,.35);
   }
-  @keyframes neonPulse {
-    0%, 100% { box-shadow: 0 0 8px rgba(45,212,191,0.5), 0 0 22px rgba(45,212,191,0.35); }
-    50%      { box-shadow: 0 0 16px rgba(45,212,191,0.9), 0 0 46px rgba(45,212,191,0.6); }
+  .btn-03::before { left: -8px; }
+  .btn-03::after  { right: -8px; }
+  .btn-03:hover { transform: scaleY(1.06); }
+  .btn-03:active {
+    animation: scrollSquash .5s cubic-bezier(.28,1.5,.6,1);
   }
-  .btn-03:active { transform: scale(0.9); }
+  @keyframes scrollSquash {
+    0% { transform: scale(1,1); }
+    40% { transform: scale(.92,1.1); }
+    70% { transform: scale(1.04,.94); }
+    100% { transform: scale(1,1); }
+  }
 
   /* =====================================================
-     04 — GLASSMORPHISM
+     04 — FRASCO DE POÇÃO (vidro + líquido esmeralda)
      ===================================================== */
   .btn-04 {
     position: relative;
-    padding: 0 34px;
-    height: 56px;
+    width: 120px;
+    height: 84px;
     color: #fff;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.25);
-    border-radius: 16px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.35);
-    transition: transform 0.1s ease, background 0.2s ease;
-  }
-  .btn-04:hover { background: rgba(255,255,255,0.14); }
-  .btn-04:active { transform: translateY(4px) scale(0.98); }
-
-  /* =====================================================
-     05 — GRADIENTE ANIMADO (fundo deslizante)
-     ===================================================== */
-  .btn-05 {
-    padding: 0 36px;
-    height: 56px;
-    color: #fff;
-    background: linear-gradient(90deg, #ff5f6d, #ffc371, #4facfe, #43e97b, #ff5f6d);
-    background-size: 300% 100%;
-    border-radius: 12px;
-    animation: gradientFlow 4s linear infinite;
-    box-shadow: 0 6px 0 rgba(0,0,0,0.35), 0 12px 24px rgba(0,0,0,0.4);
-    transition: transform 0.08s ease;
-  }
-  @keyframes gradientFlow { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
-  .btn-05:active { transform: translateY(6px); box-shadow: 0 1px 0 rgba(0,0,0,0.35), 0 6px 12px rgba(0,0,0,0.4); }
-
-  /* =====================================================
-     06 — BRUTALISTA (sombra dura em camadas)
-     ===================================================== */
-  .btn-06 {
-    padding: 0 34px;
-    height: 56px;
-    color: #0a0a0a;
-    background: #ffd23f;
-    border: 3px solid #0a0a0a;
-    border-radius: 4px;
-    box-shadow: 4px 4px 0 #0a0a0a, 8px 8px 0 rgba(0,0,0,0.25);
-    transition: transform 0.08s ease, box-shadow 0.08s ease;
-  }
-  .btn-06:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 #0a0a0a, 12px 12px 0 rgba(0,0,0,0.25); }
-  .btn-06:active { transform: translate(8px, 8px); box-shadow: 0 0 0 #0a0a0a, 0 0 0 rgba(0,0,0,0.25); }
-
-  /* =====================================================
-     07 — FLIP 3D (vira no eixo X no hover)
-     ===================================================== */
-  .flip-wrap { perspective: 700px; }
-  .btn-07 {
-    position: relative;
-    width: 180px;
-    height: 56px;
-    transform-style: preserve-3d;
-    transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
-  }
-  .flip-wrap:hover .btn-07 { transform: rotateX(180deg); }
-  .btn-07 .face {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    backface-visibility: hidden;
-    letter-spacing: 1px;
-  }
-  .btn-07 .front {
-    color: #fff;
-    background: linear-gradient(180deg, #9b6bff, #5b2fd0);
-    box-shadow: 0 6px 0 #3a1e86, 0 12px 24px rgba(0,0,0,0.4);
-  }
-  .btn-07 .back {
-    transform: rotateX(180deg);
-    color: #1a0d00;
-    background: linear-gradient(180deg, var(--gold-bright), var(--gold));
-    box-shadow: 0 6px 0 var(--gold-dark);
-  }
-  .btn-07:active { transform: rotateX(180deg) scale(0.95); }
-
-  /* =====================================================
-     08 — MOLLA / BOUNCE (rebate ao clicar)
-     ===================================================== */
-  .btn-08 {
-    padding: 0 34px;
-    height: 56px;
-    color: #fff;
-    background: linear-gradient(180deg, #ff6b81, #d6304a);
-    border-radius: 14px;
-    box-shadow: 0 6px 0 #7a1424, 0 12px 24px rgba(0,0,0,0.4);
-  }
-  .btn-08:active { animation: bounce 0.5s cubic-bezier(0.28,1.5,0.6,1); }
-  @keyframes bounce {
-    0%   { transform: translateY(0) scale(1); }
-    35%  { transform: translateY(6px) scale(0.94, 1.06); }
-    65%  { transform: translateY(-4px) scale(1.03, 0.97); }
-    100% { transform: translateY(0) scale(1); }
-  }
-
-  /* =====================================================
-     09 — RIPPLE / ONDA (origem no clique)
-     ===================================================== */
-  .btn-09 {
-    position: relative;
-    padding: 0 34px;
-    height: 56px;
-    color: #fff;
-    background: linear-gradient(180deg, #2dd4bf, #0e7a72);
-    border-radius: 12px;
-    box-shadow: 0 6px 0 #08423c, 0 12px 24px rgba(0,0,0,0.4);
+    background: rgba(238,235,248,.16);
+    border: 1px solid rgba(255,255,255,.32);
+    border-radius: 30px 30px 20px 20px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 8px 22px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.35), 0 0 20px rgba(32,201,127,.35);
     overflow: hidden;
-    transition: transform 0.08s ease;
+    font-size: 12px;
   }
-  .btn-09:active { transform: translateY(6px); box-shadow: 0 1px 0 #08423c, 0 6px 12px rgba(0,0,0,0.4); }
-  .ripple {
+  .btn-04::after { /* líquido */
+    content: "";
     position: absolute;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.5);
-    transform: scale(0);
-    animation: ripple 0.6s ease-out;
-    pointer-events: none;
+    left: 0; right: 0; bottom: 0;
+    height: 62%;
+    background: linear-gradient(180deg, #8cf5c4, #20c97f 70%, #0f7a4e);
+    border-radius: 0 0 20px 20px;
+    transition: transform .6s ease;
   }
-  @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+  .btn-04 .bubble {
+    position: absolute;
+    bottom: 8%;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.7);
+    animation: bubbleUp 2.4s linear infinite;
+    z-index: 2;
+  }
+  .btn-04 .bubble:nth-child(2) { left: 30%; animation-delay: .8s; width: 5px; height: 5px; }
+  .btn-04 .bubble:nth-child(3) { left: 58%; animation-delay: 1.6s; width: 9px; height: 9px; }
+  @keyframes bubbleUp {
+    0%   { transform: translateY(0) scale(.6); opacity: 0; }
+    20%  { opacity: 1; }
+    100% { transform: translateY(-54px) scale(1); opacity: 0; }
+  }
+  .btn-04:active::after { animation: slosh .6s ease-in-out; }
+  .btn-04:active { animation: slosh .6s ease-in-out; }
+  @keyframes slosh {
+    0%, 100% { transform: rotate(0) translateX(0); }
+    25% { transform: rotate(-4deg) translateX(-4px); }
+    75% { transform: rotate(4deg) translateX(4px); }
+  }
 
   /* =====================================================
-     10 — TILT 3D COM PERSPECTIVA (segue o mouse)
+     05 — DADO ARCANO d20 (marfim facetado)
+     ===================================================== */
+  .depth-05 { filter: drop-shadow(0 8px 0 #1f1306) drop-shadow(0 12px 14px rgba(0,0,0,.5)); }
+  .btn-05 {
+    position: relative;
+    width: 108px;
+    height: 96px;
+    color: #2b2b33;
+    background: linear-gradient(180deg, #f0e6d2 0%, #c9b896 60%, #8a7a5c 100%);
+    clip-path: polygon(50% 0, 100% 38%, 82% 100%, 18% 100%, 0 38%);
+    font-size: 30px;
+    font-family: 'Georgia', serif;
+  }
+  .btn-05::before { /* facetas */
+    content: "";
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(155deg, transparent 48%, rgba(0,0,0,.18) 50%, transparent 52%),
+      linear-gradient(25deg, transparent 48%, rgba(0,0,0,.15) 50%, transparent 52%);
+  }
+  .depth-05:active .shape { animation: diceRoll .6s cubic-bezier(.28,1.5,.6,1); }
+  @keyframes diceRoll {
+    0%   { transform: rotate(0) translateY(0); }
+    30%  { transform: rotate(90deg) translateY(-16px); }
+    70%  { transform: rotate(180deg) translateY(6px); }
+    100% { transform: rotate(360deg) translateY(0); }
+  }
+
+  /* =====================================================
+     06 — CARTUCHO VULCÂNICO (aço escovado sci-fi)
      ===================================================== */
   .tilt-wrap { perspective: 600px; }
-  .btn-10 {
-    padding: 0 36px;
-    height: 56px;
-    color: #1a0d00;
-    background: linear-gradient(180deg, var(--gold-bright), var(--gold-2) 45%, var(--gold));
-    border: 1px solid var(--gold-dark);
-    border-radius: 10px;
-    box-shadow: 0 10px 0 var(--gold-dark), 0 18px 32px rgba(0,0,0,0.45);
+  .depth-06 { filter: drop-shadow(0 8px 0 #0d1013) drop-shadow(0 12px 18px rgba(0,0,0,.5)); }
+  .btn-06 {
+    position: relative;
+    width: 200px;
+    height: 58px;
+    color: #dfe6ec;
+    background: repeating-linear-gradient(90deg, #3a4148 0 2px, #2f353b 2px 4px);
+    clip-path: polygon(12% 0, 100% 0, 88% 100%, 0 100%);
     transform-style: preserve-3d;
-    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+    transition: transform .12s ease-out;
+    letter-spacing: 3px;
   }
-  .btn-10:active { transform: translateY(10px) scale(0.97); box-shadow: 0 1px 0 var(--gold-dark), 0 6px 12px rgba(0,0,0,0.4); }
+  .btn-06::before { /* listras de advertência */
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #b83030 0 12px, transparent 12px 24px);
+    opacity: .85;
+  }
+  .btn-06::after { /* brilho metálico */
+    content: "";
+    position: absolute; top: 0; left: -70%;
+    width: 45%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+    animation: shine 3.2s ease infinite;
+  }
+  @keyframes shine { 0% { left: -70%; } 45%, 100% { left: 130%; } }
+  .btn-06:active { transform: translateX(-8px); }
+
+  /* =====================================================
+     07 — NEON ARCADE (cápsula octogonal de néon)
+     ===================================================== */
+  .depth-07 { filter: drop-shadow(0 6px 0 rgba(0,0,0,.6)); }
+  .btn-07 {
+    width: 170px;
+    height: 58px;
+    color: #eafffb;
+    background: linear-gradient(180deg, #0b2a2a, #0a1a1c);
+    clip-path: polygon(14% 0, 86% 0, 100% 50%, 86% 100%, 14% 100%, 0 50%);
+    text-shadow: 0 0 8px #2dd4bf;
+    box-shadow:
+      inset 0 0 8px #eafffb,
+      inset 0 0 16px rgba(45,212,191,.5);
+    animation: neonFlicker 3.5s linear infinite;
+    font-family: 'Consolas', monospace;
+    letter-spacing: 4px;
+  }
+  @keyframes neonFlicker {
+    0%, 100% { opacity: 1; }
+    93% { opacity: 1; }
+    94% { opacity: .55; }
+    95% { opacity: .95; }
+    96% { opacity: .4; }
+    97% { opacity: 1; }
+  }
+  .depth-07:active .shape { animation: neonFlash .35s ease; }
+  @keyframes neonFlash {
+    0% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.08); filter: brightness(1.9); }
+    100% { transform: scale(1); filter: brightness(1); }
+  }
+
+  /* =====================================================
+     08 — PIXEL RELIC (8-bit com cantos serrilhados)
+     ===================================================== */
+  .depth-08 { filter: drop-shadow(0 6px 0 #0a0a0a); }
+  .btn-08 {
+    width: 190px;
+    height: 58px;
+    color: #0a0a0a;
+    background: linear-gradient(180deg, #ffeb9e, #ffd23f 70%, #e0ad1a);
+    clip-path: polygon(
+      0 6px, 6px 6px, 6px 0,
+      calc(100% - 6px) 0, calc(100% - 6px) 6px, 100% 6px,
+      100% calc(100% - 6px), calc(100% - 6px) calc(100% - 6px), calc(100% - 6px) 100%,
+      6px 100%, 6px calc(100% - 6px), 0 calc(100% - 6px)
+    );
+    font-family: 'Consolas', monospace;
+    image-rendering: pixelated;
+    transition: transform .08s steps(3, end);
+  }
+  .depth-08:active .shape { transform: translate(6px, 6px); }
+
+  /* =====================================================
+     09 — MOEDA DO DESTINO (moeda de ouro cunhada)
+     ===================================================== */
+  .coin-wrap { perspective: 700px; }
+  .btn-09 {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    color: #2a1a00;
+    background: linear-gradient(180deg, #ffd97a 0%, #eab850 45%, #c8993a 100%);
+    box-shadow:
+      inset 0 0 0 3px #7a5518,
+      inset 0 0 0 6px #c8993a,
+      inset 0 6px 12px rgba(0,0,0,.35),
+      inset 0 -4px 8px rgba(255,255,255,.35),
+      0 8px 0 #7a5518,
+      0 14px 20px rgba(0,0,0,.5);
+    transform-style: preserve-3d;
+    font-size: 22px;
+    font-family: 'Georgia', serif;
+  }
+  .coin-wrap:hover .btn-09 { animation: coinSpin 1.6s linear infinite; }
+  @keyframes coinSpin { to { transform: rotateY(360deg); } }
+  .btn-09.flipping { animation: coinFlip .7s cubic-bezier(.28,1.3,.5,1); }
+  @keyframes coinFlip {
+    0% { transform: rotateY(0); }
+    100% { transform: rotateY(720deg); }
+  }
+
+  /* =====================================================
+     10 — CRISTAL DE QUARTZO (estilhaço prismático)
+     ===================================================== */
+  .depth-10 { filter: drop-shadow(0 8px 0 rgba(10,20,30,.6)) drop-shadow(0 0 18px rgba(140,245,196,.35)); }
+  .btn-10 {
+    position: relative;
+    width: 130px;
+    height: 84px;
+    color: #fff;
+    background: linear-gradient(180deg, rgba(231,228,242,.5), rgba(140,245,196,.2) 55%, rgba(155,107,255,.35));
+    border: 1px solid #8cf5c4;
+    clip-path: polygon(50% 0, 100% 28%, 78% 100%, 22% 100%, 0 28%);
+    backdrop-filter: blur(6px);
+    overflow: hidden;
+    animation: prism 6s linear infinite;
+    font-size: 12px;
+    text-shadow: 0 1px 3px rgba(0,0,0,.5);
+  }
+  @keyframes prism { to { filter: hue-rotate(360deg); } }
+  .btn-10::after { /* luz prismática */
+    content: "";
+    position: absolute; top: -20%; left: -60%;
+    width: 45%; height: 140%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.75), transparent);
+    transform: rotate(18deg);
+    animation: prismLight 2.6s ease-in-out infinite;
+  }
+  @keyframes prismLight { 0% { left: -60%; } 55%, 100% { left: 140%; } }
+  .depth-10:active .shape { transform: scale(.96,.92) rotate(2deg); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .depth, .btn-03, .btn-04, .btn-06, .btn-09, .btn-10,
+    .btn-01::after, .btn-06::after, .btn-10::after, .btn-04 .bubble {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
 </style>
 </head>
 <body>
 
   <h1>10 Botões 3D</h1>
-  <p class="subtitle">Clique em cada um para testar a animação</p>
+  <p class="subtitle">Formas, materiais e animações distintos — clique em cada um</p>
 
   <div class="click-log" id="log">Nenhum clique ainda</div>
 
   <div class="grid">
 
     <div class="cell" data-n="01">
-      <span class="label">Push Clássico</span>
-      <button class="btn-01">Clique-me</button>
+      <span class="label">Gema Real · ouro facetado</span>
+      <div class="stage">
+        <span class="depth depth-01"><button class="shape btn-01">Ativar</button></span>
+      </div>
       <span class="count" data-count>0 cliques</span>
     </div>
 
     <div class="cell" data-n="02">
-      <span class="label">Ouro Metálico</span>
-      <button class="btn-02">Clique-me</button>
+      <span class="label">Escudo do Guarda · aço rebitado</span>
+      <div class="stage">
+        <span class="depth depth-02"><button class="shape btn-02">⚔</button></span>
+      </div>
       <span class="count" data-count>0 cliques</span>
     </div>
 
     <div class="cell" data-n="03">
-      <span class="label">Neon Pulsante</span>
-      <button class="btn-03">Clique-me</button>
+      <span class="label">Pergaminho Arcano · scroll</span>
+      <div class="stage">
+        <button class="btn-03">Conjurar</button>
+      </div>
       <span class="count" data-count>0 cliques</span>
     </div>
 
     <div class="cell" data-n="04">
-      <span class="label">Glassmorphism</span>
-      <button class="btn-04">Clique-me</button>
+      <span class="label">Frasco de Poção · vidro + líquido</span>
+      <div class="stage">
+        <button class="btn-04">Poção
+          <span class="bubble"></span>
+          <span class="bubble"></span>
+          <span class="bubble"></span>
+        </button>
+      </div>
       <span class="count" data-count>0 cliques</span>
     </div>
 
     <div class="cell" data-n="05">
-      <span class="label">Gradiente Animado</span>
-      <button class="btn-05">Clique-me</button>
+      <span class="label">Dado Arcano d20 · marfim</span>
+      <div class="stage">
+        <span class="depth depth-05"><button class="shape btn-05">20</button></span>
+      </div>
       <span class="count" data-count>0 cliques</span>
     </div>
 
     <div class="cell" data-n="06">
-      <span class="label">Brutalista</span>
-      <button class="btn-06">Clique-me</button>
-      <span class="count" data-count>0 cliques</span>
-    </div>
-
-    <div class="cell" data-n="07">
-      <span class="label">Flip 3D (hover)</span>
-      <div class="flip-wrap">
-        <div class="btn-07" role="button" tabindex="0">
-          <span class="face front">Virar</span>
-          <span class="face back">Pronto!</span>
+      <span class="label">Cartucho Vulcânico · aço escovado</span>
+      <div class="stage">
+        <div class="tilt-wrap">
+          <span class="depth depth-06"><button class="shape btn-06">Ejetar</button></span>
         </div>
       </div>
       <span class="count" data-count>0 cliques</span>
     </div>
 
+    <div class="cell" data-n="07">
+      <span class="label">Neon Arcade · tubo de néon</span>
+      <div class="stage">
+        <span class="depth depth-07"><button class="shape btn-07">PLAY</button></span>
+      </div>
+      <span class="count" data-count>0 cliques</span>
+    </div>
+
     <div class="cell" data-n="08">
-      <span class="label">Molla / Bounce</span>
-      <button class="btn-08">Clique-me</button>
+      <span class="label">Pixel Relic · 8-bit</span>
+      <div class="stage">
+        <span class="depth depth-08"><button class="shape btn-08">START</button></span>
+      </div>
       <span class="count" data-count>0 cliques</span>
     </div>
 
     <div class="cell" data-n="09">
-      <span class="label">Ripple / Onda</span>
-      <button class="btn-09">Clique-me</button>
+      <span class="label">Moeda do Destino · ouro cunhado</span>
+      <div class="stage">
+        <div class="coin-wrap"><button class="btn-09">¤</button></div>
+      </div>
       <span class="count" data-count>0 cliques</span>
     </div>
 
     <div class="cell" data-n="10">
-      <span class="label">Tilt 3D (mouse)</span>
-      <div class="tilt-wrap">
-        <button class="btn-10">Clique-me</button>
+      <span class="label">Cristal de Quartzo · prismático</span>
+      <div class="stage">
+        <span class="depth depth-10"><button class="shape btn-10">Runa</button></span>
       </div>
       <span class="count" data-count>0 cliques</span>
     </div>
@@ -419,62 +561,44 @@
   const log = document.getElementById("log");
   let total = 0;
 
-  function register(btn, name) {
+  function count(btn, name) {
     const cell = btn.closest(".cell");
     const countEl = cell && cell.querySelector("[data-count]");
-
-    btn.addEventListener("click", function (e) {
+    btn.addEventListener("click", function () {
       total++;
       log.innerHTML = "Último clique: <b>" + name + "</b> &middot; total " + total;
-
       if (countEl) {
         const n = (parseInt(countEl.textContent, 10) || 0) + 1;
         countEl.textContent = n + (n === 1 ? " clique" : " cliques");
       }
-
-      // Ripple no botão 09
-      if (btn.classList.contains("btn-09")) {
-        const rect = btn.getBoundingClientRect();
-        const d = Math.max(rect.width, rect.height);
-        const span = document.createElement("span");
-        span.className = "ripple";
-        span.style.width = span.style.height = d + "px";
-        span.style.left = (e.clientX - rect.left - d / 2) + "px";
-        span.style.top = (e.clientY - rect.top - d / 2) + "px";
-        btn.appendChild(span);
-        setTimeout(() => span.remove(), 600);
-      }
     });
   }
 
-  document.querySelectorAll("button").forEach((b, i) => {
-    const names = [
-      "01 Push Clássico", "02 Ouro Metálico", "03 Neon Pulsante",
-      "04 Glassmorphism", "05 Gradiente Animado", "06 Brutalista",
-      "08 Molla/Bounce", "09 Ripple/Onda", "10 Tilt 3D"
-    ];
-    // buttons index: 0..5 são 01..06, 6 é 08 (07 não é <button>), 7 é 09, 8 é 10
-    const label = b.closest(".cell").querySelector(".label").textContent;
-    register(b, label);
+  document.querySelectorAll("button").forEach((b) => {
+    count(b, (b.closest(".cell").querySelector(".label") || {}).textContent || "botão");
   });
 
-  // Botão 07 (div role=button)
-  register(document.querySelector(".btn-07"), "07 Flip 3D");
+  // Moeda: flip de 720° ao clicar
+  const coin = document.querySelector(".btn-09");
+  coin.addEventListener("click", function () {
+    coin.classList.remove("flipping");
+    void coin.offsetWidth; // reinicia a animação
+    coin.classList.add("flipping");
+    setTimeout(() => coin.classList.remove("flipping"), 700);
+  });
 
-  // Tilt 3D — botão 10 segue o mouse
-  const tiltBtn = document.querySelector(".btn-10");
+  // Cartucho: tilt 3D seguindo o mouse
   const tiltWrap = document.querySelector(".tilt-wrap");
-  if (tiltWrap && tiltBtn) {
-    tiltWrap.addEventListener("mousemove", function (e) {
-      const r = tiltWrap.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width - 0.5;
-      const y = (e.clientY - r.top) / r.height - 0.5;
-      tiltBtn.style.transform = "rotateX(" + (-y * 18) + "deg) rotateY(" + (x * 22) + "deg)";
-    });
-    tiltWrap.addEventListener("mouseleave", function () {
-      tiltBtn.style.transform = "";
-    });
-  }
+  const tiltBtn = document.querySelector(".btn-06");
+  tiltWrap.addEventListener("mousemove", function (e) {
+    const r = tiltWrap.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - 0.5;
+    const y = (e.clientY - r.top) / r.height - 0.5;
+    tiltBtn.style.transform = "rotateX(" + (-y * 20) + "deg) rotateY(" + (x * 26) + "deg)";
+  });
+  tiltWrap.addEventListener("mouseleave", function () {
+    tiltBtn.style.transform = "";
+  });
 </script>
 </body>
 </html>
