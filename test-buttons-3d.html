@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>10 Botões 3D — Teste de Estilos</title>
+<style>
+  :root {
+    --bg: #0b0e14;
+    --card: #141a24;
+    --ink: #e8e2d5;
+    --gold: #c8993a;
+    --gold-2: #eab850;
+    --gold-bright: #ffd97a;
+    --gold-dark: #7a5518;
+    --teal: #2dd4bf;
+    --crimson: #e05050;
+    --blue: #4a90d9;
+    --purple: #9b6bff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background:
+      radial-gradient(ellipse 90% 60% at 50% -10%, #1c2333 0%, transparent 60%),
+      var(--bg);
+    color: var(--ink);
+    padding: 40px 20px 60px;
+  }
+
+  h1 {
+    text-align: center;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    background: linear-gradient(180deg, #fff, #d8b25a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: rgba(232, 226, 213, 0.5);
+    margin-bottom: 12px;
+    font-size: 14px;
+  }
+
+  .click-log {
+    position: sticky;
+    top: 12px;
+    z-index: 50;
+    max-width: 360px;
+    margin: 0 auto 32px;
+    text-align: center;
+    padding: 12px 18px;
+    border-radius: 999px;
+    background: rgba(20, 26, 36, 0.9);
+    border: 1px solid rgba(200, 153, 58, 0.35);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .click-log b { color: var(--gold-bright); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 28px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .cell {
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 30px 20px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cell::before {
+    content: attr(data-n);
+    position: absolute;
+    top: 10px; left: 14px;
+    font-size: 12px;
+    font-weight: 900;
+    color: rgba(255,255,255,0.22);
+    letter-spacing: 1px;
+  }
+
+  .cell .label {
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(232,226,213,0.55);
+  }
+
+  .cell .count {
+    font-size: 11px;
+    color: var(--teal);
+    font-weight: 800;
+  }
+
+  button {
+    font-family: inherit;
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  /* =====================================================
+     01 — PUSH CLÁSSICO (afunda na base)
+     ===================================================== */
+  .btn-01 {
+    padding: 0 34px;
+    height: 56px;
+    color: #fff;
+    background: linear-gradient(180deg, #4a90d9, #2b5d96);
+    border-radius: 12px;
+    box-shadow: 0 8px 0 #1c3f68, 0 14px 24px rgba(0,0,0,0.4);
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+  }
+  .btn-01:active {
+    transform: translateY(8px);
+    box-shadow: 0 0 0 #1c3f68, 0 4px 10px rgba(0,0,0,0.4);
+  }
+
+  /* =====================================================
+     02 — OURO METÁLICO + VARREDURA DE BRILHO
+     ===================================================== */
+  .btn-02 {
+    position: relative;
+    padding: 0 36px;
+    height: 56px;
+    color: #1a1000;
+    background: linear-gradient(180deg, var(--gold-bright), var(--gold-2) 45%, var(--gold));
+    border: 1px solid var(--gold-dark);
+    border-radius: 6px;
+    box-shadow: 0 6px 0 var(--gold-dark), 0 12px 26px rgba(200,153,58,0.35);
+    overflow: hidden;
+    transition: transform 0.09s cubic-bezier(0.22,1,0.36,1), box-shadow 0.09s ease;
+  }
+  .btn-02::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -80%;
+    width: 40%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
+    animation: shine 2.8s ease infinite;
+  }
+  @keyframes shine { 0% { left: -80%; } 45%, 100% { left: 140%; } }
+  .btn-02:hover { transform: translateY(-2px); }
+  .btn-02:active {
+    transform: translateY(6px) scale(1.02, 0.94);
+    box-shadow: 0 1px 0 var(--gold-dark), 0 6px 14px rgba(200,153,58,0.3);
+  }
+
+  /* =====================================================
+     03 — NEON GLOW PULSANTE
+     ===================================================== */
+  .btn-03 {
+    padding: 0 34px;
+    height: 56px;
+    color: #061216;
+    background: var(--teal);
+    border-radius: 999px;
+    animation: neonPulse 1.6s ease-in-out infinite;
+    transition: transform 0.08s ease;
+  }
+  @keyframes neonPulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(45,212,191,0.5), 0 0 22px rgba(45,212,191,0.35); }
+    50%      { box-shadow: 0 0 16px rgba(45,212,191,0.9), 0 0 46px rgba(45,212,191,0.6); }
+  }
+  .btn-03:active { transform: scale(0.9); }
+
+  /* =====================================================
+     04 — GLASSMORPHISM
+     ===================================================== */
+  .btn-04 {
+    position: relative;
+    padding: 0 34px;
+    height: 56px;
+    color: #fff;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.35);
+    transition: transform 0.1s ease, background 0.2s ease;
+  }
+  .btn-04:hover { background: rgba(255,255,255,0.14); }
+  .btn-04:active { transform: translateY(4px) scale(0.98); }
+
+  /* =====================================================
+     05 — GRADIENTE ANIMADO (fundo deslizante)
+     ===================================================== */
+  .btn-05 {
+    padding: 0 36px;
+    height: 56px;
+    color: #fff;
+    background: linear-gradient(90deg, #ff5f6d, #ffc371, #4facfe, #43e97b, #ff5f6d);
+    background-size: 300% 100%;
+    border-radius: 12px;
+    animation: gradientFlow 4s linear infinite;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.35), 0 12px 24px rgba(0,0,0,0.4);
+    transition: transform 0.08s ease;
+  }
+  @keyframes gradientFlow { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
+  .btn-05:active { transform: translateY(6px); box-shadow: 0 1px 0 rgba(0,0,0,0.35), 0 6px 12px rgba(0,0,0,0.4); }
+
+  /* =====================================================
+     06 — BRUTALISTA (sombra dura em camadas)
+     ===================================================== */
+  .btn-06 {
+    padding: 0 34px;
+    height: 56px;
+    color: #0a0a0a;
+    background: #ffd23f;
+    border: 3px solid #0a0a0a;
+    border-radius: 4px;
+    box-shadow: 4px 4px 0 #0a0a0a, 8px 8px 0 rgba(0,0,0,0.25);
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+  }
+  .btn-06:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 #0a0a0a, 12px 12px 0 rgba(0,0,0,0.25); }
+  .btn-06:active { transform: translate(8px, 8px); box-shadow: 0 0 0 #0a0a0a, 0 0 0 rgba(0,0,0,0.25); }
+
+  /* =====================================================
+     07 — FLIP 3D (vira no eixo X no hover)
+     ===================================================== */
+  .flip-wrap { perspective: 700px; }
+  .btn-07 {
+    position: relative;
+    width: 180px;
+    height: 56px;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
+  }
+  .flip-wrap:hover .btn-07 { transform: rotateX(180deg); }
+  .btn-07 .face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    backface-visibility: hidden;
+    letter-spacing: 1px;
+  }
+  .btn-07 .front {
+    color: #fff;
+    background: linear-gradient(180deg, #9b6bff, #5b2fd0);
+    box-shadow: 0 6px 0 #3a1e86, 0 12px 24px rgba(0,0,0,0.4);
+  }
+  .btn-07 .back {
+    transform: rotateX(180deg);
+    color: #1a0d00;
+    background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+    box-shadow: 0 6px 0 var(--gold-dark);
+  }
+  .btn-07:active { transform: rotateX(180deg) scale(0.95); }
+
+  /* =====================================================
+     08 — MOLLA / BOUNCE (rebate ao clicar)
+     ===================================================== */
+  .btn-08 {
+    padding: 0 34px;
+    height: 56px;
+    color: #fff;
+    background: linear-gradient(180deg, #ff6b81, #d6304a);
+    border-radius: 14px;
+    box-shadow: 0 6px 0 #7a1424, 0 12px 24px rgba(0,0,0,0.4);
+  }
+  .btn-08:active { animation: bounce 0.5s cubic-bezier(0.28,1.5,0.6,1); }
+  @keyframes bounce {
+    0%   { transform: translateY(0) scale(1); }
+    35%  { transform: translateY(6px) scale(0.94, 1.06); }
+    65%  { transform: translateY(-4px) scale(1.03, 0.97); }
+    100% { transform: translateY(0) scale(1); }
+  }
+
+  /* =====================================================
+     09 — RIPPLE / ONDA (origem no clique)
+     ===================================================== */
+  .btn-09 {
+    position: relative;
+    padding: 0 34px;
+    height: 56px;
+    color: #fff;
+    background: linear-gradient(180deg, #2dd4bf, #0e7a72);
+    border-radius: 12px;
+    box-shadow: 0 6px 0 #08423c, 0 12px 24px rgba(0,0,0,0.4);
+    overflow: hidden;
+    transition: transform 0.08s ease;
+  }
+  .btn-09:active { transform: translateY(6px); box-shadow: 0 1px 0 #08423c, 0 6px 12px rgba(0,0,0,0.4); }
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    transform: scale(0);
+    animation: ripple 0.6s ease-out;
+    pointer-events: none;
+  }
+  @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+
+  /* =====================================================
+     10 — TILT 3D COM PERSPECTIVA (segue o mouse)
+     ===================================================== */
+  .tilt-wrap { perspective: 600px; }
+  .btn-10 {
+    padding: 0 36px;
+    height: 56px;
+    color: #1a0d00;
+    background: linear-gradient(180deg, var(--gold-bright), var(--gold-2) 45%, var(--gold));
+    border: 1px solid var(--gold-dark);
+    border-radius: 10px;
+    box-shadow: 0 10px 0 var(--gold-dark), 0 18px 32px rgba(0,0,0,0.45);
+    transform-style: preserve-3d;
+    transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+  }
+  .btn-10:active { transform: translateY(10px) scale(0.97); box-shadow: 0 1px 0 var(--gold-dark), 0 6px 12px rgba(0,0,0,0.4); }
+</style>
+</head>
+<body>
+
+  <h1>10 Botões 3D</h1>
+  <p class="subtitle">Clique em cada um para testar a animação</p>
+
+  <div class="click-log" id="log">Nenhum clique ainda</div>
+
+  <div class="grid">
+
+    <div class="cell" data-n="01">
+      <span class="label">Push Clássico</span>
+      <button class="btn-01">Clique-me</button>
+      <span class="count" data-count>0 cliques</span>
+    </div>
+
+    <div class="cell" data-n="02">
+      <span class="label">Ouro Metálico</span>
+      <button class="btn-02">Clique-me</button>
+      <span class="count" data-count>0 cliques</span>
+    </div>
+
+    <div class="cell" data-n="03">
+      <span class="label">Neon Pulsante</span>
+      <button class="btn-03">Clique-me</button>
+      <span class="count" data-count>0 cliques</span>
+    </div>
+
+    <div class="cell" data-n="04">
+      <span class="label">Glassmorphism</span>
+      <button class="btn-04">Clique-me</button>
+      <span class="count" data-count>0 cliques</span>
+    </div>
+
+    <div class="cell" data-n="05">
+      <span class="label">Gradiente Animado</span>
+      <button class="btn-05">Clique-me</button>
+      <span class="count" data-count>0 cliques</span>
+    </div>
+
+    <div class="cell" data-n="06">
+      <span class="label">Brutalista</span>
+      <button class="btn-06">Clique-me</button>
+      <span class="count" data-count>0 cliques</span>
+    </div>
+
+    <div class="cell" data-n="07">
+      <span class="label">Flip 3D (hover)</span>
+      <div class="flip-wrap">
+        <div class="btn-07" role="button" tabindex="0">
+          <span class="face front">Virar</span>
+          <span class="face back">Pronto!</span>
+        </div>
+      </div>
+      <span class="count" data-count>0 cliques</span>
+    </div>
+
+    <div class="cell" data-n="08">
+      <span class="label">Molla / Bounce</span>
+      <button class="btn-08">Clique-me</button>
+      <span class="count" data-count>0 cliques</span>
+    </div>
+
+    <div class="cell" data-n="09">
+      <span class="label">Ripple / Onda</span>
+      <button class="btn-09">Clique-me</button>
+      <span class="count" data-count>0 cliques</span>
+    </div>
+
+    <div class="cell" data-n="10">
+      <span class="label">Tilt 3D (mouse)</span>
+      <div class="tilt-wrap">
+        <button class="btn-10">Clique-me</button>
+      </div>
+      <span class="count" data-count>0 cliques</span>
+    </div>
+
+  </div>
+
+<script>
+  const log = document.getElementById("log");
+  let total = 0;
+
+  function register(btn, name) {
+    const cell = btn.closest(".cell");
+    const countEl = cell && cell.querySelector("[data-count]");
+
+    btn.addEventListener("click", function (e) {
+      total++;
+      log.innerHTML = "Último clique: <b>" + name + "</b> &middot; total " + total;
+
+      if (countEl) {
+        const n = (parseInt(countEl.textContent, 10) || 0) + 1;
+        countEl.textContent = n + (n === 1 ? " clique" : " cliques");
+      }
+
+      // Ripple no botão 09
+      if (btn.classList.contains("btn-09")) {
+        const rect = btn.getBoundingClientRect();
+        const d = Math.max(rect.width, rect.height);
+        const span = document.createElement("span");
+        span.className = "ripple";
+        span.style.width = span.style.height = d + "px";
+        span.style.left = (e.clientX - rect.left - d / 2) + "px";
+        span.style.top = (e.clientY - rect.top - d / 2) + "px";
+        btn.appendChild(span);
+        setTimeout(() => span.remove(), 600);
+      }
+    });
+  }
+
+  document.querySelectorAll("button").forEach((b, i) => {
+    const names = [
+      "01 Push Clássico", "02 Ouro Metálico", "03 Neon Pulsante",
+      "04 Glassmorphism", "05 Gradiente Animado", "06 Brutalista",
+      "08 Molla/Bounce", "09 Ripple/Onda", "10 Tilt 3D"
+    ];
+    // buttons index: 0..5 são 01..06, 6 é 08 (07 não é <button>), 7 é 09, 8 é 10
+    const label = b.closest(".cell").querySelector(".label").textContent;
+    register(b, label);
+  });
+
+  // Botão 07 (div role=button)
+  register(document.querySelector(".btn-07"), "07 Flip 3D");
+
+  // Tilt 3D — botão 10 segue o mouse
+  const tiltBtn = document.querySelector(".btn-10");
+  const tiltWrap = document.querySelector(".tilt-wrap");
+  if (tiltWrap && tiltBtn) {
+    tiltWrap.addEventListener("mousemove", function (e) {
+      const r = tiltWrap.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      tiltBtn.style.transform = "rotateX(" + (-y * 18) + "deg) rotateY(" + (x * 22) + "deg)";
+    });
+    tiltWrap.addEventListener("mouseleave", function () {
+      tiltBtn.style.transform = "";
+    });
+  }
+</script>
+</body>
+</html>
