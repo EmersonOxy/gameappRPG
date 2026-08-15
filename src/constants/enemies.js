@@ -131,6 +131,118 @@ export const ENEMIES = [
   },
 ];
 
+export const TUTORIAL_ENEMIES = [
+  {
+    id: "lobo-espectral-1",
+    name: "Lobo Espectral",
+    element: "vendaval",
+    personality: "Rápido e frágil: morde antes de morrer.",
+    sprite: loboEspectral,
+    skills: [],
+    canUseItems: false,
+    tip: "Role o dado e use Atacar para causar dano.",
+    tipMechanic: "attack",
+    stats: {
+      maxHp: 2,
+      atk: 1,
+      def: 0,
+      mana: 2,
+      goldBase: 2,
+      goldExtra: 2,
+      xpBase: 2,
+      xpExtra: 2,
+    },
+  },
+  {
+    id: "esqueleto-guardiao-1",
+    name: "Esqueleto Guardião",
+    element: "rocha",
+    personality: "Lento e ossudo: aguenta muito, bate pouco.",
+    sprite: esqueletoGuardiao,
+    skills: [],
+    canUseItems: false,
+    tip: "Use Defender para reduzir o dano pela metade.",
+    tipMechanic: "defend",
+    stats: {
+      maxHp: 3,
+      atk: 1,
+      def: 0,
+      mana: 2,
+      goldBase: 2,
+      goldExtra: 2,
+      xpBase: 2,
+      xpExtra: 2,
+    },
+  },
+  {
+    id: "golem-gelo-1",
+    name: "Golem de Gelo",
+    element: "mare",
+    personality: "Muralha viva: defesa alta, passos lentos.",
+    sprite: golemGelo,
+    skills: [],
+    canUseItems: false,
+    tip: "Ao levar dano, sua Fúria enche. Cheia, use o Especial.",
+    tipMechanic: "special",
+    stats: {
+      maxHp: 3,
+      atk: 1,
+      def: 1,
+      mana: 2,
+      goldBase: 2,
+      goldExtra: 2,
+      xpBase: 2,
+      xpExtra: 2,
+    },
+  },
+  {
+    id: "arpia-glacial-1",
+    name: "Arpia Glacial",
+    element: "vendaval",
+    personality: "Veloz e cortante: difícil de acertar.",
+    sprite: arpiaGlacial,
+    skills: [],
+    canUseItems: false,
+    tip: "Vencer dá ouro e XP — com XP você sobe de nível.",
+    tipMechanic: "victory",
+    stats: {
+      maxHp: 4,
+      atk: 2,
+      def: 0,
+      mana: 2,
+      goldBase: 3,
+      goldExtra: 2,
+      xpBase: 3,
+      xpExtra: 2,
+    },
+  },
+  {
+    id: "diabrete-igneo-1",
+    name: "Diabrete Ígneo",
+    element: "magma",
+    personality: "Pequeno e incendiário: muito dano, corpo frágil.",
+    sprite: diabreteIgneo,
+    skills: [],
+    canUseItems: false,
+    tip: "Cada região tem um chefe. Vença mais para enfrentá-lo!",
+    tipMechanic: "victory",
+    stats: {
+      maxHp: 5,
+      atk: 2,
+      def: 1,
+      mana: 2,
+      goldBase: 3,
+      goldExtra: 2,
+      xpBase: 3,
+      xpExtra: 2,
+    },
+  },
+];
+
 export function getEnemy(id) {
   return ENEMIES.find((e) => e.id === id) || null;
+}
+
+export function getTutorialEnemy(step) {
+  return TUTORIAL_ENEMIES[step] || null;
 }

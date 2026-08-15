@@ -10,9 +10,10 @@ import {
   computeEnemyStats,
   BOSS_STAT_POINTS,
 } from "../constants/maps.js";
-import { getEnemy } from "../constants/enemies.js";
+import { getEnemy, getTutorialEnemy } from "../constants/enemies.js";
 
 const STORAGE_KEY = "gameapprpg:progress";
+const TUTORIAL_STEPS = 5;
 
 function xpToNext(level) {
   return 8 + (level - 1) * 4;
@@ -79,6 +80,7 @@ function defaultProgress() {
     currentMapId: MAPS[0].id,
     clearedMaps: [],
     mapProgress: {},
+    tutorialStep: 0,
   };
 }
 
@@ -109,6 +111,11 @@ function loadProgress() {
     const currentMapId = VALID_MAP_IDS.has(data.currentMapId)
       ? data.currentMapId
       : MAPS[0].id;
+    let tutorialStep = Math.floor(Number(data.tutorialStep));
+    if (!Number.isFinite(tutorialStep) || tutorialStep < 0) {
+      tutorialStep = TUTORIAL_STEPS;
+    }
+    if (tutorialStep > TUTORIAL_STEPS) tutorialStep = TUTORIAL_STEPS;
     return {
       gold: Number(data.gold) || 0,
       totalXp,
@@ -120,6 +127,7 @@ function loadProgress() {
       currentMapId,
       clearedMaps: sanitizeClearedMaps(data.clearedMaps),
       mapProgress: sanitizeMapProgress(data.mapProgress),
+      tutorialStep,
     };
   } catch {
     return defaultProgress();
@@ -140,6 +148,7 @@ export function GameProvider({ children }) {
   const [currentMapId, setCurrentMapId] = useState(initial.currentMapId);
   const [clearedMaps, setClearedMaps] = useState(initial.clearedMaps);
   const [mapProgress, setMapProgress] = useState(initial.mapProgress);
+  const [tutorialStep, setTutorialStep] = useState(initial.tutorialStep);
 
   const hasProgress =
     totalXp > 0 ||
@@ -161,6 +170,7 @@ export function GameProvider({ children }) {
     setCurrentMapId(MAPS[0].id);
     setClearedMaps([]);
     setMapProgress({});
+    setTutorialStep(0);
   }
 
   useEffect(() => {
@@ -177,6 +187,7 @@ export function GameProvider({ children }) {
         currentMapId,
         clearedMaps,
         mapProgress,
+        tutorialStep,
       })
     );
   }, [
@@ -190,6 +201,7 @@ export function GameProvider({ children }) {
     currentMapId,
     clearedMaps,
     mapProgress,
+    tutorialStep,
   ]);
 
   function addReward(goldGain, xpGain) {
@@ -288,6 +300,16 @@ export function GameProvider({ children }) {
   }
 
   function getBattleSetup() {
+    if (tutorialStep < TUTORIAL_STEPS) {
+      const enemy = getTutorialEnemy(tutorialStep);
+      return {
+        enemy,
+        isBoss: false,
+        isTutorial: true,
+        ...enemy.stats,
+        threatLevel: 1,
+      };
+    }
     const wins = getMapWins(currentMap.id);
     const isBoss = wins >= currentMap.fightsToBoss;
     const enemy = isBoss
@@ -296,6 +318,10 @@ export function GameProvider({ children }) {
     const safeEnemy = enemy || pickNormalEnemy(currentMap) || getEnemy(currentMap.boss);
     const statsResult = computeEnemyStats(safeEnemy, currentMap, isBoss);
     return { enemy: safeEnemy, isBoss, ...statsResult };
+  }
+
+  function advanceTutorial() {
+    setTutorialStep((s) => Math.min(TUTORIAL_STEPS, s + 1));
   }
 
   function advanceMap(wonBoss) {
@@ -361,6 +387,7 @@ export function GameProvider({ children }) {
         selectMap,
         getMapWins,
         getBattleSetup,
+        advanceTutorial,
         advanceMap,
       }}
     >

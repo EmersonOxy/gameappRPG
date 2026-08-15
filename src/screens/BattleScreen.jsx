@@ -17,6 +17,7 @@ import {
   Play,
   Crown,
   Map,
+  Check,
 } from "lucide-react";
 import HealthBar from "../components/HealthBar.jsx";
 import ResourceBar from "../components/ResourceBar.jsx";
@@ -105,6 +106,7 @@ export default function BattleScreen() {
     itemsOwned,
     useItem,
     getBattleSetup,
+    advanceTutorial,
     advanceMap,
     currentMap,
   } = useGame();
@@ -158,6 +160,7 @@ export default function BattleScreen() {
   const [itemPopup, setItemPopup] = useState(null);
   const [battleId, setBattleId] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [hintState, setHintState] = useState("show");
 
   const staminaRegenMs = REGEN_BASE_INTERVAL / playerStaminaRegen;
   const enemyStaminaRegenMs = REGEN_BASE_INTERVAL / ENEMY_STAMINA_REGEN;
@@ -618,12 +621,18 @@ export default function BattleScreen() {
             const goldGain = rollReward(battle.goldBase, battle.goldExtra);
             const xpGain = rollReward(battle.xpBase, battle.xpExtra);
             const gained = addReward(goldGain, xpGain);
-            const advance = advanceMap(battle.isBoss);
+            let advance;
+            if (battle.isTutorial) {
+              advanceTutorial();
+              if (battle.enemy.tipMechanic === "victory") completeHint();
+            } else {
+              advance = advanceMap(battle.isBoss);
+            }
             setReward({
               gold: goldGain,
               xp: xpGain,
               boss: battle.isBoss,
-              firstClear: advance.firstClear,
+              firstClear: advance ? advance.firstClear : false,
             });
             setLeveledUp(gained > 0);
             setPhase("victory");
@@ -650,8 +659,21 @@ export default function BattleScreen() {
     if (action === "skill" && (!skill || playerManaCurrent < skill.manaCost)) {
       return;
     }
+    if (battle.isTutorial && battle.enemy.tipMechanic === action) {
+      completeHint();
+    }
     resolveTurn(action, skill);
   }
+
+  function completeHint() {
+    setHintState((s) => (s === "show" ? "done" : s));
+  }
+
+  useEffect(() => {
+    if (hintState !== "done") return;
+    const t = setTimeout(() => setHintState("gone"), 950);
+    return () => clearTimeout(t);
+  }, [hintState]);
 
   function useItemAction(item) {
     if (phase !== "player") return;
@@ -853,6 +875,7 @@ export default function BattleScreen() {
     setReward({ gold: 0, xp: 0, boss: false, firstClear: false });
     setLeveledUp(false);
     setPhase("dice");
+    setHintState("show");
   }
 
   function surrender() {
@@ -888,6 +911,22 @@ export default function BattleScreen() {
         />
       </div>
       <div className="battle-divider" />
+
+      {battle.isTutorial && hintState !== "gone" && !paused && phase !== "defeat" && (
+        <div className={"hint-box" + (hintState === "done" ? " done" : "")}>
+          <span className="hint-check">
+            <Check size={13} />
+          </span>
+          <span className="hint-text">{battle.enemy.tip}</span>
+          <button
+            className="hint-close"
+            onClick={() => setHintState("gone")}
+            aria-label="Fechar dica"
+          >
+            <X size={12} />
+          </button>
+        </div>
+      )}
 
       {(phase === "dice" || phase === "player") && !paused && (
         <button
