@@ -7,12 +7,77 @@ import {
   getBranchSkills,
 } from "../constants/skills.js";
 import { getElement } from "../constants/elements.js";
-import Skill3D from "../components/Skill3D.jsx";
 import "./SkillTreeScreen.css";
 
-function rootPath(a, b) {
-  const mx = (a.x + b.x) / 2;
-  return `M ${a.x} ${a.y} C ${mx} ${a.y}, ${mx} ${b.y}, ${b.x} ${b.y}`;
+const CENTER = { x: 320, y: 480 };
+
+const TREE = {
+  sombrio: {
+    color: "#ff9d8a",
+    labelPos: { x: 200, y: 452 },
+    path: [
+      { x: 310, y: 462 },
+      { x: 252, y: 408 },
+      { x: 198, y: 330 },
+      { x: 150, y: 238 },
+      { x: 112, y: 152 },
+    ],
+    stubs: [
+      { node: { x: 215, y: 380 }, attach: { x: 252, y: 408 } },
+      { node: { x: 166, y: 318 }, attach: { x: 198, y: 330 } },
+      { node: { x: 120, y: 226 }, attach: { x: 150, y: 238 } },
+      { node: { x: 84, y: 144 }, attach: { x: 112, y: 152 } },
+    ],
+  },
+  sagrado: {
+    color: "#8ff5e4",
+    labelPos: { x: 440, y: 452 },
+    path: [
+      { x: 330, y: 462 },
+      { x: 388, y: 408 },
+      { x: 442, y: 330 },
+      { x: 490, y: 238 },
+      { x: 528, y: 152 },
+    ],
+    stubs: [
+      { node: { x: 425, y: 380 }, attach: { x: 388, y: 408 } },
+      { node: { x: 474, y: 318 }, attach: { x: 442, y: 330 } },
+      { node: { x: 520, y: 226 }, attach: { x: 490, y: 238 } },
+      { node: { x: 556, y: 144 }, attach: { x: 528, y: 152 } },
+    ],
+  },
+  magico: {
+    color: "#9cc7ff",
+    labelPos: { x: 270, y: 552 },
+    path: [
+      { x: 330, y: 498 },
+      { x: 352, y: 580 },
+      { x: 388, y: 668 },
+      { x: 432, y: 764 },
+      { x: 470, y: 868 },
+    ],
+    stubs: [
+      { node: { x: 384, y: 572 }, attach: { x: 352, y: 580 } },
+      { node: { x: 422, y: 660 }, attach: { x: 388, y: 668 } },
+      { node: { x: 468, y: 754 }, attach: { x: 432, y: 764 } },
+      { node: { x: 504, y: 858 }, attach: { x: 470, y: 868 } },
+    ],
+  },
+};
+
+function smoothPath(points) {
+  let d = `M ${points[0].x} ${points[0].y}`;
+  for (let i = 0; i < points.length - 1; i++) {
+    const a = points[i];
+    const b = points[i + 1];
+    const mx = (a.x + b.x) / 2;
+    d += ` C ${mx} ${a.y}, ${mx} ${b.y}, ${b.x} ${b.y}`;
+  }
+  return d;
+}
+
+function pct(v, max) {
+  return (v / max) * 100 + "%";
 }
 
 export default function SkillTreeScreen() {
@@ -39,6 +104,7 @@ export default function SkillTreeScreen() {
   }
 
   const selected = getSkill(selectedId);
+  const SelectedIcon = selected ? selected.icon : null;
   const ElementIcon = selected ? getElement(selected.element).icon : null;
 
   function nodeState(skill) {
@@ -115,72 +181,97 @@ export default function SkillTreeScreen() {
         </div>
       </div>
 
-      <div className="skill-branches">
-        {Object.values(SKILL_BRANCHES).map((branch) => {
-          const skills = getBranchSkills(branch.key);
-          return (
-            <div className={"skill-branch branch-" + branch.key} key={branch.key}>
-              <div className="branch-header">
-                <span className="branch-title">{branch.label}</span>
-                <span className="branch-tag">{branch.tagline}</span>
-              </div>
-              <div className="branch-roots">
-                <div className="root-stage">
-                  <svg
-                    className="root-lines"
-                    viewBox="0 0 100 100"
-                    preserveAspectRatio="none"
-                    aria-hidden="true"
-                  >
-                    {skills.slice(0, -1).map((skill, i) => {
-                      const next = skills[i + 1];
-                      return (
-                        <path
-                          key={skill.id}
-                          d={rootPath(skill, next)}
-                          className={
-                            "root-line" +
-                            (skillsOwned.includes(next.id) ? " on" : "")
-                          }
-                        />
-                      );
-                    })}
-                  </svg>
-                  {skills.map((skill) => {
-                    const state = nodeState(skill);
-                    const locked =
-                      state === "locked" || state === "locked-level";
-                    const NodeElementIcon = getElement(skill.element).icon;
-                    return (
-                      <button
-                        key={skill.id}
-                        className={
-                          "skill-node " +
-                          state +
-                          (selectedId === skill.id ? " selected" : "")
-                        }
-                        style={{
-                          left: skill.x + "%",
-                          top: skill.y + "%",
-                          "--node-rot": skill.rot + "deg",
-                        }}
-                        onClick={() => setSelectedId(skill.id)}
-                      >
-                        <Skill3D skill={skill} size={54} locked={locked} />
-                        <span className="node-name">{skill.name}</span>
-                        <span
-                          className={"node-element element-" + skill.element}
-                          title={getElement(skill.element).label}
-                        >
-                          <NodeElementIcon size={9} />
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          );
+      <div className="tree-canvas">
+        <svg
+          className="tree-svg"
+          viewBox="0 0 640 960"
+          preserveAspectRatio="xMidYMid meet"
+          aria-hidden="true"
+        >
+          <circle className="center-ring" cx={CENTER.x} cy={CENTER.y} r={34} />
+          <circle className="center-core" cx={CENTER.x} cy={CENTER.y} r={13} />
+
+          {Object.entries(TREE).map(([key, cfg]) => {
+            const skills = getBranchSkills(key);
+            return (
+              <g key={key} className={"tree-branch branch-" + key}>
+                {cfg.path.map((p, i) => {
+                  const seg = [i === 0 ? CENTER : cfg.path[i - 1], p];
+                  const on = skillsOwned.includes(skills[i].id);
+                  return (
+                    <path
+                      key={i}
+                      d={smoothPath(seg)}
+                      className={"branch-path" + (on ? " on" : "")}
+                    />
+                  );
+                })}
+                {cfg.stubs.map((s, i) => (
+                  <line
+                    key={i}
+                    x1={s.attach.x}
+                    y1={s.attach.y}
+                    x2={s.node.x}
+                    y2={s.node.y}
+                    className={
+                      "stub-line" +
+                      (skillsOwned.includes(skills[i].id) ? " on" : "")
+                    }
+                  />
+                ))}
+                <text
+                  className="branch-label"
+                  x={cfg.labelPos.x}
+                  y={cfg.labelPos.y}
+                  textAnchor="middle"
+                >
+                  {SKILL_BRANCHES[key].label}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+
+        {Object.entries(TREE).map(([key, cfg]) => {
+          const skills = getBranchSkills(key);
+          return skills.map((skill, i) => {
+            const state = nodeState(skill);
+            const keystone = i === skills.length - 1;
+            const pos = cfg.stubs[i].node;
+            const NodeIcon = skill.icon;
+            const NodeElementIcon = getElement(skill.element).icon;
+            return (
+              <button
+                key={skill.id}
+                className={
+                  "skill-node branch-" +
+                  key +
+                  " " +
+                  state +
+                  (keystone ? " keystone" : "") +
+                  (selectedId === skill.id ? " selected" : "")
+                }
+                style={{ left: pct(pos.x, 640), top: pct(pos.y, 960) }}
+                onClick={() => setSelectedId(skill.id)}
+              >
+                <span className="node-icon">
+                  <NodeIcon size={keystone ? 26 : 19} />
+                  {state === "equipped" && (
+                    <span className="node-check">
+                      <Check size={9} />
+                    </span>
+                  )}
+                </span>
+                <span className="node-name">{skill.name}</span>
+                <span
+                  className={"node-element element-" + skill.element}
+                  title={getElement(skill.element).label}
+                >
+                  <NodeElementIcon size={8} />
+                </span>
+              </button>
+            );
+          });
         })}
       </div>
 
@@ -197,8 +288,16 @@ export default function SkillTreeScreen() {
             >
               <X size={18} />
             </button>
-            <div className={"modal-art branch-" + selected.branch}>
-              <Skill3D skill={selected} size={124} locked={selectedLocked} />
+            <div
+              className={
+                "modal-art branch-" +
+                selected.branch +
+                (selectedLocked ? " locked" : "")
+              }
+            >
+              <span className="modal-badge">
+                {SelectedIcon && <SelectedIcon size={54} />}
+              </span>
             </div>
             <div className="modal-title">
               <span className="modal-name">{selected.name}</span>

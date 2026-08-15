@@ -1,8 +1,7 @@
 /* ======================================
-   SKILL TREE — arvore de raizes + popup
+   SKILL TREE — arvore unica 2D (PoE style)
    L1: skill equipada (glow) / popup aberto
-   L2: objetos 3D das habilidades
-   L3: curvas de raiz, frames de branch
+   L2: nos 2D + linhas da arvore
    ====================================== */
 .skill-tree-view {
   display: flex;
@@ -104,116 +103,131 @@
   box-shadow: 0 0 4px rgba(156, 199, 255, 0.6);
 }
 
-/* ---- Branches (raizes) ---- */
-.skill-branches {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.skill-branch {
+/* ---- Canvas da arvore ---- */
+.tree-canvas {
   position: relative;
-  border: 1px solid var(--border-bright);
-  border-radius: 4px;
-  background: linear-gradient(180deg, #12100a, #0d0b07);
-  box-shadow: inset 0 0 0 1px rgba(200, 206, 222, 0.08);
-  padding: 12px 10px 14px;
+  width: 100%;
+  aspect-ratio: 640 / 960;
 }
 
-.skill-branch::after {
-  content: "";
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 5px;
-  height: 5px;
-  transform: rotate(45deg);
-  background: var(--quartz-glass);
-  border: 1px solid var(--quartz-bright);
-  box-shadow: 0 0 5px var(--quartz-glass);
-  pointer-events: none;
-}
-
-.branch-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.branch-title {
-  font-family: 'Cinzel', serif;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-
-.branch-sombrio .branch-title { color: #ff9d8a; }
-.branch-sagrado .branch-title { color: #8ff5e4; }
-.branch-magico .branch-title { color: #9cc7ff; }
-
-.branch-tag {
-  font-size: 9px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--text-dim);
-}
-
-/* Palco das raizes: mesma area que o SVG, nos posicionados em % */
-.branch-roots {
-  position: relative;
-  height: 210px;
-}
-
-.root-stage {
-  position: absolute;
-  left: 28px;
-  right: 28px;
-  top: 26px;
-  bottom: 22px;
-}
-
-.root-lines {
+.tree-svg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  overflow: visible;
 }
 
-.root-line {
+/* Circulo central neutro: anel prateado + bola escura */
+.center-ring {
   fill: none;
-  stroke: rgba(200, 153, 58, 0.15);
+  stroke: #9aa0ad;
+  stroke-width: 4;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 8px rgba(154, 160, 173, 0.3));
+}
+
+.center-core {
+  fill: #0b0d11;
+  stroke: #232833;
+  stroke-width: 2;
+}
+
+/* Caminhos da arvore */
+.branch-path {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.09);
+  stroke-width: 5;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.branch-sombrio .branch-path.on {
+  stroke: rgba(255, 157, 138, 0.85);
+  filter: drop-shadow(0 0 5px rgba(255, 157, 138, 0.4));
+}
+
+.branch-sagrado .branch-path.on {
+  stroke: rgba(143, 245, 228, 0.85);
+  filter: drop-shadow(0 0 5px rgba(143, 245, 228, 0.4));
+}
+
+.branch-magico .branch-path.on {
+  stroke: rgba(156, 199, 255, 0.85);
+  filter: drop-shadow(0 0 5px rgba(156, 199, 255, 0.4));
+}
+
+/* Sublinhas que seguram os nos */
+.stub-line {
+  stroke: rgba(255, 255, 255, 0.12);
   stroke-width: 3;
   stroke-linecap: round;
   vector-effect: non-scaling-stroke;
 }
 
-.root-line.on {
-  stroke: rgba(200, 153, 58, 0.8);
-  filter: drop-shadow(0 0 5px rgba(200, 153, 58, 0.45));
+.branch-sombrio .stub-line.on {
+  stroke: rgba(255, 157, 138, 0.85);
+  filter: drop-shadow(0 0 4px rgba(255, 157, 138, 0.35));
 }
 
-/* ---- Nos orgânicos ---- */
+.branch-sagrado .stub-line.on {
+  stroke: rgba(143, 245, 228, 0.85);
+  filter: drop-shadow(0 0 4px rgba(143, 245, 228, 0.35));
+}
+
+.branch-magico .stub-line.on {
+  stroke: rgba(156, 199, 255, 0.85);
+  filter: drop-shadow(0 0 4px rgba(156, 199, 255, 0.35));
+}
+
+/* Rotulos das secoes */
+.branch-label {
+  font-family: 'Cinzel', serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  paint-order: stroke;
+  stroke: rgba(4, 5, 8, 0.9);
+  stroke-width: 4;
+  opacity: 0.9;
+}
+
+.branch-sombrio .branch-label { fill: #ff9d8a; }
+.branch-sagrado .branch-label { fill: #8ff5e4; }
+.branch-magico .branch-label { fill: #9cc7ff; }
+
+/* ---- Nos 2D ---- */
 .skill-node {
   position: absolute;
-  transform: translate(-50%, -50%) rotate(var(--node-rot, 0deg));
+  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 3px;
-  width: 72px;
+  width: 76px;
   padding: 2px 0;
   background: none;
   border: none;
   cursor: pointer;
 }
 
-.skill-node .skill3d {
-  transition: transform 0.18s ease;
+.node-icon {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 35% 30%, #1c1a16, #0d0c09 70%);
+  border: 2px solid rgba(200, 153, 58, 0.35);
+  color: rgba(200, 153, 58, 0.75);
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.6);
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
-.skill-node:hover .skill3d {
+.skill-node:hover .node-icon {
   transform: scale(1.08);
 }
 
@@ -223,12 +237,65 @@
   border-radius: 8px;
 }
 
-.skill-node.selected .skill3d {
-  transform: scale(1.1);
+.skill-node.selected .node-icon {
+  outline: 2px solid var(--gold-bright);
+  outline-offset: 3px;
 }
 
-.skill-node.selected {
-  filter: drop-shadow(0 0 6px rgba(200, 153, 58, 0.55));
+/* Nos finais (keystone) maiores, estilo PoE */
+.skill-node.keystone .node-icon {
+  width: 62px;
+  height: 62px;
+  border-width: 3px;
+}
+
+/* Compradas: anel na cor do ramo */
+.skill-node.branch-sombrio.owned .node-icon {
+  border-color: rgba(255, 157, 138, 0.85);
+  color: #ffb0a0;
+  box-shadow: 0 0 14px rgba(255, 157, 138, 0.25), inset 0 0 8px rgba(0, 0, 0, 0.6);
+}
+
+.skill-node.branch-sagrado.owned .node-icon {
+  border-color: rgba(143, 245, 228, 0.85);
+  color: #aef7ea;
+  box-shadow: 0 0 14px rgba(143, 245, 228, 0.25), inset 0 0 8px rgba(0, 0, 0, 0.6);
+}
+
+.skill-node.branch-magico.owned .node-icon {
+  border-color: rgba(156, 199, 255, 0.85);
+  color: #c2dcff;
+  box-shadow: 0 0 14px rgba(156, 199, 255, 0.25), inset 0 0 8px rgba(0, 0, 0, 0.6);
+}
+
+/* Equipada: brilho dourado pulsante + check */
+.skill-node.equipped .node-icon {
+  border-color: var(--gold-bright);
+  color: var(--gold-bright);
+  animation: nodePulse 2.2s ease-in-out infinite;
+}
+
+@keyframes nodePulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(200, 153, 58, 0.35), inset 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(200, 153, 58, 0.7), inset 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.node-check {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--gold-bright);
+  color: #1a0d00;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .node-name {
@@ -238,7 +305,7 @@
   line-height: 1.15;
   text-align: center;
   color: var(--text-dim);
-  max-width: 70px;
+  max-width: 76px;
 }
 
 .skill-node.owned .node-name,
@@ -250,9 +317,27 @@
   color: var(--gold-bright);
 }
 
+.skill-node.keystone .node-name {
+  font-size: 10px;
+  font-weight: 800;
+}
+
+/* Bloqueadas: skill escurecida */
 .skill-node.locked,
 .skill-node.locked-level {
   opacity: 0.55;
+}
+
+.skill-node.locked .node-icon,
+.skill-node.locked-level .node-icon {
+  filter: grayscale(0.85) brightness(0.4);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.skill-node.locked .node-name,
+.skill-node.locked-level .node-name {
+  opacity: 0.7;
 }
 
 .node-element {
@@ -332,6 +417,41 @@
   justify-content: center;
   padding: 8px 0 14px;
   border-bottom: 1px dashed rgba(200, 153, 58, 0.28);
+}
+
+.modal-art.locked {
+  filter: grayscale(0.85) brightness(0.5);
+}
+
+.modal-badge {
+  width: 118px;
+  height: 118px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 35% 30%, #1c1a16, #0d0c09 70%);
+  border: 3px solid rgba(200, 153, 58, 0.4);
+  color: var(--gold-2);
+  box-shadow: 0 0 24px rgba(200, 153, 58, 0.18), inset 0 0 12px rgba(0, 0, 0, 0.6);
+}
+
+.modal-art.branch-sombrio .modal-badge {
+  border-color: rgba(255, 157, 138, 0.65);
+  color: #ffb0a0;
+  box-shadow: 0 0 24px rgba(255, 157, 138, 0.2), inset 0 0 12px rgba(0, 0, 0, 0.6);
+}
+
+.modal-art.branch-sagrado .modal-badge {
+  border-color: rgba(143, 245, 228, 0.65);
+  color: #aef7ea;
+  box-shadow: 0 0 24px rgba(143, 245, 228, 0.2), inset 0 0 12px rgba(0, 0, 0, 0.6);
+}
+
+.modal-art.branch-magico .modal-badge {
+  border-color: rgba(156, 199, 255, 0.65);
+  color: #c2dcff;
+  box-shadow: 0 0 24px rgba(156, 199, 255, 0.2), inset 0 0 12px rgba(0, 0, 0, 0.6);
 }
 
 .modal-title {
