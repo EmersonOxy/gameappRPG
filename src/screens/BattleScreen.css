@@ -242,7 +242,8 @@
 .dodge-flash,
 .crit-flash,
 .stun-flash,
-.skill-flash {
+.skill-flash,
+.type-flash {
   position: absolute;
   top: -18px;
   padding: 4px 8px;
@@ -264,6 +265,8 @@
 .crit-flash.right { right: 10px; }
 .stun-flash.left { left: 10px; }
 .stun-flash.right { right: 10px; }
+.type-flash.left { left: 10px; }
+.type-flash.right { right: 10px; }
 
 .crit-flash {
   color: var(--accent);
@@ -275,6 +278,16 @@
 
 .skill-flash {
   color: var(--green);
+}
+
+.type-flash.good {
+  color: var(--green);
+  border-color: var(--green);
+}
+
+.type-flash.bad {
+  color: var(--danger);
+  border-color: var(--danger);
 }
 
 .enemy-reaction {
@@ -312,6 +325,30 @@
   font-size: 10px;
   font-weight: 800;
   text-transform: uppercase;
+}
+
+.enemy-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.enemy-type.type-infernal {
+  color: var(--danger);
+}
+
+.enemy-type.type-mecanico {
+  color: #9db8c4;
+}
+
+.enemy-type.type-sabio {
+  color: #b39df0;
 }
 
 .enemy-luck {

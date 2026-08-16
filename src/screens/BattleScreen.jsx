@@ -19,6 +19,7 @@ import {
 import { useGame } from "../context/GameContext.jsx";
 import { ITEMS, getItem } from "../constants/items.js";
 import { getElement, getElementalMultiplier } from "../constants/elements.js";
+import { getEnemyType, getTypeMultiplier } from "../constants/enemyTypes.js";
 import { getEnemySkill, pickEnemyItem } from "../constants/enemySkills.js";
 import "./BattleScreen.css";
 
@@ -153,6 +154,7 @@ export default function BattleScreen() {
   const [enemyStunFlash, setEnemyStunFlash] = useState(false);
   const [playerStunFlash, setPlayerStunFlash] = useState(false);
   const [skillFlash, setSkillFlash] = useState(null);
+  const [typeFlash, setTypeFlash] = useState(null);
   const [enemySkillFlash, setEnemySkillFlash] = useState(null);
   const [enemyItemPopup, setEnemyItemPopup] = useState(null);
   const [enemyItemCooldown, setEnemyItemCooldown] = useState(0);
@@ -322,10 +324,12 @@ export default function BattleScreen() {
       let enemyFuryGain = 0;
       const playerSpecial = playerAction === "special";
       const enemySpecial = enemyAction.action === "special";
+      let typeMult = 1;
 
       if (skill) {
         const fx = skill.effect;
         if (fx.type === "damage") {
+          typeMult = getTypeMultiplier(skill.branch, battle.enemy.tipo);
           if (Math.random() < missChance(playerLuck)) {
             skillMiss = true;
           } else if (Math.random() < dodgeChance(enemyLuck, false)) {
@@ -334,7 +338,8 @@ export default function BattleScreen() {
             let d =
               rollDamage(playerAtk, battle.def) *
               fx.mult *
-              getElementalMultiplier(skill.element, battle.enemy.element);
+              getElementalMultiplier(skill.element, battle.enemy.element) *
+              typeMult;
             if (enemyAction.action === "defend") d = d / 2;
             enemyDmg = d;
           }
@@ -550,6 +555,15 @@ export default function BattleScreen() {
       setPlayerCrit(enemySpecial);
       setEnemyCrit(playerSpecial);
       setSkillFlash(skill && !skillMiss && !enemyDodge ? skill : null);
+      setTypeFlash(
+        skill &&
+          skill.effect.type === "damage" &&
+          !skillMiss &&
+          !enemyDodge &&
+          typeMult !== 1
+          ? { mult: typeMult, label: typeMult > 1 ? "Muito eficaz!" : "Resistência!" }
+          : null
+      );
       setEnemySkillFlash(
         enemySkill && !enemyMiss && !playerDodge ? enemySkill : null
       );
@@ -600,6 +614,7 @@ export default function BattleScreen() {
         setEnemyStunFlash(false);
         setPlayerStunFlash(false);
         setSkillFlash(null);
+        setTypeFlash(null);
         setEnemySkillFlash(null);
 
         setTimeout(() => {
@@ -904,6 +919,7 @@ export default function BattleScreen() {
     setEnemyStunFlash(false);
     setPlayerStunFlash(false);
     setSkillFlash(null);
+    setTypeFlash(null);
     setEnemySkillFlash(null);
     setEnemyItemCooldown(0);
     setEnemyReaction(null);
@@ -947,6 +963,8 @@ export default function BattleScreen() {
   const PopupIcon = itemPopup ? itemPopup.icon : null;
   const EnemyElement = getElement(battle.enemy.element);
   const EnemyElementIcon = EnemyElement.icon;
+  const EnemyType = getEnemyType(battle.enemy.tipo);
+  const EnemyTypeIcon = EnemyType ? EnemyType.icon : null;
 
   return (
     <div className="battle-screen">
@@ -1074,6 +1092,15 @@ export default function BattleScreen() {
               {skillFlash.name}!
             </div>
           )}
+          {typeFlash && (
+            <div
+              className={
+                "type-flash left" + (typeFlash.mult > 1 ? " good" : " bad")
+              }
+            >
+              {typeFlash.label}
+            </div>
+          )}
           {enemySkillFlash && (
             <div
               className={"skill-flash left element-" + enemySkillFlash.element}
@@ -1092,6 +1119,11 @@ export default function BattleScreen() {
           <span className={"enemy-element element-" + battle.enemy.element}>
             <EnemyElementIcon size={11} /> {EnemyElement.label}
           </span>
+          {EnemyType && (
+            <span className={"enemy-type type-" + battle.enemy.tipo}>
+              <EnemyTypeIcon size={11} /> {EnemyType.label}
+            </span>
+          )}
           {enemyLuck && <span className="enemy-luck">Sorte {enemyLuck}</span>}
         </div>
         {enemyItemPopup && (

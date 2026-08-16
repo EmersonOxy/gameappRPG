@@ -25,6 +25,38 @@
   color: var(--text-dim);
 }
 
+.skill-type-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.type-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+
+.type-legend-item.infernal {
+  color: var(--danger);
+}
+
+.type-legend-item.mecanico {
+  color: #9db8c4;
+}
+
+.type-legend-item.sabio {
+  color: #b39df0;
+}
+
 .equipped-chip {
   display: inline-flex;
   align-items: center;

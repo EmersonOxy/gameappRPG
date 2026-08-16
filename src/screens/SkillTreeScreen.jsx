@@ -7,6 +7,7 @@ import {
   getBranchSkills,
 } from "../constants/skills.js";
 import { getElement } from "../constants/elements.js";
+import { ENEMY_TYPES } from "../constants/enemyTypes.js";
 import "./SkillTreeScreen.css";
 
 const TREE = {
@@ -298,9 +299,21 @@ export default function SkillTreeScreen() {
     <div className="skill-tree-view">
       <div className="skill-tree-header">
         <h2 className="skill-tree-title">Habilidades</h2>
-        <span className="skill-tree-sub">
-          Compre com ouro e selecione para a batalha
-        </span>
+<span className="skill-tree-sub">
+            Compre com ouro e selecione para a batalha
+          </span>
+          <div className="skill-type-legend">
+            {Object.keys(ENEMY_TYPES).map((key) => {
+              const t = ENEMY_TYPES[key];
+              const TypeIcon = t.icon;
+              const weakLabel = SKILL_BRANCHES[t.weakTo].label;
+              return (
+                <span className={"type-legend-item " + key} key={key}>
+                  <TypeIcon size={12} /> {t.label} ← {weakLabel}
+                </span>
+              );
+            })}
+          </div>
         <div
           className={
             "equipped-chip" + (equippedSkills.length === 0 ? " empty" : "")
