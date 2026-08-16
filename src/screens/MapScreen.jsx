@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Swords, Crown, Trophy } from "lucide-react";
+import { Swords, Crown, Trophy, Lock } from "lucide-react";
 import { useGame } from "../context/GameContext.jsx";
 import { MAPS } from "../constants/maps.js";
 import { getEnemy } from "../constants/enemies.js";
