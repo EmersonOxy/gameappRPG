@@ -1,6 +1,3 @@
-import mapCampos from "../assets/sprites/map-campos.svg";
-import mapFloresta from "../assets/sprites/map-floresta.svg";
-import mapFortaleza from "../assets/sprites/map-fortaleza.svg";
 import { getEnemy } from "./enemies.js";
 
 export const BOSS_REWARD_MULT = 3;
@@ -11,7 +8,6 @@ export const MAPS = [
     id: "campos-sombrios",
     name: "Campos Sombrios",
     tagline: "Cemitério enevoado na fronteira do reino.",
-    sprite: mapCampos,
     baseLevel: 1,
     minLevel: 1,
     maxLevel: 4,
@@ -25,7 +21,6 @@ export const MAPS = [
     id: "floresta-congelada",
     name: "Floresta Congelada",
     tagline: "Bosque tomado por gelo eterno e cristais de neve.",
-    sprite: mapFloresta,
     baseLevel: 4,
     minLevel: 4,
     maxLevel: 7,
@@ -39,7 +34,6 @@ export const MAPS = [
     id: "fortaleza-infernal",
     name: "Fortaleza Infernal",
     tagline: "Cidadela vulcânica sob uma coroa de fogo.",
-    sprite: mapFortaleza,
     baseLevel: 7,
     minLevel: 7,
     maxLevel: 10,

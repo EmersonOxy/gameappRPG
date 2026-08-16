@@ -1,18 +1,11 @@
-/* ======================================
-   INICIO VIEW — layout simples, sem artes
-   ====================================== */
 .inicio-view {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
-  padding: 0;
   overflow-y: auto;
-  background: var(--bg-deep);
 }
 
-/* Hero banner — apenas o texto */
 .inicio-banner {
   width: 100%;
   padding: 20px;
@@ -23,7 +16,6 @@
 .inicio-banner-title {
   font-size: 22px;
   font-weight: 900;
-  color: var(--text-bright);
   line-height: 1.1;
 }
 
@@ -33,12 +25,9 @@
   margin-top: 4px;
 }
 
-/* Stats row */
 .inicio-stats {
   display: flex;
-  gap: 1px;
   width: 100%;
-  background: var(--border);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
@@ -52,13 +41,11 @@
   justify-content: center;
   gap: 2px;
   padding: 11px 8px;
-  background: var(--bg-card);
 }
 
 .inicio-stat-value {
   font-size: 16px;
   font-weight: 700;
-  color: var(--gold);
 }
 
 .inicio-stat-label {
@@ -68,19 +55,17 @@
   color: var(--text-dim);
 }
 
-/* Main action area */
 .inicio-action {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  padding: 24px 24px 32px;
+  gap: 16px;
+  padding: 24px;
   width: 100%;
 }
 
-/* Section title */
 .inicio-section-title {
   font-size: 12px;
   font-weight: 700;
@@ -89,12 +74,20 @@
   color: var(--text-dim);
 }
 
-/* Threat level label */
+.inicio-action button {
+  min-width: 220px;
+  padding: 12px;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
 .inicio-threat {
   font-size: 11px;
   color: var(--text-dim);
-  background: var(--bg-card);
-  border: 1px solid var(--border);
   padding: 5px 14px;
+  border: 1px solid var(--border);
   border-radius: 999px;
 }

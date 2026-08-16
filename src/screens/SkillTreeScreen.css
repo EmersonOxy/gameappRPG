@@ -1,6 +1,3 @@
-/* ======================================
-   SKILL TREE — layout simples, sem artes
-   ====================================== */
 .skill-tree-view {
   flex: 1;
   min-height: 0;
@@ -8,10 +5,8 @@
   flex-direction: column;
   gap: 14px;
   padding: 16px 12px 14px;
-  background: var(--bg-deep);
 }
 
-/* ---- Header ---- */
 .skill-tree-header {
   display: flex;
   flex-direction: column;
@@ -23,7 +18,6 @@
 .skill-tree-title {
   font-size: 20px;
   font-weight: 900;
-  color: var(--text-bright);
 }
 
 .skill-tree-sub {
@@ -40,14 +34,11 @@
   border-radius: 999px;
   font-size: 11px;
   font-weight: 700;
-  color: var(--gold);
-  background: var(--bg-card);
   border: 1px solid var(--border);
 }
 
 .equipped-chip.empty {
   color: var(--text-dim);
-  border-color: var(--border);
 }
 
 .equipped-dots {
@@ -60,13 +51,13 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
+  background: var(--border-strong);
 }
 
-.equipped-dot.branch-sombrio { background: #ff9d8a; }
-.equipped-dot.branch-sagrado { background: #8ff5e4; }
-.equipped-dot.branch-magico  { background: #9cc7ff; }
+.equipped-dot.branch-sombrio { background: var(--danger); }
+.equipped-dot.branch-sagrado { background: var(--green); }
+.equipped-dot.branch-magico  { background: var(--blue); }
 
-/* ---- Viewport: pan/zoom da arvore ---- */
 .tree-viewport {
   position: relative;
   flex: 1;
@@ -97,9 +88,12 @@
   right: 10px;
   bottom: 10px;
   z-index: 5;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* ---- Nos ---- */
 .skill-node {
   position: absolute;
   transform: translate(-50%, -50%);
@@ -114,6 +108,17 @@
   cursor: pointer;
 }
 
+.skill-node:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+.skill-node.selected .node-icon {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
 .node-icon {
   position: relative;
   width: 44px;
@@ -122,53 +127,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-card);
+  background: var(--panel);
   border: 2px solid var(--border);
   color: var(--text-dim);
 }
 
-.skill-node:hover .node-icon {
-  transform: scale(1.08);
-}
-
-.skill-node:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 3px;
-  border-radius: 8px;
-}
-
-.skill-node.selected .node-icon {
-  outline: 2px solid var(--gold-bright);
-  outline-offset: 3px;
-}
-
-/* Nos finais (keystone) maiores */
 .skill-node.keystone .node-icon {
   width: 62px;
   height: 62px;
   border-width: 3px;
 }
 
-/* Compradas: anel na cor do ramo */
-.skill-node.branch-sombrio.owned .node-icon {
-  border-color: #ff9d8a;
-  color: #ffb0a0;
+.skill-node.owned .node-icon {
+  border-color: var(--border-strong);
+  color: var(--text);
 }
 
-.skill-node.branch-sagrado.owned .node-icon {
-  border-color: #8ff5e4;
-  color: #aef7ea;
-}
-
-.skill-node.branch-magico.owned .node-icon {
-  border-color: #9cc7ff;
-  color: #c2dcff;
-}
-
-/* Equipada: cor dourada */
 .skill-node.equipped .node-icon {
-  border-color: var(--gold-bright);
-  color: var(--gold-bright);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .node-check {
@@ -178,7 +155,7 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: var(--gold-bright);
+  background: var(--accent);
   color: #1a0d00;
   display: flex;
   align-items: center;
@@ -196,41 +173,22 @@
 
 .skill-node.owned .node-name,
 .skill-node.equipped .node-name {
-  color: var(--text-bright);
+  color: var(--text);
 }
 
 .skill-node.equipped .node-name {
-  color: var(--gold-bright);
+  color: var(--accent);
 }
 
 .skill-node.keystone .node-name {
   font-size: 10px;
 }
 
-/* Bloqueadas: skill escurecida */
 .skill-node.locked,
 .skill-node.locked-level {
-  opacity: 0.55;
+  opacity: 0.4;
 }
 
-.skill-node.locked .node-icon,
-.skill-node.locked-level .node-icon {
-  filter: grayscale(0.85) brightness(0.4);
-  border-color: var(--border);
-  color: var(--text-dim);
-}
-
-.skill-node.locked .node-name,
-.skill-node.locked-level .node-name {
-  opacity: 0.7;
-}
-
-.element-magma    { color: #ff8a5c; }
-.element-rocha    { color: #d8b48a; }
-.element-mare     { color: #7ec8ff; }
-.element-vendaval { color: #9de8d2; }
-
-/* ---- Popup ---- */
 .skill-modal-overlay {
   position: fixed;
   inset: 0;
@@ -239,7 +197,7 @@
   align-items: center;
   justify-content: center;
   padding: 26px;
-  background: rgba(3, 4, 7, 0.78);
+  background: rgba(0, 0, 0, 0.7);
 }
 
 .skill-modal {
@@ -253,15 +211,19 @@
   align-items: center;
   gap: 10px;
   padding: 22px 18px 18px;
-  border-radius: 8px;
-  background: var(--bg-dark);
-  border: 1px solid var(--border-bright);
+  border-radius: 6px;
+  background: var(--panel);
+  border: 1px solid var(--border-strong);
 }
 
 .modal-close {
   position: absolute;
   top: 10px;
   right: 10px;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modal-title {
@@ -274,7 +236,6 @@
 .modal-name {
   font-size: 17px;
   font-weight: 700;
-  color: var(--text-bright);
   text-align: center;
 }
 
@@ -289,7 +250,6 @@
 .modal-desc {
   font-size: 12px;
   line-height: 1.5;
-  color: var(--text);
   text-align: center;
 }
 
@@ -312,22 +272,10 @@
   color: var(--text-dim);
 }
 
-.cost-chip.gold {
-  color: var(--gold-bright);
-}
-
-.cost-chip.mana {
-  color: #8fe8e0;
-}
-
-.cost-chip.element {
-  border-color: currentColor;
-}
-
 .modal-req {
   font-size: 10.5px;
   font-weight: 700;
-  color: #ffb0a0;
+  color: var(--danger);
 }
 
 .modal-req.ok {
@@ -337,7 +285,7 @@
 .modal-warn {
   font-size: 10.5px;
   font-weight: 800;
-  color: #ffd97a;
+  color: var(--accent);
   border: 1px solid var(--border);
   border-radius: 3px;
   padding: 5px 10px;
@@ -348,16 +296,23 @@
   margin-top: 2px;
 }
 
-/* ---- Toast ---- */
+.modal-actions button {
+  width: 100%;
+  padding: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
 .skill-toast {
   position: fixed;
   bottom: 84px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 80;
-  background: var(--bg-dark);
-  border: 1px solid var(--border);
-  color: var(--text-bright);
+  background: var(--panel);
+  border: 1px solid var(--border-strong);
   font-size: 12px;
   font-weight: 700;
   padding: 10px 18px;

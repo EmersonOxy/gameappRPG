@@ -1,15 +1,10 @@
-/* ======================================
-   START SCREEN — layout simples, sem artes
-   ====================================== */
 .start-screen {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-deep);
 }
 
-/* ---- Content ---- */
 .start-content {
   display: flex;
   flex-direction: column;
@@ -19,7 +14,6 @@
   text-align: center;
 }
 
-/* ---- Title ---- */
 .game-logo {
   display: flex;
   flex-direction: column;
@@ -28,33 +22,40 @@
 }
 
 .game-title {
-  font-size: 40px;
+  font-size: 32px;
   font-weight: 900;
   letter-spacing: 4px;
   line-height: 1;
-  color: var(--text-bright);
+  color: var(--text);
 }
 
 .game-subtitle {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 8px;
   color: var(--text-dim);
   text-transform: uppercase;
 }
 
-/* ---- Tagline ---- */
 .game-tagline {
   font-size: 13px;
   color: var(--text-dim);
 }
 
-/* ---- Menu ---- */
 .start-menu {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   margin-top: 6px;
   width: 100%;
-  max-width: 300px;
+  max-width: 280px;
+}
+
+.start-menu button {
+  padding: 12px;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }

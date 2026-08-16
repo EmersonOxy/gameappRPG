@@ -1,17 +1,11 @@
-/* ======================================
-   HOME SCREEN — cabeçalho simples, sem artes
-   ====================================== */
 .home-screen {
   flex: 1;
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(--bg-deep);
 }
 
-/* Top bar */
 .top-bar {
-  background: var(--bg-dark);
   border-bottom: 1px solid var(--border);
 }
 
@@ -22,20 +16,18 @@
   padding: 10px 16px;
 }
 
-/* XP bar */
 .xp-track {
   height: 4px;
-  background: var(--bg-card);
+  background: var(--panel);
   overflow: hidden;
 }
 
 .xp-fill {
   height: 100%;
-  background: var(--gold);
+  background: var(--accent);
   transition: width 0.5s ease;
 }
 
-/* Player info */
 .player-info {
   display: flex;
   align-items: center;
@@ -51,7 +43,6 @@
 .player-name {
   font-weight: 700;
   font-size: 14px;
-  color: var(--text-bright);
 }
 
 .player-level {
@@ -59,26 +50,19 @@
   color: var(--text-dim);
 }
 
-/* Currency */
 .currency {
   display: flex;
   gap: 6px;
 }
 
 .currency-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
   font-size: 13px;
   font-weight: 700;
-  color: var(--gold);
-  background: var(--bg-card);
   padding: 5px 10px;
-  border-radius: 4px;
   border: 1px solid var(--border);
+  border-radius: 4px;
 }
 
-/* Main content area */
 .home-content {
   flex: 1;
   overflow-y: auto;
@@ -86,7 +70,6 @@
   flex-direction: column;
 }
 
-/* Placeholder pages */
 .placeholder {
   flex: 1;
   display: flex;

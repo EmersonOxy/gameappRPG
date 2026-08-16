@@ -1,12 +1,8 @@
-/* ======================================
-   SHOP — layout simples, sem artes
-   ====================================== */
 .shop-view {
   display: flex;
   flex-direction: column;
   gap: 14px;
   padding: 16px 14px 14px;
-  background: var(--bg-deep);
 }
 
 .shop-header {
@@ -20,7 +16,6 @@
 .shop-title {
   font-size: 20px;
   font-weight: 900;
-  color: var(--text-bright);
 }
 
 .shop-sub {
@@ -37,8 +32,6 @@
   border-radius: 999px;
   font-size: 12px;
   font-weight: 800;
-  color: var(--gold-bright);
-  background: var(--bg-card);
   border: 1px solid var(--border);
 }
 
@@ -55,7 +48,7 @@
   padding: 12px;
   border: 1px solid var(--border);
   border-radius: 4px;
-  background: var(--bg-card);
+  background: var(--panel);
 }
 
 .shop-info {
@@ -69,7 +62,6 @@
 .shop-name {
   font-size: 14px;
   font-weight: 700;
-  color: var(--text-bright);
 }
 
 .shop-desc {
@@ -97,9 +89,6 @@
   color: var(--text-dim);
 }
 
-.shop-cost.gold    { color: var(--gold-bright); }
-.shop-cost.crystal { color: #cfefff; }
-
 .shop-side {
   flex-shrink: 0;
   display: flex;
@@ -120,15 +109,12 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 60;
-  background: var(--bg-dark);
-  border: 1px solid var(--border);
-  color: var(--text-bright);
+  background: var(--panel);
+  border: 1px solid var(--border-strong);
   font-size: 12px;
   font-weight: 700;
   padding: 10px 18px;
   border-radius: 999px;
   max-width: 90%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  text-align: center;
 }

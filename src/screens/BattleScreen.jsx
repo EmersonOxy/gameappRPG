@@ -20,7 +20,6 @@ import { useGame } from "../context/GameContext.jsx";
 import { ITEMS, getItem } from "../constants/items.js";
 import { getElement, getElementalMultiplier } from "../constants/elements.js";
 import { getEnemySkill, pickEnemyItem } from "../constants/enemySkills.js";
-import playerSprite from "../assets/sprites/player.svg";
 import "./BattleScreen.css";
 
 const FURY_MAX = 5;
@@ -1053,7 +1052,6 @@ export default function BattleScreen() {
           {battle.isBoss ? "Chefe · " : ""}Ameaça Nível {battle.threatLevel}
         </div>
         <div className="sprite enemy-sprite">
-          <img src={battle.enemy.sprite} alt={battle.enemy.name} />
           {enemyShield > 0 && (
             <div className="shield-badge">
               <Shield size={13} />
@@ -1110,7 +1108,6 @@ export default function BattleScreen() {
         className={"player-sprite-holder" + (playerMoving ? " attacking" : "")}
       >
         <div className="sprite player-sprite">
-          <img src={playerSprite} alt="Aventureiro" />
           {playerShield > 0 && (
             <div className="shield-badge">
               <Shield size={13} />
@@ -1285,10 +1282,11 @@ export default function BattleScreen() {
                 const qty = itemsOwned[item.id] || 0;
                 if (qty <= 0) return null;
                 const canUse = crystals >= item.crystalCost;
+                const ItemIcon = item.icon;
                 return (
                   <div className={"bag-item branch-" + item.branch} key={item.id}>
-                    <div className={"bag-item-icon branch-" + item.branch}>
-                      <img src={item.sprite} alt={item.name} />
+                    <div className="bag-item-icon">
+                      <ItemIcon size={20} />
                     </div>
                     <div className="bag-item-info">
                       <span className="bag-item-name">

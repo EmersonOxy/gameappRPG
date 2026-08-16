@@ -1,40 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap');
-
 /* ============================================================
-   SISTEMA DE HIERARQUIA VISUAL — 3 CAMADAS
-   Inspirado no design system da Riot / Legends of Runeterra
-   ============================================================
-
-   CAMADA 1 — DECISÃO (máximo destaque, glow em repouso permitido)
-   Usar em: HP do jogador/inimigo, botão de ação principal (Atacar,
-   Batalhar), resultado de dano/crit no momento em que ocorre.
-   Cor de maior contraste, maior peso de fonte.
-   → --l1-color, --l1-accent, --l1-danger
-
-   CAMADA 2 — RECURSO (suporte, sempre visível mas discreto)
-   Usar em: Fury, Stamina, Mana, Ouro, XP, nível, Shield.
-   Sem glow em repouso. Borda fina única. Destaque temporário
-   apenas ao mudar de estado (cheio, crítico, recém-aumentado).
-   → --l2-color, --l2-accent, --l2-border
-
-   CAMADA 3 — AMBIENTAÇÃO (moldura, não informação)
-   Usar em: ornamentos rúnicos, dividers, corner ornaments, texturas.
-   Opacidade 0.12–0.3, nunca reforçada com sombra extra.
-   Reservada para StartScreen (tela hero) e momentos de recompensa.
-   Nas telas de uso constante (Battle, Home) = mínimo indispensável.
-   → --l3-opacity, --l3-border
-
-   REGRA DE ORNAMENTO:
-   - StartScreen: todos os ornamentos permitidos (tela hero única).
-   - Battle/Home/Inicio: max 1 corner-ornament group (o do .app-frame).
-     Nenhum corner ornament nos elementos individuais.
-   - Shop/SkillTree/LevelUp: rune-sep nos cabeçalhos de seção, ok.
-     Nenhum box-shadow extra em cards individuais.
-
-   ANIMAÇÃO DE GLOW:
-   - Permitida em repouso APENAS em: btn-battle, btn-attack (L1).
-   - Skill equipada (equipped): glow tênue, é o único nó que pulsa.
-   - Todo o resto: sem animação de brilho em repouso.
+   ESQUELETO FUNCIONAL — sem decoração, apenas usabilidade.
+   Cores: tema escuro neutro para leitura. Sem gradientes,
+   sombras, glows, fontes especiais ou animações decorativas.
    ============================================================ */
 
 * {
@@ -44,81 +11,18 @@
 }
 
 :root {
-  /* LoR-inspired dark stone base */
-  --bg-deep:        #08090d;
-  --bg-dark:        #0f1218;
-  --bg-card:        #14181f;
-  --bg-panel:       rgba(12, 14, 20, 0.94);
-
-  /* LoR Metallic Gold — ornate frames, active buttons */
-  --gold:           #c8993a;
-  --gold-2:         #eab850;
-  --gold-bright:    #ffd97a;
-  --gold-dark:      #7a5518;
-  --gold-dim:       rgba(200, 153, 58, 0.3);
-
-  /* Victorian Silver — molduras estruturais (frames, painéis, barras) */
-  --silver:         #aeb4c4;
-  --silver-bright:  #e8ecf5;
-  --silver-dark:    #5c6270;
-  --silver-dim:     rgba(190, 196, 214, 0.25);
-
-  /* Emerald — gemas decorativas translúcidas (efeito vidro) */
-  --emerald:        #20c97f;
-  --emerald-bright: #8cf5c4;
-  --emerald-dark:   #0f7a4e;
-  --emerald-glass:  rgba(46, 206, 134, 0.30);
-
-  /* Quartz — cristal claro decorativo */
-  --quartz:         #e7e4f2;
-  --quartz-bright:  #ffffff;
-  --quartz-glass:   rgba(238, 235, 248, 0.28);
-
-  /* LoR Teal — mana/magic/muted accents */
-  --teal:           #2dd4bf;
-  --teal-dim:       rgba(45, 212, 191, 0.12);
-
-  /* LoR Crimson — HP, combat, danger */
-  --crimson:        #b83030;
-  --crimson-2:      #e05050;
-
-  /* Parchment text — warm off-white */
-  --text:           #e8dcc8;
-  --text-dim:       rgba(232, 220, 200, 0.48);
-  --text-bright:    #f5edd8;
-
-  /* Metal borders — prata (molduras) */
-  --border:         rgba(202, 208, 224, 0.15);
-  --border-bright:  rgba(214, 220, 236, 0.40);
-
-  /* Compat aliases */
-  --blue:           #4a90d9;
-
-  /* --------------------------------------------------
-     CAMADA 1 — Decisão
-     -------------------------------------------------- */
-  --l1-color:       var(--text-bright);       /* cor de texto L1 */
-  --l1-accent:      var(--gold-bright);        /* ouro máximo contraste */
-  --l1-danger:      var(--crimson-2);          /* HP / perigo máximo */
-  --l1-border-hp:   rgba(184, 48, 48, 0.65);  /* borda crimson do HP */
-  --l1-font-sz:     clamp(16px, 4vw, 20px);
-
-  /* --------------------------------------------------
-     CAMADA 2 — Recurso
-     -------------------------------------------------- */
-  --l2-color:       var(--text);              /* texto de recurso */
-  --l2-accent:      var(--gold);              /* ouro moderado */
-  --l2-border:      rgba(200, 206, 222, 0.18); /* borda tênue prateada */
-  --l2-font-sz:     clamp(11px, 2.8vw, 13px);
-
-  /* --------------------------------------------------
-     CAMADA 3 — Ambientação
-     -------------------------------------------------- */
-  --l3-opacity:     0.25;
-  --l3-border:      rgba(200, 206, 222, 0.11); /* quase invisível, estrutura apenas */
-
-  /* Profundidade física dos botões 3D */
-  --btn-depth:      6px;
+  --bg: #10131a;
+  --panel: #171b24;
+  --text: #dfe3ea;
+  --text-dim: #8b93a3;
+  --border: #2c3340;
+  --border-strong: #4a5568;
+  --accent: #ffd97a;
+  --danger: #e05050;
+  --teal: #2dd4bf;
+  --blue: #6fb1ff;
+  --amber: #e8a33d;
+  --green: #6eea9c;
 }
 
 html,
@@ -128,7 +32,7 @@ body,
 }
 
 body {
-  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: system-ui, 'Segoe UI', sans-serif;
   background: #04050a;
   color: var(--text);
   -webkit-font-smoothing: antialiased;
@@ -143,12 +47,34 @@ body {
   height: 100vh;
   height: 100dvh;
   margin: 0 auto;
-  background: var(--bg-deep);
-  box-shadow:
-    0 0 0 1px rgba(200, 153, 58, 0.1),
-    0 0 80px rgba(0, 0, 0, 0.95),
-    inset 0 0 100px rgba(0, 0, 0, 0.35);
+  background: var(--bg);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+/* Botões padrão do app — simples e uniformes */
+button {
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: border-color 0.1s ease;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--text-dim);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+a {
+  color: inherit;
 }

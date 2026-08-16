@@ -1,20 +1,9 @@
-import loboEspectral from "../assets/sprites/lobo-espectral.svg";
-import esqueletoGuardiao from "../assets/sprites/esqueleto-guardiao.svg";
-import cavaleiroCripta from "../assets/sprites/cavaleiro-cripta.svg";
-import golemGelo from "../assets/sprites/golem-gelo.svg";
-import arpiaGlacial from "../assets/sprites/arpia-glacial.svg";
-import senhorGeada from "../assets/sprites/senhor-geada.svg";
-import diabreteIgneo from "../assets/sprites/diabrete-igneo.svg";
-import brutoMagma from "../assets/sprites/bruto-magma.svg";
-import reiDemonio from "../assets/sprites/rei-demonio.svg";
-
 export const ENEMIES = [
   {
     id: "lobo-espectral",
     name: "Lobo Espectral",
     element: "vendaval",
     personality: "Rápido e frágil: morde antes de morrer.",
-    sprite: loboEspectral,
     hpMult: 0.8,
     atkMult: 1.0,
     defMult: 0.6,
@@ -27,7 +16,6 @@ export const ENEMIES = [
     name: "Esqueleto Guardião",
     element: "rocha",
     personality: "Lento e ossudo: aguenta muito, bate pouco.",
-    sprite: esqueletoGuardiao,
     hpMult: 1.4,
     atkMult: 0.7,
     defMult: 1.0,
@@ -41,7 +29,6 @@ export const ENEMIES = [
     boss: true,
     element: "rocha",
     personality: "Guardião final do cemitério, armadura forjada em ossos.",
-    sprite: cavaleiroCripta,
     hpMult: 2.0,
     atkMult: 1.4,
     defMult: 1.3,
@@ -54,7 +41,6 @@ export const ENEMIES = [
     name: "Golem de Gelo",
     element: "mare",
     personality: "Muralha viva: defesa alta, passos lentos.",
-    sprite: golemGelo,
     hpMult: 1.4,
     atkMult: 0.9,
     defMult: 1.3,
@@ -67,7 +53,6 @@ export const ENEMIES = [
     name: "Arpia Glacial",
     element: "vendaval",
     personality: "Veloz e cortante: difícil de acertar.",
-    sprite: arpiaGlacial,
     hpMult: 0.8,
     atkMult: 1.3,
     defMult: 0.8,
@@ -81,7 +66,6 @@ export const ENEMIES = [
     boss: true,
     element: "mare",
     personality: "A fúria do inverno encarnada.",
-    sprite: senhorGeada,
     hpMult: 2.1,
     atkMult: 1.5,
     defMult: 1.3,
@@ -94,7 +78,6 @@ export const ENEMIES = [
     name: "Diabrete Ígneo",
     element: "magma",
     personality: "Pequeno e incendiário: muito dano, corpo frágil.",
-    sprite: diabreteIgneo,
     hpMult: 0.9,
     atkMult: 1.4,
     defMult: 0.9,
@@ -107,7 +90,6 @@ export const ENEMIES = [
     name: "Bruto de Magma",
     element: "rocha",
     personality: "Colosso lento de pedra e fogo.",
-    sprite: brutoMagma,
     hpMult: 1.5,
     atkMult: 1.1,
     defMult: 1.2,
@@ -121,7 +103,6 @@ export const ENEMIES = [
     boss: true,
     element: "magma",
     personality: "Senhor da fortaleza, coroa de brasas.",
-    sprite: reiDemonio,
     hpMult: 2.0,
     atkMult: 1.6,
     defMult: 1.2,
@@ -137,7 +118,6 @@ export const TUTORIAL_ENEMIES = [
     name: "Lobo Espectral",
     element: "vendaval",
     personality: "Rápido e frágil: morde antes de morrer.",
-    sprite: loboEspectral,
     skills: [],
     canUseItems: false,
     tip: "Role o dado e use Atacar para causar dano.",
@@ -158,7 +138,6 @@ export const TUTORIAL_ENEMIES = [
     name: "Esqueleto Guardião",
     element: "rocha",
     personality: "Lento e ossudo: aguenta muito, bate pouco.",
-    sprite: esqueletoGuardiao,
     skills: [],
     canUseItems: false,
     tip: "Use Defender para reduzir o dano pela metade.",
@@ -179,7 +158,6 @@ export const TUTORIAL_ENEMIES = [
     name: "Golem de Gelo",
     element: "mare",
     personality: "Muralha viva: defesa alta, passos lentos.",
-    sprite: golemGelo,
     skills: [],
     canUseItems: false,
     tip: "Ao levar dano, sua Fúria enche. Cheia, use o Especial.",
@@ -200,7 +178,6 @@ export const TUTORIAL_ENEMIES = [
     name: "Arpia Glacial",
     element: "vendaval",
     personality: "Veloz e cortante: difícil de acertar.",
-    sprite: arpiaGlacial,
     skills: [],
     canUseItems: false,
     tip: "Vencer dá ouro e XP — com XP você sobe de nível.",
@@ -221,7 +198,6 @@ export const TUTORIAL_ENEMIES = [
     name: "Diabrete Ígneo",
     element: "magma",
     personality: "Pequeno e incendiário: muito dano, corpo frágil.",
-    sprite: diabreteIgneo,
     skills: [],
     canUseItems: false,
     tip: "Cada região tem um chefe. Vença mais para enfrentá-lo!",
