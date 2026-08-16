@@ -62,7 +62,7 @@ export default function ShopScreen() {
               <div className="shop-side">
                 {owned > 0 && <span className="shop-owned">x{owned}</span>}
                 <button
-                  className="shop-buy btn-3d"
+                  type="button"
                   onClick={() => handleBuy(item)}
                   disabled={gold < item.price}
                 >

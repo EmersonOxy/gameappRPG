@@ -59,7 +59,7 @@ export default function LevelUpScreen() {
               <div className="stat-side">
                 <span className="stat-level">Nv {stats[key]}</span>
                 <button
-                  className="stat-up"
+                  type="button"
                   onClick={() => upgradeStat(key)}
                   disabled={statPoints <= 0}
                 >
@@ -71,7 +71,7 @@ export default function LevelUpScreen() {
         </div>
 
         <button
-          className="btn-continue btn-3d"
+          type="button"
           onClick={() => navigate("/home/map")}
           disabled={statPoints > 0}
         >

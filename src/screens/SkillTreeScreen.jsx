@@ -468,7 +468,7 @@ export default function SkillTreeScreen() {
         })}
         </div>
         <button
-          className="tree-fit"
+          type="button"
           onClick={fitView}
           aria-label="Ajustar árvore na tela"
           title="Ajustar na tela"
@@ -484,7 +484,7 @@ export default function SkillTreeScreen() {
         >
           <div className="skill-modal" onClick={(e) => e.stopPropagation()}>
             <button
-              className="modal-close"
+              type="button"
               onClick={() => setSelectedId(null)}
               aria-label="Fechar"
             >
@@ -547,26 +547,20 @@ export default function SkillTreeScreen() {
             <div className="modal-actions">
               {skillsOwned.includes(selected.id) ? (
                 skillsEquipped.includes(selected.id) ? (
-                  <button className="btn-modal" onClick={handleToggle}>
+                  <button type="button" onClick={handleToggle}>
                     <Check size={16} /> Remover seleção
                   </button>
                 ) : (
-                  <button
-                    className="btn-modal primary btn-3d"
-                    onClick={handleToggle}
-                  >
+                  <button type="button" onClick={handleToggle}>
                     Selecionar
                   </button>
                 )
               ) : selectedLocked ? (
-                <button className="btn-modal disabled" disabled>
+                <button type="button" disabled>
                   <Lock size={16} /> {lockReason(selected)}
                 </button>
               ) : (
-                <button
-                  className="btn-modal primary btn-3d"
-                  onClick={handleBuy}
-                >
+                <button type="button" onClick={handleBuy}>
                   <Coins size={16} /> Comprar por {selected.goldCost}
                 </button>
               )}

@@ -52,16 +52,13 @@ export default function InicioView() {
           <div className="inicio-section-line right" />
         </div>
 
-        <button className="btn-battle btn-3d" onClick={() => navigate("/home/map")}>
+        <button type="button" onClick={() => navigate("/home/map")}>
           <Swords size={22} />
           Batalhar
         </button>
 
         {statPoints > 0 && (
-          <button
-            className="btn-points"
-            onClick={() => navigate("/levelup")}
-          >
+          <button type="button" onClick={() => navigate("/levelup")}>
             <Sparkles size={16} />
             Distribuir pontos ({statPoints})
           </button>

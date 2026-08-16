@@ -10,6 +10,10 @@ import {
   Pause,
   Crown,
   Check,
+  Swords,
+  Zap,
+  Backpack,
+  Play,
 } from "lucide-react";
 import HealthBar from "../components/HealthBar.jsx";
 import ResourceBar from "../components/ResourceBar.jsx";
@@ -941,7 +945,7 @@ export default function BattleScreen() {
           </span>
           <span className="hint-text">{battle.enemy.tip}</span>
           <button
-            className="hint-close"
+            type="button"
             onClick={() => setHintState("gone")}
             aria-label="Fechar dica"
           >
@@ -952,10 +956,12 @@ export default function BattleScreen() {
 
       {(phase === "dice" || phase === "player") && !paused && (
         <button
-          className="pause-button"
+          type="button"
           onClick={() => setPaused(true)}
           aria-label="Pausar batalha"
-        />
+        >
+          <Pause size={18} />
+        </button>
       )}
 
       {paused && (
@@ -968,15 +974,19 @@ export default function BattleScreen() {
             <p className="pause-sub">A batalha está pausada</p>
             <div className="pause-actions">
               <button
-                className="btn-result ui-btn ui-play btn-3d"
+                type="button"
                 onClick={() => setPaused(false)}
                 aria-label="Continuar"
-              />
+              >
+                <Play size={18} /> Continuar
+              </button>
               <button
-                className="btn-result ui-btn ui-exit"
+                type="button"
                 onClick={surrender}
                 aria-label="Sair (derrota)"
-              />
+              >
+                <X size={18} /> Sair (derrota)
+              </button>
             </div>
           </div>
         </div>
@@ -1174,50 +1184,66 @@ export default function BattleScreen() {
       <div className="player-wrap">
         {equippedSkills.length > 0 ? (
           <div className="battle-skills">
-            {equippedSkills.map((skill) => (
-              <button
-                key={skill.id}
-                className={"btn-action skill branch-" + skill.branch}
-                onClick={() => handleAction("skill", skill)}
-                disabled={disabled || playerManaCurrent < skill.manaCost}
-                aria-label={skill.name}
-              />
-            ))}
+            {equippedSkills.map((skill) => {
+              const SkillIcon = skill.icon;
+              return (
+                <button
+                  key={skill.id}
+                  type="button"
+                  onClick={() => handleAction("skill", skill)}
+                  disabled={disabled || playerManaCurrent < skill.manaCost}
+                  aria-label={skill.name}
+                >
+                  {SkillIcon && <SkillIcon size={18} />}
+                  {skill.name}
+                </button>
+              );
+            })}
           </div>
         ) : (
           <div className="battle-skills">
             <button
-              className="btn-action skill generic"
+              type="button"
               disabled
               aria-label="Nenhuma habilidade"
-            />
+            >
+              Nenhuma habilidade
+            </button>
           </div>
         )}
         <div className="battle-actions">
           <button
-            className="btn-action attack"
+            type="button"
             onClick={() => handleAction("attack")}
             disabled={disabled || !canAttack}
             aria-label="Atacar"
-          />
+          >
+            <Swords size={18} /> Atacar
+          </button>
           <button
-            className="btn-action defend"
+            type="button"
             onClick={() => handleAction("defend")}
             disabled={disabled || !canDefend}
             aria-label="Defender"
-          />
+          >
+            <Shield size={18} /> Defender
+          </button>
           <button
-            className="btn-action special"
+            type="button"
             onClick={() => handleAction("special")}
             disabled={disabled || !canSpecial}
             aria-label="Especial"
-          />
+          >
+            <Zap size={18} /> Especial
+          </button>
           <button
-            className="btn-action bag"
+            type="button"
             onClick={() => setInventoryOpen(true)}
             disabled={disabled}
             aria-label="Mochila"
-          />
+          >
+            <Backpack size={18} /> Mochila
+          </button>
         </div>
       </div>
 
@@ -1253,7 +1279,7 @@ export default function BattleScreen() {
             <div className="bag-head">
               <h3 className="bag-title">Mochila</h3>
               <button
-                className="bag-close"
+                type="button"
                 onClick={() => setInventoryOpen(false)}
               >
                 <X size={18} />
@@ -1293,7 +1319,7 @@ export default function BattleScreen() {
                       </span>
                     </div>
                     <button
-                      className="bag-use"
+                      type="button"
                       onClick={() => useItemAction(item)}
                       disabled={!canUse}
                     >
@@ -1351,7 +1377,7 @@ export default function BattleScreen() {
             </div>
             {!rolled ? (
               <button
-                className="btn-roll ui-frame btn-3d"
+                type="button"
                 onClick={handleRoll}
                 disabled={rolling}
               >
@@ -1359,10 +1385,12 @@ export default function BattleScreen() {
               </button>
             ) : (
               <button
-                className="btn-roll ui-play btn-3d primary"
+                type="button"
                 onClick={() => setPhase("player")}
                 aria-label="Começar batalha"
-              />
+              >
+                <Play size={18} /> Batalhar!
+              </button>
             )}
           </div>
         </div>
@@ -1411,19 +1439,14 @@ export default function BattleScreen() {
             )}
             <div className="result-actions">
               <button
-                className="btn-result ui-btn ui-exit"
+                type="button"
                 onClick={() => navigate("/home")}
                 aria-label="Sair"
-              />
+              >
+                <X size={18} /> Sair
+              </button>
               <button
-                className={
-                  "btn-result ui-btn btn-3d primary" +
-                  (leveledUp
-                    ? " ui-star"
-                    : reward.boss
-                    ? " ui-levels"
-                    : " ui-repeat")
-                }
+                type="button"
                 onClick={
                   leveledUp
                     ? () => navigate("/levelup")
@@ -1438,7 +1461,21 @@ export default function BattleScreen() {
                     ? "Voltar ao mapa"
                     : "Próximo combate"
                 }
-              />
+              >
+                {leveledUp ? (
+                  <>
+                    <Sparkles size={18} /> Distribuir pontos
+                  </>
+                ) : reward.boss ? (
+                  <>
+                    <Crown size={18} /> Voltar ao mapa
+                  </>
+                ) : (
+                  <>
+                    <Swords size={18} /> Próximo combate
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>
@@ -1484,20 +1521,29 @@ export default function BattleScreen() {
             )}
             <div className="result-actions">
               <button
-                className="btn-result ui-btn ui-exit"
+                type="button"
                 onClick={() => navigate("/home")}
                 aria-label="Sair"
-              />
+              >
+                <X size={18} /> Sair
+              </button>
               <button
-                className={
-                  "btn-result ui-btn btn-3d primary" +
-                  (leveledUp ? " ui-star" : " ui-repeat")
-                }
+                type="button"
                 onClick={leveledUp ? () => navigate("/levelup") : nextBattle}
                 aria-label={
                   leveledUp ? "Distribuir pontos" : "Jogar novamente"
                 }
-              />
+              >
+                {leveledUp ? (
+                  <>
+                    <Sparkles size={18} /> Distribuir pontos
+                  </>
+                ) : (
+                  <>
+                    <Swords size={18} /> Jogar novamente
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>

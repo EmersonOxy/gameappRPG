@@ -50,15 +50,12 @@ export default function StartScreen() {
 
         <div className="start-menu">
           {hasProgress && (
-            <button className="btn-start btn-3d" onClick={() => navigate("/home")}>
+            <button type="button" onClick={() => navigate("/home")}>
               <RotateCw size={18} />
               Continuar
             </button>
           )}
-          <button
-            className={"btn-start btn-3d" + (hasProgress ? " secondary" : "")}
-            onClick={handleNewGame}
-          >
+          <button type="button" onClick={handleNewGame}>
             <Sword size={18} />
             Novo Jogo
           </button>
