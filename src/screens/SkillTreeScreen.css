@@ -1,7 +1,5 @@
 /* ======================================
-   SKILL TREE — arvore unica 2D (PoE style)
-   L1: skill equipada (glow) / popup aberto
-   L2: nos 2D + linhas da arvore
+   SKILL TREE — layout simples, sem artes
    ====================================== */
 .skill-tree-view {
   flex: 1;
@@ -10,14 +8,11 @@
   flex-direction: column;
   gap: 14px;
   padding: 16px 12px 14px;
-  background:
-    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(200, 153, 58, 0.04) 0%, transparent 60%),
-    linear-gradient(180deg, #0c0a06 0%, #08090d 100%);
+  background: var(--bg-deep);
 }
 
 /* ---- Header ---- */
 .skill-tree-header {
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -25,36 +20,14 @@
   text-align: center;
 }
 
-.skill-tree-header::before,
-.skill-tree-header::after {
-  content: "";
-  position: absolute;
-  top: 6px;
-  width: 6px;
-  height: 6px;
-  transform: rotate(45deg);
-  background: var(--quartz-glass);
-  border: 1px solid var(--quartz-bright);
-  box-shadow: 0 0 5px var(--quartz-glass);
-  pointer-events: none;
-}
-
-.skill-tree-header::before { left: 6px; }
-.skill-tree-header::after { right: 6px; }
-
 .skill-tree-title {
-  font-family: 'Cinzel', serif;
   font-size: 20px;
   font-weight: 900;
-  letter-spacing: 3px;
-  text-transform: uppercase;
   color: var(--text-bright);
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
 }
 
 .skill-tree-sub {
-  font-size: 10.5px;
-  letter-spacing: 1px;
+  font-size: 12px;
   color: var(--text-dim);
 }
 
@@ -65,12 +38,11 @@
   margin-top: 4px;
   padding: 4px 12px;
   border-radius: 999px;
-  font-size: 10.5px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  color: var(--gold-2);
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(200, 153, 58, 0.45);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
 }
 
 .equipped-chip.empty {
@@ -85,25 +57,14 @@
 }
 
 .equipped-dot {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
 }
 
-.equipped-dot.branch-sombrio {
-  background: #ff9d8a;
-  box-shadow: 0 0 4px rgba(255, 157, 138, 0.6);
-}
-
-.equipped-dot.branch-sagrado {
-  background: #8ff5e4;
-  box-shadow: 0 0 4px rgba(143, 245, 228, 0.6);
-}
-
-.equipped-dot.branch-magico {
-  background: #9cc7ff;
-  box-shadow: 0 0 4px rgba(156, 199, 255, 0.6);
-}
+.equipped-dot.branch-sombrio { background: #ff9d8a; }
+.equipped-dot.branch-sagrado { background: #8ff5e4; }
+.equipped-dot.branch-magico  { background: #9cc7ff; }
 
 /* ---- Viewport: pan/zoom da arvore ---- */
 .tree-viewport {
@@ -115,22 +76,10 @@
   user-select: none;
   -webkit-user-select: none;
   cursor: grab;
-  border-radius: 8px;
 }
 
 .tree-viewport.grabbing {
   cursor: grabbing;
-}
-
-.tree-viewport::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  box-shadow:
-    inset 0 0 60px rgba(0, 0, 0, 0.35),
-    inset 0 0 0 1px rgba(200, 206, 222, 0.06);
-  border-radius: 8px;
 }
 
 .tree-stage {
@@ -143,118 +92,14 @@
   will-change: transform;
 }
 
-.tree-svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
 .tree-fit {
   position: absolute;
   right: 10px;
   bottom: 10px;
   z-index: 5;
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: 1px solid var(--border-bright);
-  background: rgba(10, 10, 14, 0.85);
-  color: var(--gold);
-  cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
 
-.tree-fit:hover {
-  color: var(--gold-bright);
-  border-color: rgba(200, 153, 58, 0.5);
-  transform: scale(1.06);
-}
-
-/* Circulo central neutro: anel prateado + bola escura */
-.center-ring {
-  fill: none;
-  stroke: #9aa0ad;
-  stroke-width: 4;
-  opacity: 0.9;
-  filter: drop-shadow(0 0 8px rgba(154, 160, 173, 0.3));
-}
-
-.center-core {
-  fill: #0b0d11;
-  stroke: #232833;
-  stroke-width: 2;
-}
-
-/* Caminhos da arvore */
-.branch-path {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.09);
-  stroke-width: 5;
-  stroke-linecap: round;
-  vector-effect: non-scaling-stroke;
-}
-
-.branch-sombrio .branch-path.on {
-  stroke: rgba(255, 157, 138, 0.85);
-  filter: drop-shadow(0 0 5px rgba(255, 157, 138, 0.4));
-}
-
-.branch-sagrado .branch-path.on {
-  stroke: rgba(143, 245, 228, 0.85);
-  filter: drop-shadow(0 0 5px rgba(143, 245, 228, 0.4));
-}
-
-.branch-magico .branch-path.on {
-  stroke: rgba(156, 199, 255, 0.85);
-  filter: drop-shadow(0 0 5px rgba(156, 199, 255, 0.4));
-}
-
-/* Sublinhas que seguram os nos */
-.stub-line {
-  stroke: rgba(255, 255, 255, 0.12);
-  stroke-width: 3;
-  stroke-linecap: round;
-  vector-effect: non-scaling-stroke;
-}
-
-.branch-sombrio .stub-line.on {
-  stroke: rgba(255, 157, 138, 0.85);
-  filter: drop-shadow(0 0 4px rgba(255, 157, 138, 0.35));
-}
-
-.branch-sagrado .stub-line.on {
-  stroke: rgba(143, 245, 228, 0.85);
-  filter: drop-shadow(0 0 4px rgba(143, 245, 228, 0.35));
-}
-
-.branch-magico .stub-line.on {
-  stroke: rgba(156, 199, 255, 0.85);
-  filter: drop-shadow(0 0 4px rgba(156, 199, 255, 0.35));
-}
-
-/* Rotulos das secoes */
-.branch-label {
-  font-family: 'Cinzel', serif;
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  paint-order: stroke;
-  stroke: rgba(4, 5, 8, 0.9);
-  stroke-width: 4;
-  opacity: 0.9;
-}
-
-.branch-sombrio .branch-label { fill: #ff9d8a; }
-.branch-sagrado .branch-label { fill: #8ff5e4; }
-.branch-magico .branch-label { fill: #9cc7ff; }
-
-/* ---- Nos 2D ---- */
+/* ---- Nos ---- */
 .skill-node {
   position: absolute;
   transform: translate(-50%, -50%);
@@ -277,11 +122,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 35% 30%, #1c1a16, #0d0c09 70%);
-  border: 2px solid rgba(200, 153, 58, 0.35);
-  color: rgba(200, 153, 58, 0.75);
-  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.6);
-  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  color: var(--text-dim);
 }
 
 .skill-node:hover .node-icon {
@@ -289,7 +132,7 @@
 }
 
 .skill-node:focus-visible {
-  outline: 2px solid rgba(200, 153, 58, 0.6);
+  outline: 2px solid var(--gold);
   outline-offset: 3px;
   border-radius: 8px;
 }
@@ -299,7 +142,7 @@
   outline-offset: 3px;
 }
 
-/* Nos finais (keystone) maiores, estilo PoE */
+/* Nos finais (keystone) maiores */
 .skill-node.keystone .node-icon {
   width: 62px;
   height: 62px;
@@ -308,37 +151,24 @@
 
 /* Compradas: anel na cor do ramo */
 .skill-node.branch-sombrio.owned .node-icon {
-  border-color: rgba(255, 157, 138, 0.85);
+  border-color: #ff9d8a;
   color: #ffb0a0;
-  box-shadow: 0 0 14px rgba(255, 157, 138, 0.25), inset 0 0 8px rgba(0, 0, 0, 0.6);
 }
 
 .skill-node.branch-sagrado.owned .node-icon {
-  border-color: rgba(143, 245, 228, 0.85);
+  border-color: #8ff5e4;
   color: #aef7ea;
-  box-shadow: 0 0 14px rgba(143, 245, 228, 0.25), inset 0 0 8px rgba(0, 0, 0, 0.6);
 }
 
 .skill-node.branch-magico.owned .node-icon {
-  border-color: rgba(156, 199, 255, 0.85);
+  border-color: #9cc7ff;
   color: #c2dcff;
-  box-shadow: 0 0 14px rgba(156, 199, 255, 0.25), inset 0 0 8px rgba(0, 0, 0, 0.6);
 }
 
-/* Equipada: brilho dourado pulsante + check */
+/* Equipada: cor dourada */
 .skill-node.equipped .node-icon {
   border-color: var(--gold-bright);
   color: var(--gold-bright);
-  animation: nodePulse 2.2s ease-in-out infinite;
-}
-
-@keyframes nodePulse {
-  0%, 100% {
-    box-shadow: 0 0 10px rgba(200, 153, 58, 0.35), inset 0 0 10px rgba(0, 0, 0, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(200, 153, 58, 0.7), inset 0 0 10px rgba(0, 0, 0, 0.5);
-  }
 }
 
 .node-check {
@@ -358,7 +188,6 @@
 .node-name {
   font-size: 9px;
   font-weight: 800;
-  letter-spacing: 0.4px;
   line-height: 1.15;
   text-align: center;
   color: var(--text-dim);
@@ -376,7 +205,6 @@
 
 .skill-node.keystone .node-name {
   font-size: 10px;
-  font-weight: 800;
 }
 
 /* Bloqueadas: skill escurecida */
@@ -388,8 +216,8 @@
 .skill-node.locked .node-icon,
 .skill-node.locked-level .node-icon {
   filter: grayscale(0.85) brightness(0.4);
-  border-color: rgba(255, 255, 255, 0.14);
-  color: rgba(255, 255, 255, 0.3);
+  border-color: var(--border);
+  color: var(--text-dim);
 }
 
 .skill-node.locked .node-name,
@@ -397,12 +225,12 @@
   opacity: 0.7;
 }
 
-.element-magma { color: #ff8a5c; }
-.element-rocha { color: #d8b48a; }
-.element-mare { color: #7ec8ff; }
+.element-magma    { color: #ff8a5c; }
+.element-rocha    { color: #d8b48a; }
+.element-mare     { color: #7ec8ff; }
 .element-vendaval { color: #9de8d2; }
 
-/* ---- Popup (Clash Royale style) ---- */
+/* ---- Popup ---- */
 .skill-modal-overlay {
   position: fixed;
   inset: 0;
@@ -412,7 +240,6 @@
   justify-content: center;
   padding: 26px;
   background: rgba(3, 4, 7, 0.78);
-  animation: modalFade 0.18s ease;
 }
 
 .skill-modal {
@@ -426,78 +253,15 @@
   align-items: center;
   gap: 10px;
   padding: 22px 18px 18px;
-  border-radius: 12px;
-  background: linear-gradient(180deg, #18130c, #0d0a06);
+  border-radius: 8px;
+  background: var(--bg-dark);
   border: 1px solid var(--border-bright);
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.75),
-    inset 0 0 0 1px rgba(200, 206, 222, 0.06);
-  animation: modalIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .modal-close {
   position: absolute;
   top: 10px;
   right: 10px;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: rgba(0, 0, 0, 0.45);
-  color: var(--text-dim);
-  cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
-}
-
-.modal-close:hover {
-  color: var(--text-bright);
-  border-color: var(--border-bright);
-}
-
-.modal-art {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 8px 0 14px;
-  border-bottom: 1px dashed rgba(200, 153, 58, 0.28);
-}
-
-.modal-art.locked {
-  filter: grayscale(0.85) brightness(0.5);
-}
-
-.modal-badge {
-  width: 118px;
-  height: 118px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at 35% 30%, #1c1a16, #0d0c09 70%);
-  border: 3px solid rgba(200, 153, 58, 0.4);
-  color: var(--gold-2);
-  box-shadow: 0 0 24px rgba(200, 153, 58, 0.18), inset 0 0 12px rgba(0, 0, 0, 0.6);
-}
-
-.modal-art.branch-sombrio .modal-badge {
-  border-color: rgba(255, 157, 138, 0.65);
-  color: #ffb0a0;
-  box-shadow: 0 0 24px rgba(255, 157, 138, 0.2), inset 0 0 12px rgba(0, 0, 0, 0.6);
-}
-
-.modal-art.branch-sagrado .modal-badge {
-  border-color: rgba(143, 245, 228, 0.65);
-  color: #aef7ea;
-  box-shadow: 0 0 24px rgba(143, 245, 228, 0.2), inset 0 0 12px rgba(0, 0, 0, 0.6);
-}
-
-.modal-art.branch-magico .modal-badge {
-  border-color: rgba(156, 199, 255, 0.65);
-  color: #c2dcff;
-  box-shadow: 0 0 24px rgba(156, 199, 255, 0.2), inset 0 0 12px rgba(0, 0, 0, 0.6);
 }
 
 .modal-title {
@@ -508,7 +272,6 @@
 }
 
 .modal-name {
-  font-family: 'Cinzel', serif;
   font-size: 17px;
   font-weight: 700;
   color: var(--text-bright);
@@ -517,7 +280,7 @@
 
 .modal-meta {
   font-size: 10px;
-  letter-spacing: 1.2px;
+  letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--text-dim);
   text-align: center;
@@ -545,30 +308,26 @@
   font-weight: 800;
   padding: 4px 10px;
   border-radius: 3px;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
 }
 
 .cost-chip.gold {
   color: var(--gold-bright);
-  background: rgba(200, 153, 58, 0.08);
-  border: 1px solid rgba(200, 153, 58, 0.3);
 }
 
 .cost-chip.mana {
   color: #8fe8e0;
-  background: rgba(45, 212, 191, 0.07);
-  border: 1px solid rgba(45, 212, 191, 0.25);
 }
 
 .cost-chip.element {
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid currentColor;
+  border-color: currentColor;
 }
 
 .modal-req {
   font-size: 10.5px;
   font-weight: 700;
   color: #ffb0a0;
-  letter-spacing: 0.5px;
 }
 
 .modal-req.ok {
@@ -579,8 +338,7 @@
   font-size: 10.5px;
   font-weight: 800;
   color: #ffd97a;
-  background: rgba(200, 153, 58, 0.08);
-  border: 1px solid rgba(200, 153, 58, 0.35);
+  border: 1px solid var(--border);
   border-radius: 3px;
   padding: 5px 10px;
 }
@@ -590,63 +348,6 @@
   margin-top: 2px;
 }
 
-.btn-modal {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  height: 46px;
-  font-family: 'Cinzel', serif;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  color: var(--text);
-  background: linear-gradient(180deg, #2a2318, #1a1610);
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5);
-  transition: transform 0.06s ease, box-shadow 0.06s ease;
-}
-
-.btn-modal.primary {
-  color: #1a0d00;
-  background:
-    radial-gradient(circle 4px at 9px 9px, var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
-    radial-gradient(circle 4px at calc(100% - 9px) 9px, var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
-    radial-gradient(circle 4px at 9px calc(100% - 9px), var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
-    radial-gradient(circle 4px at calc(100% - 9px) calc(100% - 9px), var(--emerald-glass) 0 2.8px, var(--emerald-bright) 3.2px 3.6px, transparent 4px),
-    linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
-  border: 1px solid var(--gold-dark);
-  outline: 1px solid var(--gold-2);
-  outline-offset: 1px;
-  box-shadow:
-    0 0 0 1px rgba(200, 153, 58, 0.35),
-    0 var(--btn-depth) 0 var(--gold-dark),
-    0 10px 26px rgba(200, 153, 58, 0.2),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.btn-modal.disabled {
-  cursor: default;
-  filter: grayscale(0.55) brightness(0.6);
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
-}
-
-@keyframes modalIn {
-  from { opacity: 0; transform: translateY(26px) scale(0.96); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@keyframes modalFade {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
 /* ---- Toast ---- */
 .skill-toast {
   position: fixed;
@@ -654,26 +355,13 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 80;
-  background: rgba(10, 10, 14, 0.96);
-  border: 1px solid rgba(200, 153, 58, 0.5);
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
   color: var(--text-bright);
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.5px;
   padding: 10px 18px;
   border-radius: 999px;
-  box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.6),
-    0 0 18px rgba(200, 153, 58, 0.2);
-  animation: toastIn 0.25s ease;
   max-width: 90%;
   text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-@keyframes toastIn {
-  from { opacity: 0; transform: translate(-50%, 8px); }
-  to   { opacity: 1; transform: translate(-50%, 0); }
 }

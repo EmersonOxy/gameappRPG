@@ -14,6 +14,7 @@ import {
   Zap,
   Backpack,
   Play,
+  Dices,
 } from "lucide-react";
 import HealthBar from "../components/HealthBar.jsx";
 import ResourceBar from "../components/ResourceBar.jsx";
@@ -51,6 +52,7 @@ const ENEMY_BOSS_SKILL_CHANCE = 0.55;
 const ENEMY_ITEM_CHANCE = 0.45;
 const ENEMY_ITEM_COOLDOWN = 4;
 const ENEMY_ITEM_HP_PCT = 0.35;
+const EMOJI_CHANCE = 0.45;
 
 const STAMINA_FILL = "linear-gradient(180deg, #6fb1ff, #357abd)";
 const STAMINA_TICK = "#245a8f";
@@ -552,7 +554,7 @@ export default function BattleScreen() {
       else if (enemyCritDmg > 0) reaction = "crit";
       else if (enemyDmg > 0) reaction = "damage";
       else if (enemyAction.action === "skip") reaction = "skip";
-      if (reaction && BUBBLE_SETS.length > 0) {
+      if (reaction && BUBBLE_SETS.length > 0 && Math.random() < EMOJI_CHANCE) {
         setEnemyReaction({
           emoji: REACTION_EMOJI[reaction],
           bubbleSet: Math.floor(Math.random() * BUBBLE_SETS.length),
@@ -1351,7 +1353,9 @@ export default function BattleScreen() {
             <div className="rune-emblem dice-emblem">
               <div className="rune-emblem-ring" />
               <div className="rune-emblem-ring inner" />
-              <span className="rune-emblem-icon">🎲</span>
+              <span className="rune-emblem-icon">
+                <Dices size={38} />
+              </span>
             </div>
             <h2 className="dice-title">Role o dado</h2>
             <div className="rune-sep">

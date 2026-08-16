@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Lock, Swords, Crown, CheckCircle2, Trophy } from "lucide-react";
+import { Swords, Crown, Trophy } from "lucide-react";
 import { useGame } from "../context/GameContext.jsx";
 import { MAPS } from "../constants/maps.js";
 import { getEnemy } from "../constants/enemies.js";
@@ -46,20 +46,6 @@ export default function MapScreen() {
               onClick={() => handleSelect(map)}
               disabled={!unlocked}
             >
-              <div className="map-card-sprite">
-                <img src={map.sprite} alt={map.name} />
-                {state === "locked" && (
-                  <span className="map-lock">
-                    <Lock size={22} />
-                  </span>
-                )}
-                {state === "cleared" && (
-                  <span className="map-clear-badge">
-                    <CheckCircle2 size={22} />
-                  </span>
-                )}
-              </div>
-
               <div className="map-card-body">
                 <div className="map-card-head">
                   <span className="map-card-name">{map.name}</span>
@@ -73,16 +59,14 @@ export default function MapScreen() {
                   {map.enemyPool.map((eid) => {
                     const e = getEnemy(eid);
                     return (
-                      <span className="map-enemy" key={eid} title={e.name}>
-                        <img src={e.sprite} alt={e.name} />
+                      <span className="map-enemy" key={eid}>
                         <em>{e.name}</em>
                       </span>
                     );
                   })}
                   {boss && (
-                    <span className="map-enemy boss" title={boss.name}>
+                    <span className="map-enemy boss">
                       <Crown size={10} />
-                      <img src={boss.sprite} alt={boss.name} />
                       <em>{boss.name}</em>
                     </span>
                   )}

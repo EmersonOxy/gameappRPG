@@ -19,7 +19,6 @@ export default function BottomNav() {
           end={end}
           className={({ isActive }) => "nav-item" + (isActive ? " active" : "")}
         >
-          <span className={"nav-icon nav-" + icon} aria-hidden="true" />
           <span>{label}</span>
         </NavLink>
       ))}

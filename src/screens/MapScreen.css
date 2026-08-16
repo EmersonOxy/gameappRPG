@@ -1,9 +1,5 @@
 /* ======================================
-   MAP VIEW — seleção de zonas temáticas
-   Hierarquia:
-   L1: card de chefe pronto (única decisão ativa além de Batalhar)
-   L2: cards abertos (informação de progresso)
-   L3: cards bloqueados (ambientação, sem brilho)
+   MAP VIEW — layout simples, sem artes
    ====================================== */
 .map-view {
   flex: 1;
@@ -12,9 +8,7 @@
   padding: 18px 16px 24px;
   gap: 14px;
   overflow-y: auto;
-  background:
-    radial-gradient(ellipse 90% 40% at 50% 0%, rgba(200, 153, 58, 0.04) 0%, transparent 60%),
-    linear-gradient(180deg, #0c0a06 0%, #08090d 100%);
+  background: var(--bg-deep);
 }
 
 .map-header {
@@ -25,17 +19,14 @@
 }
 
 .map-title {
-  font-family: 'Cinzel', serif;
   font-size: 22px;
   font-weight: 900;
-  letter-spacing: 2px;
   color: var(--text-bright);
 }
 
 .map-sub {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-dim);
-  letter-spacing: 0.5px;
 }
 
 .map-list {
@@ -45,7 +36,6 @@
 }
 
 .map-card {
-  position: relative;
   display: flex;
   gap: 14px;
   align-items: stretch;
@@ -56,7 +46,7 @@
   border: 1px solid var(--l2-border);
   border-radius: 6px;
   cursor: pointer;
-  transition: transform 0.08s ease, border-color 0.12s ease, opacity 0.12s ease;
+  transition: border-color 0.12s ease, opacity 0.12s ease;
   font-family: inherit;
   color: inherit;
 }
@@ -65,72 +55,20 @@
   border-color: var(--border-bright);
 }
 
-.map-card:not(:disabled):active {
-  transform: translateY(1px);
-}
-
-/* Bloqueado — L3, dessaturado */
+/* Bloqueado */
 .map-card.locked {
   opacity: 0.45;
   cursor: not-allowed;
-  filter: saturate(0.4);
 }
 
-/* Chefe pronto — L1, moldura dourada com brilho em repouso (decisão) */
+/* Chefe pronto */
 .map-card.boss {
   border-color: var(--gold);
-  box-shadow:
-    0 0 0 1px rgba(200, 153, 58, 0.35),
-    0 0 22px rgba(200, 153, 58, 0.18);
-  animation: mapBossPulse 2.4s ease-in-out infinite;
 }
 
-@keyframes mapBossPulse {
-  0%, 100% { box-shadow: 0 0 0 1px rgba(200, 153, 58, 0.3), 0 0 14px rgba(200, 153, 58, 0.12); }
-  50%       { box-shadow: 0 0 0 1px rgba(200, 153, 58, 0.5), 0 0 26px rgba(200, 153, 58, 0.28); }
-}
-
-/* Concluída — selo esmeralda */
+/* Concluída */
 .map-card.cleared {
-  border-color: rgba(32, 201, 127, 0.4);
-}
-
-.map-card-sprite {
-  position: relative;
-  flex-shrink: 0;
-  width: 74px;
-  height: 74px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  background:
-    radial-gradient(circle at 50% 60%, rgba(200, 153, 58, 0.08) 0%, transparent 70%),
-    linear-gradient(180deg, rgba(14, 11, 7, 0.9), rgba(8, 9, 13, 0.9));
-  border: 1px solid var(--l3-border);
-}
-
-.map-card-sprite img {
-  width: 56px;
-  height: 56px;
-  object-fit: contain;
-  filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.6));
-}
-
-.map-lock,
-.map-clear-badge {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  background: rgba(4, 5, 10, 0.55);
-  color: var(--silver);
-}
-
-.map-clear-badge {
-  color: var(--emerald);
+  border-color: var(--emerald);
 }
 
 .map-card-body {
@@ -149,27 +87,20 @@
 }
 
 .map-card-name {
-  font-family: 'Cinzel', serif;
   font-size: 16px;
   font-weight: 700;
   color: var(--text-bright);
-  letter-spacing: 0.5px;
 }
 
 .map-card-level {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 1px;
   color: var(--gold);
   white-space: nowrap;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid var(--l2-border);
-  padding: 2px 7px;
-  border-radius: 999px;
 }
 
 .map-card-tag {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-dim);
   line-height: 1.3;
 }
@@ -177,6 +108,7 @@
 .map-card-enemies {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
   margin-top: 2px;
 }
@@ -187,40 +119,22 @@
   gap: 4px;
 }
 
-.map-enemy img {
-  width: 22px;
-  height: 22px;
-  object-fit: contain;
-}
-
 .map-enemy.boss {
-  position: relative;
   color: var(--gold-bright);
-}
-
-.map-enemy.boss svg {
-  position: absolute;
-  top: -8px;
-  left: -3px;
 }
 
 .map-enemy em {
   font-style: normal;
-  font-size: 9px;
+  font-size: 11px;
   color: var(--text-dim);
-  max-width: 90px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .map-card-status {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.4px;
   color: var(--text-dim);
 }
 
@@ -233,19 +147,12 @@
 }
 
 .map-card-go {
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  font-family: 'Cinzel', serif;
-  font-size: 9px;
+  align-self: flex-start;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--text-bright);
-  padding: 3px 14px;
-  border: none;
-  border-radius: 4px;
-  background: url(../assets/ui/icons/Rect-Dark-Default.png) no-repeat center / 100% 100%;
 }
 
 .map-card.boss .map-card-go {
@@ -258,7 +165,6 @@
 }
 
 .map-footer-note {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--text-dim);
-  letter-spacing: 0.5px;
 }

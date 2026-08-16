@@ -40,9 +40,6 @@ export default function ShopScreen() {
           const owned = itemsOwned[item.id] || 0;
           return (
             <div className={"shop-card branch-" + item.branch} key={item.id}>
-              <div className={"shop-icon branch-" + item.branch}>
-                <img src={item.sprite} alt={item.name} />
-              </div>
               <div className="shop-info">
                 <span className="shop-name">{item.name}</span>
                 <span className="shop-desc">{item.description}</span>

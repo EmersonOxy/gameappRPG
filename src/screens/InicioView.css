@@ -1,9 +1,5 @@
 /* ======================================
-   INICIO VIEW — LoR-Inspired Home Panel
-   Hierarquia:
-   L1: btn-battle (único elemento dominante desta tela)
-   L2: os 5 stats (nível/ouro/XP/ATK/DEF) — painel informativo
-   L3: banner atmosférico, tochas, dividers
+   INICIO VIEW — layout simples, sem artes
    ====================================== */
 .inicio-view {
   flex: 1;
@@ -13,124 +9,40 @@
   gap: 0;
   padding: 0;
   overflow-y: auto;
-  background:
-    radial-gradient(ellipse 90% 50% at 50% 0%, rgba(200, 153, 58, 0.04) 0%, transparent 60%),
-    linear-gradient(180deg, #0c0a06 0%, #08090d 100%);
+  background: var(--bg-deep);
 }
 
-/* Hero banner — atmospheric like LoR's home screen art */
+/* Hero banner — apenas o texto */
 .inicio-banner {
   width: 100%;
-  height: 200px;
-  position: relative;
-  overflow: hidden;
+  padding: 20px;
+  text-align: center;
   flex-shrink: 0;
-  display: flex;
-  align-items: flex-end;
-  padding: 0 20px 18px;
-  /* Atmospheric gradient simulating dark fantasy landscape */
-  background:
-    radial-gradient(ellipse 60% 80% at 70% 40%, rgba(180, 80, 20, 0.18) 0%, transparent 60%),
-    radial-gradient(ellipse 80% 60% at 20% 60%, rgba(30, 50, 80, 0.3) 0%, transparent 60%),
-    linear-gradient(180deg, #1a120a 0%, #0d0a06 60%, #08090d 100%);
-}
-
-/* Fog layer at bottom */
-.inicio-banner::after {
-  content: "";
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 80px;
-  background: linear-gradient(0deg, #08090d, transparent);
-  pointer-events: none;
-}
-
-/* Atmospheric torch glow left */
-.inicio-banner::before {
-  content: "";
-  position: absolute;
-  top: 20%; left: 15%;
-  width: 60px; height: 80px;
-  background: radial-gradient(ellipse at center, rgba(255, 140, 20, 0.18) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-/* Torch flicker elements */
-.inicio-torch {
-  position: absolute;
-  top: 18px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50% 50% 30% 30%;
-  background: radial-gradient(ellipse at center, #ffa020, #ff5500);
-  filter: blur(2px);
-  animation: torchFlicker 1.8s ease-in-out infinite;
-}
-.inicio-torch.left  { left: 18%; }
-.inicio-torch.right { right: 18%; animation-delay: 0.9s; }
-
-@keyframes torchFlicker {
-  0%, 100% { opacity: 1;   transform: scaleX(1)   scaleY(1); }
-  25%       { opacity: 0.7; transform: scaleX(1.2) scaleY(0.8); }
-  50%       { opacity: 0.9; transform: scaleX(0.9) scaleY(1.15); }
-  75%       { opacity: 0.75;transform: scaleX(1.1) scaleY(0.9); }
-}
-
-/* Banner text */
-.inicio-banner-text {
-  position: relative;
-  z-index: 2;
 }
 
 .inicio-banner-title {
-  font-family: 'Cinzel', serif;
   font-size: 22px;
   font-weight: 900;
-  letter-spacing: 2px;
   color: var(--text-bright);
   line-height: 1.1;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
 }
 
 .inicio-banner-sub {
   font-size: 12px;
-  color: var(--gold);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  opacity: 0.8;
+  color: var(--text-dim);
   margin-top: 4px;
 }
 
-/* Stats row — Camada 2 (painel informativo, sem destaque individual)
-   Todos os 5 stats têm o mesmo peso L2 entre si — nenhum é L1 aqui.
-   O único elemento L1 desta tela é o botão Batalhar. */
+/* Stats row */
 .inicio-stats {
-  position: relative;
   display: flex;
   gap: 1px;
   width: 100%;
   background: var(--border);
-  border-top: 1px solid var(--l3-border);
-  border-bottom: 1px solid var(--l3-border);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
-
-.inicio-stats::before,
-.inicio-stats::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  width: 6px;
-  height: 6px;
-  transform: translateY(-50%) rotate(45deg);
-  background: var(--emerald-glass);
-  border: 1px solid var(--emerald-bright);
-  box-shadow: 0 0 5px var(--emerald-glass);
-  pointer-events: none;
-}
-.inicio-stats::before { left: 6px; }
-.inicio-stats::after { right: 6px; }
 
 .inicio-stat {
   flex: 1;
@@ -140,22 +52,18 @@
   justify-content: center;
   gap: 2px;
   padding: 11px 8px;
-  /* L2: background neutro, sem gradiente ornamentado */
   background: var(--bg-card);
 }
 
-/* L2: menor, mais sutil — deixa o btn-battle dominar */
 .inicio-stat-value {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(14px, 3.6vw, 16px);
+  font-size: 16px;
   font-weight: 700;
   color: var(--gold);
-  opacity: 0.9;
 }
 
 .inicio-stat-label {
   font-size: 9px;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--text-dim);
 }
@@ -174,114 +82,19 @@
 
 /* Section title */
 .inicio-section-title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-}
-
-.inicio-section-line {
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border-bright));
-}
-.inicio-section-line.right {
-  background: linear-gradient(90deg, var(--border-bright), transparent);
-}
-
-.inicio-section-text {
-  font-family: 'Cinzel', serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--gold);
-  opacity: 0.7;
-  white-space: nowrap;
-}
-
-/* Battle button — LoR's attack/challenge button (moldura do kit UI) */
-.btn-battle {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  width: 100%;
-  max-width: 320px;
-  height: 60px;
-  font-family: 'Cinzel', serif;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--text-bright);
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  background: url(../assets/ui/icons/Rect-Dark-Default.png) no-repeat center / 100% 100%;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5);
-  overflow: hidden;
-}
-
-/* Shimmer */
-.btn-battle::before {
-  content: "";
-  position: absolute;
-  top: 0; left: -80%;
-  width: 50%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
-  animation: battleShimmer 2.5s ease infinite;
-}
-
-@keyframes battleShimmer {
-  0%        { left: -80%; }
-  35%, 100% { left: 130%; }
-}
-
-.btn-battle:hover:not(:active) {
-  background-image: url(../assets/ui/icons/Rect-Dark-Hover.png);
-  filter: brightness(1.1);
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5), 0 0 14px rgba(200, 153, 58, 0.3);
-}
-
-/* Distribute points button — secondary gold outline */
-.btn-points {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 0 22px;
-  height: 44px;
-  font-family: 'Cinzel', serif;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--gold-2);
-  background: linear-gradient(180deg, rgba(200,153,58,0.1), rgba(200,153,58,0.03));
-  border: 1px solid rgba(200, 153, 58, 0.4);
-  border-radius: 3px;
-  cursor: pointer;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5), 0 0 18px rgba(200, 153, 58, 0.15);
-  transition: transform 0.06s ease, box-shadow 0.06s ease;
-}
-
-.btn-points:active {
-  transform: translateY(3px);
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
-}
-
-/* Threat level label */
-.inicio-threat {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--text-dim);
-  background: rgba(0, 0, 0, 0.35);
+}
+
+/* Threat level label */
+.inicio-threat {
+  font-size: 11px;
+  color: var(--text-dim);
+  background: var(--bg-card);
   border: 1px solid var(--border);
   padding: 5px 14px;
   border-radius: 999px;
 }
-

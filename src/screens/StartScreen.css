@@ -1,44 +1,16 @@
 /* ======================================
-   START SCREEN — LoR-Inspired Epic Splash
+   START SCREEN — layout simples, sem artes
    ====================================== */
 .start-screen {
   flex: 1;
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
-  /* Dark stone dungeon — LoR atmosphere */
-  background:
-    radial-gradient(ellipse 80% 60% at 50% 40%, #1c1408 0%, #08090d 60%, #000 100%);
-}
-
-/* Atmospheric fog layers */
-.start-screen::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 60% 40% at 50% 20%, rgba(200, 153, 58, 0.08) 0%, transparent 60%),
-    radial-gradient(ellipse 80% 80% at 50% 100%, rgba(10, 6, 2, 0.7) 0%, transparent 60%);
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* Vignette */
-.start-screen::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(0,0,0,0.75) 100%);
-  pointer-events: none;
-  z-index: 1;
+  background: var(--bg-deep);
 }
 
 /* ---- Content ---- */
 .start-content {
-  position: relative;
-  z-index: 3;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -47,7 +19,7 @@
   text-align: center;
 }
 
-/* ---- Game Logo ---- */
+/* ---- Title ---- */
 .game-logo {
   display: flex;
   flex-direction: column;
@@ -56,44 +28,28 @@
 }
 
 .game-title {
-  font-family: 'Cinzel', serif;
-  font-size: 44px;
+  font-size: 40px;
   font-weight: 900;
-  letter-spacing: 6px;
+  letter-spacing: 4px;
   line-height: 1;
-  background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 45%, var(--gold) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 24px rgba(200, 153, 58, 0.4));
-  animation: titleGlow 3s ease-in-out infinite;
-}
-
-@keyframes titleGlow {
-  0%, 100% { filter: drop-shadow(0 0 16px rgba(200, 153, 58, 0.35)); }
-  50%       { filter: drop-shadow(0 0 32px rgba(234, 184, 80, 0.65)); }
+  color: var(--text-bright);
 }
 
 .game-subtitle {
-  font-family: 'Cinzel', serif;
   font-size: 13px;
   font-weight: 700;
-  letter-spacing: 10px;
-  padding-left: 10px;
-  color: var(--gold);
-  opacity: 0.75;
+  letter-spacing: 8px;
+  color: var(--text-dim);
   text-transform: uppercase;
 }
 
 /* ---- Tagline ---- */
 .game-tagline {
   font-size: 13px;
-  font-style: italic;
   color: var(--text-dim);
-  letter-spacing: 0.5px;
 }
 
-/* ---- CTA Button — LoR-style physical press ---- */
+/* ---- Menu ---- */
 .start-menu {
   display: flex;
   flex-direction: column;
@@ -102,94 +58,3 @@
   width: 100%;
   max-width: 300px;
 }
-
-.start-menu .btn-start {
-  margin-top: 0;
-  width: 100%;
-  justify-content: center;
-}
-
-.btn-start {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 6px;
-  padding: 0 40px;
-  height: 54px;
-  font-family: 'Cinzel', serif;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #1a1000;
-  /* Metallic gold gradient — matches LoR's attack token active state */
-  background:
-    radial-gradient(circle 5px at 10px 10px, var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
-    radial-gradient(circle 5px at calc(100% - 10px) 10px, var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
-    radial-gradient(circle 5px at 10px calc(100% - 10px), var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
-    radial-gradient(circle 5px at calc(100% - 10px) calc(100% - 10px), var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
-    linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
-  border: 1px solid var(--gold-dark);
-  outline: 1px solid var(--gold-2);
-  outline-offset: 2px;
-  border-radius: 3px;
-  cursor: pointer;
-  /* LoR 3D raised button effect */
-  box-shadow:
-    0 0 0 1px rgba(200, 153, 58, 0.4),
-    0 var(--btn-depth) 0 var(--gold-dark),
-    0 8px 24px rgba(200, 153, 58, 0.3),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  overflow: hidden;
-}
-
-/* Shimmer sweep */
-.btn-start::after {
-  content: "";
-  position: absolute;
-  top: 0; left: -60%;
-  width: 40%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
-  animation: btnShimmer 3.5s ease infinite;
-}
-
-@keyframes btnShimmer {
-  0%   { left: -60%; }
-  40%, 100% { left: 130%; }
-}
-
-/* Hover glow */
-.btn-start:hover {
-  box-shadow:
-    0 var(--btn-depth) 0 var(--gold-dark),
-    0 12px 32px rgba(234, 184, 80, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-/* Secondary (Novo Jogo) — steel/silver, quieter than gold CTA */
-.btn-start.secondary {
-  color: var(--text-bright);
-  background: linear-gradient(180deg, #2a2f3a 0%, #1a1e27 100%);
-  border: 1px solid var(--silver-dark);
-  outline: 1px solid var(--silver);
-  box-shadow:
-    0 0 0 1px rgba(190, 196, 214, 0.25),
-    0 var(--btn-depth) 0 #0a0c12,
-    0 8px 24px rgba(0, 0, 0, 0.4),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.16);
-}
-
-.btn-start.secondary::after {
-  display: none;
-}
-
-.btn-start.secondary:hover {
-  box-shadow:
-    0 var(--btn-depth) 0 #0a0c12,
-    0 12px 32px rgba(190, 196, 214, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-

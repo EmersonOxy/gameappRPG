@@ -12,8 +12,6 @@ export default function InicioView() {
     <div className="inicio-view">
       {/* Hero banner */}
       <div className="inicio-banner">
-        <div className="inicio-torch left" />
-        <div className="inicio-torch right" />
         <div className="inicio-banner-text">
           <div className="inicio-banner-title">Bem-vindo, Aventureiro</div>
           <div className="inicio-banner-sub">Pronto para a batalha?</div>
@@ -46,11 +44,7 @@ export default function InicioView() {
 
       {/* Action area */}
       <div className="inicio-action">
-        <div className="inicio-section-title">
-          <div className="inicio-section-line" />
-          <span className="inicio-section-text">Combate</span>
-          <div className="inicio-section-line right" />
-        </div>
+        <div className="inicio-section-title">Combate</div>
 
         <button type="button" onClick={() => navigate("/home/map")}>
           <Swords size={22} />
