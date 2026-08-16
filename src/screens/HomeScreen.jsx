@@ -1,10 +1,10 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import BottomNav from "../components/BottomNav.jsx";
-import Placeholder from "../components/Placeholder.jsx";
 import InicioView from "./InicioView.jsx";
 import SkillTreeScreen from "./SkillTreeScreen.jsx";
 import ShopScreen from "./ShopScreen.jsx";
 import MapScreen from "./MapScreen.jsx";
+import MineScreen from "./MineScreen.jsx";
 import { useGame } from "../context/GameContext.jsx";
 import "./HomeScreen.css";
 
@@ -41,7 +41,8 @@ export default function HomeScreen() {
           <Route path="map" element={<MapScreen />} />
           <Route path="skills" element={<SkillTreeScreen />} />
           <Route path="shop" element={<ShopScreen />} />
-          <Route path="profile" element={<Placeholder title="Perfil" />} />
+          <Route path="mine" element={<MineScreen />} />
+          <Route path="profile" element={<Navigate to="/home/mine" replace />} />
         </Routes>
       </main>
 

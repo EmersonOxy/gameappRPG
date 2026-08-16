@@ -2,11 +2,11 @@ import { NavLink } from "react-router-dom";
 import "./BottomNav.css";
 
 const tabs = [
+  { to: "/home/shop", label: "Loja", icon: "cart" },
+  { to: "/home/skills", label: "Habilidades", icon: "star" },
   { to: "/home", label: "Início", icon: "home", end: true },
   { to: "/home/map", label: "Mapa", icon: "levels" },
-  { to: "/home/skills", label: "Habilidades", icon: "star" },
-  { to: "/home/shop", label: "Loja", icon: "cart" },
-  { to: "/home/profile", label: "Perfil", icon: "player" },
+  { to: "/home/mine", label: "Mina", icon: "pickaxe" },
 ];
 
 export default function BottomNav() {
