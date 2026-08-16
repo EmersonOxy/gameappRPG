@@ -1,1608 +1,506 @@
-/* ======================================
-   BATTLE SCREEN — LoR-Inspired Arena
-   Hierarquia visual de 3 camadas:
-   L1 (Decisão): HP + botão Atacar
-   L2 (Recurso): Fury/Stamina/Mana/Shield, timer, sprites
-   L3 (Ambientação): fog, divider, arena atmosphere
-   ====================================== */
-
-/* ---- Arena background — matches StartScreen atmosphere ---- */
 .battle-screen {
   flex: 1;
   position: relative;
-  overflow: hidden;
-  font-family: 'Inter', system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  padding: 14px;
+  gap: 10px;
   color: var(--text);
-  /* Dark stone dungeon — LoR atmosphere */
   background:
-    radial-gradient(ellipse 80% 60% at 50% 40%, #1c1408 0%, #08090d 60%, #000 100%);
+    radial-gradient(ellipse 90% 40% at 50% 12%, rgba(184, 48, 48, 0.07) 0%, transparent 60%),
+    var(--bg-deep);
 }
 
-/* Atmospheric fog layers */
-.battle-screen::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 60% 40% at 50% 20%, rgba(200, 153, 58, 0.08) 0%, transparent 60%),
-    radial-gradient(ellipse 80% 80% at 50% 100%, rgba(10, 6, 2, 0.7) 0%, transparent 60%);
-  pointer-events: none;
-  z-index: 1;
+.battle-screen button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--border-bright);
+  border-radius: 4px;
+  background: var(--bg-card);
+  color: var(--text-bright);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.12s ease, background 0.12s ease;
 }
 
-/* Vignette */
-.battle-screen::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(0,0,0,0.75) 100%);
-  pointer-events: none;
-  z-index: 1;
+.battle-screen button:hover:not(:disabled) {
+  background: #1a1f29;
 }
 
-/* ---- Arena dividing line ---- */
-.battle-divider {
-  position: absolute;
-  top: 50%;
-  left: 20px; right: 20px;
-  height: 1px;
-  transform: translateY(-50%);
-  background: linear-gradient(90deg, transparent, var(--gold) 30%, var(--gold-2) 50%, var(--gold) 70%, transparent);
-  opacity: 0.35;
-  z-index: 1;
-  pointer-events: none;
-}
-.battle-divider::before {
-  content: "✦";
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 10px;
-  color: var(--gold);
-  background: var(--bg-deep);
-  padding: 0 8px;
+.battle-screen button:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
-/* ---- Timer — Camada 2 (suporte, não ação) ---- */
+/* ---- Timer ---- */
 .timer-wrap {
-  position: absolute;
-  top: 14px;
-  left: 20px; right: 20px;
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.6);
-  /* L2: borda tênue, sem inset highlight */
-  border: 1px solid var(--l3-border);
+  width: 100%;
+  max-width: 420px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
   overflow: hidden;
-  z-index: 6;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
 .timer-fill {
   height: 100%;
-  background: linear-gradient(90deg, #2cc96e, #7de84d);
-  transition: width 0.12s linear;
-  /* Sem glow constante — só no estado de perigo (L1 temporário) */
+  background: linear-gradient(90deg, var(--gold-2), var(--gold));
+  transition: width 0.3s linear;
 }
 
-/* Timer danger: temporariamente promovido a L1 para chamar atenção */
 .timer-fill.danger {
-  background: linear-gradient(90deg, #c0392b, #e74c3c);
-  box-shadow: 0 0 10px rgba(192, 57, 43, 0.55);
-  animation: timerDangerPulse 0.6s ease-in-out infinite;
+  background: linear-gradient(90deg, var(--crimson-2), var(--crimson));
 }
 
-@keyframes timerDangerPulse {
-  0%, 100% { box-shadow: 0 0 8px rgba(192, 57, 43, 0.5); }
-  50%       { box-shadow: 0 0 18px rgba(231, 76, 60, 0.85); }
+.battle-divider {
+  width: 100%;
+  max-width: 420px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--silver-dim), transparent);
 }
 
-/* ---- Pause button ---- */
-.pause-button {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 38px;
-  height: 38px;
+/* ---- Botão de pausa ---- */
+.pause-btn {
+  align-self: flex-end;
+  padding: 8px !important;
+  width: 36px;
+  height: 36px;
+}
+
+/* ---- Dica do tutorial ---- */
+.hint-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 420px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-bright);
+  border-radius: 4px;
+  background: rgba(200, 153, 58, 0.06);
+}
+
+.hint-box.done {
+  border-color: var(--emerald-glass);
+}
+
+.hint-check {
+  display: flex;
+  color: var(--emerald);
+}
+
+.hint-text {
+  flex: 1;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.hint-box button {
+  padding: 4px;
   border: none;
-  border-radius: 6px;
-  background-color: #101016;
-  background-image: url(../assets/ui/icons/Square-Dark-Default/Pause.png);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 100% 100%;
-  cursor: pointer;
-  z-index: 9;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-  -webkit-user-select: none;
-  transition: transform 0.08s ease, filter 0.12s ease;
+  background: none;
+  color: var(--text-dim);
 }
 
-.pause-button:hover {
-  background-image: url(../assets/ui/icons/Square-Dark-Hover/Pause.png);
-  filter: drop-shadow(0 2px 8px rgba(200, 153, 58, 0.4));
-}
-
-.pause-button:active { transform: scale(0.92); }
-
-/* ---- Pause overlay ---- */
+/* ---- Pausa ---- */
 .pause-overlay {
   position: absolute;
   inset: 0;
+  z-index: 30;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 28px;
-  background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(5, 4, 8, 0.75) 0%, rgba(0, 0, 0, 0.94) 100%);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: 40;
-  animation: overlayFadeIn 0.25s ease;
+  background: rgba(4, 5, 10, 0.78);
 }
 
 .pause-card {
-  position: relative;
-  width: 100%;
-  max-width: 380px;
+  width: 280px;
+  padding: 22px 18px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 34px 26px 26px;
-  border-radius: 4px;
-  background: linear-gradient(180deg, #18140e 0%, #0d0b08 100%);
-  border: 1px solid rgba(200, 153, 58, 0.4);
-  box-shadow:
-    0 0 0 1px rgba(200, 153, 58, 0.08),
-    0 30px 80px rgba(0, 0, 0, 0.8),
-    inset 0 1px 0 rgba(200, 153, 58, 0.1);
-  animation: cardSlideIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  gap: 8px;
+  border: 1px solid var(--border-bright);
+  border-radius: 6px;
+  background: var(--bg-panel);
 }
 
 .pause-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--gold-bright);
-  background: radial-gradient(circle at 35% 30%, #fff0b0, #c8993a 55%, #7a5518);
-  box-shadow: 0 0 40px rgba(200, 153, 58, 0.4);
+  color: var(--gold);
 }
 
 .pause-title {
-  font-family: 'Cinzel', serif;
-  font-size: 28px;
+  font-size: 18px;
   font-weight: 900;
-  letter-spacing: 3px;
-  text-transform: uppercase;
   color: var(--text-bright);
 }
 
 .pause-sub {
   font-size: 12px;
   color: var(--text-dim);
-  letter-spacing: 1px;
 }
 
 .pause-actions {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  margin-top: 8px;
+  gap: 8px;
+  margin-top: 10px;
 }
 
-/* ---- Enemy zone ---- */
+/* ---- HUD (barras simples do jogador/inimigo) ---- */
+.battle-hud {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mini-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mini-bar-label {
+  width: 62px;
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.mini-bar-track {
+  flex: 1;
+  height: 10px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.mini-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.mini-bar-value {
+  width: 52px;
+  flex-shrink: 0;
+  text-align: right;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-shield {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--teal);
+}
+
+/* ---- Arena (sprites) ---- */
 .enemy-wrap {
-  position: absolute;
-  top: 46px;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  z-index: 3;
-  transition: top 0.85s cubic-bezier(0.22, 1, 0.36, 1), transform 0.2s ease;
 }
 
-.enemy-wrap.attacking {
-  top: calc(50% - 220px);
-  transform: translateX(-50%) scale(1.03);
-}
-
-/* Threat level badge above enemy */
 .threat-badge {
-  font-family: 'Cinzel', serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 2px;
+  font-weight: 800;
+  letter-spacing: 1px;
   text-transform: uppercase;
-  color: var(--gold-2);
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid var(--border);
-  padding: 4px 12px;
-  border-radius: 999px;
-  white-space: nowrap;
+  color: var(--text-dim);
+  margin-bottom: 4px;
 }
 
-/* ---- Sprites ---- */
+.threat-badge.boss {
+  color: var(--gold);
+}
+
 .sprite {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .sprite img {
-  width: 100%;
-  height: 100%;
+  width: 120px;
+  height: 120px;
   object-fit: contain;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
 }
 
-/* Nome do inimigo sob o sprite — Camada 2 (identificação) */
-.enemy-name {
-  display: inline-flex;
+.enemy-sprite img {
+  width: 150px;
+  height: 150px;
+}
+
+.player-sprite-holder {
+  display: flex;
+  justify-content: center;
+}
+
+.shield-badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  display: flex;
   align-items: center;
-  gap: 5px;
-  font-family: 'Cinzel', serif;
+  gap: 3px;
+  padding: 3px 6px;
+  border: 1px solid rgba(45, 212, 191, 0.5);
+  border-radius: 3px;
+  background: rgba(13, 40, 42, 0.85);
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: var(--text);
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid var(--border);
-  padding: 4px 12px;
-  border-radius: 999px;
-  white-space: nowrap;
+  font-weight: 800;
+  color: var(--teal);
 }
 
-/* Linha de identificação do inimigo: nome + elemento + sorte */
+.block-flash {
+  position: absolute;
+  color: var(--silver-bright);
+}
+
+.miss-flash,
+.dodge-flash,
+.crit-flash,
+.stun-flash,
+.skill-flash {
+  position: absolute;
+  top: -18px;
+  padding: 4px 8px;
+  border: 1px solid var(--border-bright);
+  border-radius: 3px;
+  background: var(--bg-panel);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  z-index: 5;
+}
+
+.miss-flash.left { left: 10px; }
+.miss-flash.right { right: 10px; }
+.dodge-flash.left { left: 10px; }
+.dodge-flash.right { right: 10px; }
+.crit-flash.left { left: 10px; }
+.crit-flash.right { right: 10px; }
+.stun-flash.left { left: 10px; }
+.stun-flash.right { right: 10px; }
+
+.crit-flash {
+  color: var(--gold-bright);
+  border-color: var(--gold-dim);
+}
+
+.stun-flash {
+  color: var(--teal);
+}
+
+.skill-flash {
+  color: var(--emerald-bright);
+  border-color: var(--emerald-glass);
+}
+
+.enemy-reaction {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 10px;
+  border-radius: 3px;
+  background: rgba(4, 5, 10, 0.85);
+  border: 1px solid var(--border-bright);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text);
+  z-index: 6;
+}
+
 .enemy-name-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
 }
 
-/* Badge do elemento do inimigo */
+.enemy-name {
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--text-bright);
+}
+
 .enemy-element {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.5px;
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid currentColor;
-  padding: 4px 10px;
-  border-radius: 999px;
-  white-space: nowrap;
+  text-transform: uppercase;
 }
 
 .enemy-luck {
-  display: inline-flex;
-  align-items: center;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  color: var(--text-dim);
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid var(--border);
-  padding: 4px 10px;
-  border-radius: 999px;
-  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold);
 }
 
-/* Popup de item usado pelo inimigo */
 .enemy-item-popup {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%);
+  margin-top: 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 7px 14px;
-  border-radius: 6px;
-  background: rgba(10, 12, 16, 0.95);
-  border: 1px solid rgba(45, 212, 191, 0.45);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-  animation: itemPopupIn 0.25s ease;
-  z-index: 6;
+  gap: 1px;
 }
 
 .enemy-item-popup-name {
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.5px;
-  color: #8ff5e4;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--gold-bright);
 }
 
 .enemy-item-popup-effect {
   font-size: 10px;
-  font-weight: 700;
-  color: var(--text);
+  color: var(--text-dim);
 }
 
-@keyframes itemPopupIn {
-  from { opacity: 0; transform: translate(-50%, 8px); }
-  to   { opacity: 1; transform: translate(-50%, 0); }
-}
-
-/* ---- Reação do inimigo (emoji no balão) — canto inferior direito ---- */
-.enemy-reaction {
-  position: absolute;
-  right: -6px;
-  bottom: -4px;
-  width: 46px;
-  height: 46px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  z-index: 6;
-  animation: reactionPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.reaction-bubble {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
-}
-
-.reaction-emoji {
-  position: relative;
-  width: 20px;
-  height: 20px;
-  z-index: 1;
-}
-
-@keyframes reactionPop {
-  from { transform: scale(0.3) rotate(-8deg); opacity: 0; }
-  to   { transform: scale(1) rotate(0deg); opacity: 1; }
-}
-
-/* Badge de chefe — promovido a L1 quando é o chefão */
-.threat-badge.boss {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--gold-bright);
-  border-color: rgba(200, 153, 58, 0.5);
-  box-shadow: 0 0 12px rgba(200, 153, 58, 0.2);
-}
-
-/* Enemy sprite — Camada 2 (identificação, não decisão)
-   Corner ornaments REMOVIDOS: são L3 numa tela de uso constante.
-   Mantém apenas a borda crimson + aura pulsante tênue. */
-.enemy-sprite {
-  position: relative;
-  width: 116px;
-  height: 116px;
-  border-radius: 4px;
-  background: linear-gradient(160deg, #1e0f0f 0%, #120808 100%);
-  border: 2px solid rgba(139, 28, 28, 0.55);
-  color: #d97070;
-  /* L2: 2 camadas apenas — profundidade + outline, sem inset highlight */
-  box-shadow:
-    0 0 0 1px rgba(80, 10, 10, 0.5),
-    0 16px 40px rgba(0, 0, 0, 0.6);
-  padding: 14px;
-}
-
-/* Aura tênue — L3 atmosfera, não L1 ação */
-.enemy-sprite::after {
-  content: "";
-  position: absolute;
-  inset: -4px;
-  border-radius: 6px;
-  background: transparent;
-  box-shadow: 0 0 14px rgba(192, 57, 43, 0.18);
-  animation: enemyAuraPulse 3s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes enemyAuraPulse {
-  0%, 100% { box-shadow: 0 0 10px rgba(192, 57, 43, 0.14); }
-  50%       { box-shadow: 0 0 22px rgba(192, 57, 43, 0.34); }
-}
-
-/* Corner ornaments nos sprites REMOVIDOS (eram L3 desnecessário
-   em tela de uso constante — tornavam tudo do mesmo peso visual).
-   Regra: ornamento pesado só em StartScreen (hero) e recompensas. */
-
-/* Player sprite — Camada 2 */
-.player-sprite {
-  position: relative;
-  width: 100px;
-  height: 100px;
-  border-radius: 4px;
-  background: linear-gradient(160deg, #0f1a2e 0%, #080f1e 100%);
-  border: 2px solid rgba(45, 80, 160, 0.5);
-  color: #7aade0;
-  /* L2: 2 camadas apenas */
-  box-shadow:
-    0 0 0 1px rgba(10, 20, 60, 0.5),
-    0 14px 36px rgba(0, 0, 0, 0.55);
-  padding: 12px;
-}
-
-/* ::before dos sprites REMOVIDO — corner ornaments eram L3 ruído */
-
-/* Player holder */
-.player-sprite-holder {
-  position: absolute;
-  left: 50%;
-  bottom: 172px;
-  transform: translateX(-50%);
-  z-index: 2;
-  transition: bottom 0.85s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.player-sprite-holder.attacking {
-  bottom: calc(50% - 104px);
-  transform: translateX(-50%) scale(1.03);
-}
-
-/* ---- Flash effects ---- */
-.block-flash {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--gold-bright);
-  filter: drop-shadow(0 0 16px rgba(200, 153, 58, 0.9));
-  animation: blockPop 0.44s cubic-bezier(0.2, 0.9, 0.3, 1);
-}
-
-@keyframes blockPop {
-  0%   { transform: scale(0.3); opacity: 0; }
-  60%  { transform: scale(1.2); opacity: 1; }
-  100% { transform: scale(1);   opacity: 1; }
-}
-
-.miss-flash {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  white-space: nowrap;
-  pointer-events: none;
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 1px;
-  color: #ff9090;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
-  animation: missPop 0.42s ease;
-}
-
-@keyframes missPop {
-  0%   { transform: translateY(-50%) scale(0.5); opacity: 0; }
-  60%  { transform: translateY(-50%) scale(1.15); opacity: 1; }
-  100% { transform: translateY(-50%) scale(1); opacity: 1; }
-}
-
-.crit-flash {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  white-space: nowrap;
-  pointer-events: none;
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 1px;
-  color: var(--gold-bright);
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
-  animation: critPop 0.5s ease;
-}
-
-@keyframes critPop {
-  0%   { transform: translateY(-50%) scale(0.4); opacity: 0; }
-  50%  { transform: translateY(-50%) scale(1.3); opacity: 1; }
-  100% { transform: translateY(-50%) scale(1); opacity: 1; }
-}
-
-/* Stun flash — enemy frozen */
-.stun-flash {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  white-space: nowrap;
-  pointer-events: none;
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 1px;
-  color: #9fe8ff;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
-  animation: critPop 0.5s ease;
-}
-
-.stun-flash.left {
-  right: calc(100% + 12px);
-}
-
-/* Skill cast flash — branch colored name */
-.skill-flash {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  white-space: nowrap;
-  pointer-events: none;
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 1px;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
-  animation: critPop 0.5s ease;
-}
-
-.skill-flash.left {
-  right: calc(100% + 12px);
-}
-
-.skill-flash.branch-sombrio    { color: #ffb09a; }
-.skill-flash.branch-sagrado { color: #8ff5e4; }
-.skill-flash.branch-magico    { color: #a8d4ff; }
-
-/* Elemental skill flashes (enemy skills) */
-.skill-flash.element-magma    { color: #ff8a5c; }
-.skill-flash.element-rocha    { color: #d8b48a; }
-.skill-flash.element-mare     { color: #7ec8ff; }
-.skill-flash.element-vendaval { color: #9de8d2; }
-
-/* Element colors (badges, chips, flashes) */
-.element-magma    { color: #ff8a5c; }
-.element-rocha    { color: #d8b48a; }
-.element-mare     { color: #7ec8ff; }
-.element-vendaval { color: #9de8d2; }
-
-/* Dodge flash — sortudo desvia do golpe */
-.dodge-flash {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  white-space: nowrap;
-  pointer-events: none;
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 1px;
-  color: #7be3b6;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
-  animation: dodgePop 0.5s ease;
-}
-
-@keyframes dodgePop {
-  0%   { transform: translateY(-50%) scale(0.4) rotate(-8deg); opacity: 0; }
-  55%  { transform: translateY(-50%) scale(1.25) rotate(4deg); opacity: 1; }
-  100% { transform: translateY(-50%) scale(1) rotate(0deg); opacity: 1; }
-}
-
-/* Shield badge — Camada 2 (recurso ativo)
-   Glow de entrada via animação (blockPop já tem), sem glow permanente.
-   O badge aparece com impacto e depois fica discreto — comportamento L2. */
-.shield-badge {
-  position: absolute;
-  top: -8px;
-  left: -8px;
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 900;
-  color: #06282b;
-  background: linear-gradient(180deg, #7fe8dc, #2dd4bf);
-  border: 1px solid #0e5a52;
-  /* Sem box-shadow permanente — glow apenas durante a animação de entrada */
-  z-index: 5;
-  animation: shieldIn 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
-}
-
-@keyframes shieldIn {
-  0%   { transform: scale(0.4); opacity: 0; box-shadow: 0 0 18px rgba(45, 212, 191, 0.8); }
-  70%  { transform: scale(1.1); opacity: 1; box-shadow: 0 0 10px rgba(45, 212, 191, 0.4); }
-  100% { transform: scale(1);   opacity: 1; box-shadow: none; }
-}
-
-/* Enemy texts — left side of the sprite / screen */
-.miss-flash.left,
-.crit-flash.left,
-.dodge-flash.left {
-  right: calc(100% + 12px);
-}
-
-/* Player texts — right side of the sprite / screen */
-.miss-flash.right,
-.crit-flash.right,
-.dodge-flash.right {
-  left: calc(100% + 12px);
-}
-
-.stun-flash.right {
-  left: calc(100% + 12px);
-}
-
-/* ---- Player stats bar ---- */
+/* ---- Ações do jogador ---- */
 .player-wrap {
-  position: absolute;
-  bottom: 24px;
-  left: 0; right: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  z-index: 2;
-  padding: 0 22px;
-}
-
-/* ---- Vertical resource stacks (arena edges) ---- */
-.arena-stack {
-  position: absolute;
-  z-index: 3;
-}
-
-.arena-stack.left  { left: 14px; }
-.arena-stack.right { right: 14px; }
-
-/* Grupo composito: vida (por cima) + estamina (por trás, menor).
-   height: 100% é obrigatório — vida/estamina usam % da altura do grupo. */
-.vbar-group {
-  position: relative;
-  display: flex;
-  align-items: stretch;
-  height: 100%;
-}
-
-.arena-stack.player {
-  bottom: 150px;
-  top: calc(50% + 16px);
-}
-
-.arena-stack.enemy {
-  top: 48px;
-  bottom: calc(50% + 16px);
-}
-
-/* HP — Camada 1: barra principal, mais larga */
-.arena-stack .vbar.vida {
-  position: relative;
-  width: 20px;
-  height: 100%;
-  z-index: 2;
-}
-
-/* Estamina — por trás da vida, com menos da metade da lateral coberta.
-   Menor (80% da altura) e mais estreita (13px) que a vida (20px).
-   A parte exposta fica do lado da borda da tela, oposta aos fury-pips. */
-.arena-stack .vbar.estamina {
-  position: absolute;
-  width: 13px;
-  height: 80%;
-  z-index: 1; /* atrás da vida */
-  bottom: 0;  /* player: alinha pela base */
-}
-
-/* Para o inimigo (enemy), estamina alinha pelo topo */
-.arena-stack.enemy .vbar.estamina {
-  bottom: auto;
-  top: 0;
-}
-
-/* Player (left stack): estamina avança 8px para fora da vida, junto à borda
-   da tela. A vida (20px) cobre 5px dos 13px da estamina (~38%, menos da
-   metade) e os outros 8px ficam expostos no lado esquerdo da tela. */
-.arena-stack.left .vbar.estamina {
-  left: -8px;
-}
-
-/* Enemy (right stack): mesmo efeito espelhado junto à borda direita */
-.arena-stack.right .vbar.estamina {
-  right: -8px;
-  left: auto;
-}
-
-/* Mana — Camada 1 simétrica: mesmo destaque que HP no lado direito */
-.arena-stack .vbar.mana {
-  width: 20px;
-  height: 100%;
-}
-
-/* ---- Forma "espada" (trapézio com 1 lado reto) ----
-   Topo largo, base mais estreita (~60% da largura), gume virado
-   para o centro da arena e lombo reto junto à borda da tela. */
-.arena-stack.left .vbar .health-bar.vertical,
-.arena-stack.left .vbar .resource-bar.vertical {
-  clip-path: polygon(0 0, 100% 0, 60% 100%, 0 100%);
-}
-
-.arena-stack.right .vbar .health-bar.vertical,
-.arena-stack.right .vbar .resource-bar.vertical {
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 40% 100%);
-}
-
-/* Barras do inimigo — de cabeça para baixo (espelho vertical do player) */
-.arena-stack.enemy.left .vbar .health-bar.vertical,
-.arena-stack.enemy.left .vbar .resource-bar.vertical {
-  clip-path: polygon(0 100%, 100% 100%, 60% 0, 0 0);
-}
-
-.arena-stack.enemy.right .vbar .health-bar.vertical,
-.arena-stack.enemy.right .vbar .resource-bar.vertical {
-  clip-path: polygon(0 100%, 100% 100%, 100% 0, 40% 0);
-}
-
-/* Segmentos — destaque suave nas divisões das barras verticais */
-.arena-stack .health-bar.vertical .tick.v.filled {
-  box-shadow: 0 0 4px rgba(255, 255, 255, 0.08);
-}
-
-.arena-stack .resource-bar.vertical .resource-tick.v {
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-
-/* ---- Fury pips: segmentos finos e compridos colados na lateral da vida ---- */
-.fury-pips {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end; /* player: pips crescem de baixo */
-  gap: 2px;
-  z-index: 3;
-  padding-bottom: 2px;
-}
-
-/* Enemy pips crescem do topo */
-.arena-stack.enemy .fury-pips {
-  justify-content: flex-start;
-  padding-bottom: 0;
-  padding-top: 2px;
-}
-
-/* Player: pips à direita, colados rente à lateral da vida (pip tem 3px) */
-.fury-pips.right {
-  right: -3px;
-}
-
-/* Enemy: pips à esquerda, colados rente à lateral da vida */
-.fury-pips.left {
-  left: -3px;
-}
-
-.fury-pip {
-  width: 3px;
-  height: 10px;
-  border-radius: 1px;
-  /* Inativo: cinza escuro quase invisível (L3) */
-  background: rgba(80, 50, 10, 0.5);
-  transition: background 0.2s ease, box-shadow 0.2s ease;
-  flex-shrink: 0;
-}
-
-/* Pip ativo: laranja fúria, sem glow permanente (L2) */
-.fury-pip.on {
-  background: linear-gradient(180deg, #ffa94d, #f0751f);
-}
-
-/* Último pip (stack completo = L1 temporário): glow de destaque */
-.fury-pips .fury-pip:last-child.on {
-  box-shadow: 0 0 6px rgba(240, 117, 31, 0.8);
-  background: linear-gradient(180deg, #ffcc70, #f0751f);
-}
-
-/* ---- Action buttons — arte PNG (up normal / down pressionado) ---- */
-.battle-actions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  width: 100%;
-  max-width: 460px;
-}
-
-.battle-skills {
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  max-width: 460px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 1px 1px 3px;
-  scrollbar-width: none;
-}
-
-.battle-skills::-webkit-scrollbar {
-  display: none;
-}
-
-.battle-skills .btn-action {
-  flex: 0 0 auto;
-  width: 88px;
-  height: 48px;
-}
-
-.btn-action {
-  flex: 1;
-  padding: 0;
-  height: 62px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  background-color: #16110c;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-  -webkit-user-select: none;
-  transition: transform 0.06s ease, filter 0.15s ease;
-}
-
-.btn-action:disabled {
-  cursor: default;
-  filter: grayscale(0.55) brightness(0.6);
-}
-
-/* ATTACK — ação principal do combate */
-.btn-action.attack {
-  background-image: url(../assets/ui/buttons/button_Attack_up.png);
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45), 0 8px 20px rgba(180, 50, 30, 0.22);
-}
-
-/* DEFEND / SPECIAL / BAG */
-.btn-action.defend {
-  background-image: url(../assets/ui/buttons/button_shield_up.png);
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45);
-}
-
-.btn-action.special {
-  background-image: url(../assets/ui/buttons/button_Especial_up.png);
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45);
-}
-
-.btn-action.bag {
-  background-image: url(../assets/ui/buttons/button_bag_up.png);
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45);
-}
-
-/* Habilidades equipadas — arte genérica */
-.btn-action.skill {
-  background-image: url(../assets/ui/buttons/button_up.png);
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.4);
-}
-
-/* Pressionado: troca para o PNG "down" */
-.btn-action.attack:active:not(:disabled) {
-  background-image: url(../assets/ui/buttons/button_Attack_down.png);
-}
-
-.btn-action.defend:active:not(:disabled) {
-  background-image: url(../assets/ui/buttons/button_shield_down.png);
-}
-
-.btn-action.special:active:not(:disabled) {
-  background-image: url(../assets/ui/buttons/button_Especial_down.png);
-}
-
-.btn-action.bag:active:not(:disabled) {
-  background-image: url(../assets/ui/buttons/button_bag_down.png);
-}
-
-.btn-action.skill:active:not(:disabled) {
-  background-image: url(../assets/ui/buttons/button_down.png);
-}
-
-/* Special: sobe para L1 temporariamente quando disponível */
-.btn-action.special:not(:disabled) {
-  animation: specialReady 2s ease-in-out infinite;
-}
-
-@keyframes specialReady {
-  0%, 100% { box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45), 0 0 0 rgba(234, 184, 80, 0); }
-  50%       { box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45), 0 0 18px rgba(234, 184, 80, 0.5); }
-}
-
-.btn-action:not(:disabled):active {
-  transform: translateY(4px) scale(1.02, 0.95);
-  animation: none;
-}
-
-/* ========================================
-   RESULT OVERLAYS
-   ======================================== */
-.result-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 28px;
-  background:
-    radial-gradient(ellipse 80% 60% at 50% 50%, rgba(5, 4, 8, 0.7) 0%, rgba(0, 0, 0, 0.92) 100%);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: 20;
-  animation: overlayFadeIn 0.3s ease;
-}
-
-@keyframes overlayFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-/* Result card — LoR-style panel with metallic frame */
-.result-card {
-  position: relative;
   width: 100%;
   max-width: 420px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  padding: 36px 28px 28px;
-  border-radius: 4px;
-  background: linear-gradient(180deg, #18140e 0%, #0d0b08 100%);
-  /* Metallic gold border frame */
-  border: 1px solid rgba(200, 153, 58, 0.4);
-  box-shadow:
-    0 0 0 1px rgba(200, 153, 58, 0.08),
-    0 30px 80px rgba(0, 0, 0, 0.8),
-    inset 0 1px 0 rgba(200, 153, 58, 0.1);
-  overflow: hidden;
-  animation: cardSlideIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-@keyframes cardSlideIn {
-  from { transform: translateY(20px) scale(0.97); opacity: 0; }
-  to   { transform: translateY(0) scale(1); opacity: 1; }
-}
-
-/* Gold corner ornaments on card */
-.result-card::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: 4px;
-  background:
-    linear-gradient(135deg, rgba(200,153,58,0.5) 0%, transparent 20%) top left / 24px 24px no-repeat,
-    linear-gradient(225deg, rgba(200,153,58,0.5) 0%, transparent 20%) top right / 24px 24px no-repeat,
-    linear-gradient(315deg, rgba(200,153,58,0.5) 0%, transparent 20%) bottom left / 24px 24px no-repeat,
-    linear-gradient(45deg, rgba(200,153,58,0.5) 0%, transparent 20%) bottom right / 24px 24px no-repeat;
-  pointer-events: none;
-}
-
-/* Top gold line on card */
-.result-card::after {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-2) 30%, var(--gold-bright) 50%, var(--gold-2) 70%, transparent);
-  opacity: 0.8;
-}
-
-.result-icon {
-  position: relative;
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 4px;
-}
-
-.result-icon.win {
-  background: radial-gradient(circle at 35% 30%, #fff0b0, #c8993a 55%, #7a5518);
-  color: #2a1a00;
-  animation: iconGlowWin 2s ease-in-out infinite;
-}
-
-.result-icon.win.coin {
-  background: transparent;
-}
-
-.result-icon.lose {
-  background: radial-gradient(circle at 35% 30%, #ffb0a0, #b83030 55%, #601010);
-  color: #2a0000;
-  animation: iconGlowLose 2s ease-in-out infinite;
-}
-
-@keyframes iconGlowWin {
-  0%, 100% { box-shadow: 0 0 0 6px rgba(200,153,58,0.08), 0 0 40px rgba(200,153,58,0.4); }
-  50%       { box-shadow: 0 0 0 12px rgba(200,153,58,0.12), 0 0 70px rgba(234,184,80,0.65); }
-}
-
-@keyframes iconGlowLose {
-  0%, 100% { box-shadow: 0 0 0 6px rgba(184,48,48,0.08), 0 0 38px rgba(184,48,48,0.4); }
-  50%       { box-shadow: 0 0 0 12px rgba(184,48,48,0.12), 0 0 65px rgba(224,80,80,0.65); }
-}
-
-.result-title {
-  font-family: 'Cinzel', serif;
-  font-size: 32px;
-  font-weight: 900;
-  letter-spacing: 3px;
-  text-align: center;
-  text-transform: uppercase;
-}
-
-.result-title.win {
-  color: var(--gold-bright);
-  text-shadow: 0 2px 0 rgba(0,0,0,0.5), 0 0 28px rgba(200,153,58,0.6);
-}
-
-.result-title.lose {
-  color: #ff9090;
-  text-shadow: 0 2px 0 rgba(0,0,0,0.5), 0 0 28px rgba(220,80,80,0.6);
-}
-
-.result-subtitle {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  color: var(--text-dim);
-}
-
-.reward-row {
-  display: flex;
-  gap: 10px;
-  margin: 4px 0 8px;
-}
-
-.reward-chip {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 10px 18px;
-  border-radius: 3px;
-  font-size: 15px;
-  font-weight: 900;
-  animation: chipIn 0.36s ease both;
-}
-
-.reward-chip:nth-child(2) { animation-delay: 0.08s; }
-
-.reward-chip.gold {
-  color: var(--gold-bright);
-  background: linear-gradient(180deg, rgba(200,153,58,0.1), rgba(200,153,58,0.04));
-  border: 1px solid rgba(200,153,58,0.3);
-}
-
-.reward-chip.xp {
-  color: #b0deff;
-  background: linear-gradient(180deg, rgba(60,140,220,0.08), rgba(60,140,220,0.03));
-  border: 1px solid rgba(60,140,220,0.15);
-}
-
-.levelup-chip {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 9px 14px;
-  border-radius: 3px;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  color: var(--gold-bright);
-  background: linear-gradient(180deg, rgba(200,153,58,0.12), rgba(200,153,58,0.04));
-  border: 1px solid rgba(200,153,58,0.35);
-  box-shadow: 0 0 18px rgba(200, 153, 58, 0.2);
-  animation: chipIn 0.4s ease both;
-}
-
-@keyframes chipIn {
-  0%   { transform: translateY(10px) scale(0.9); opacity: 0; }
-  100% { transform: translateY(0) scale(1); opacity: 1; }
-}
-
-.result-actions {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  margin-top: 6px;
-}
-
-.btn-result {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 8px;
-  padding: 0;
-  height: 48px;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  color: var(--text);
-  background: linear-gradient(180deg, #2a2318, #1a1610);
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 0 rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
-  transition: transform 0.06s ease, filter 0.1s ease;
 }
 
-.btn-result:hover { filter: brightness(1.1); }
-.btn-result:not(.primary):active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.5); }
-
-/* Botões com arte do kit UI (Rect-Dark): ícone embutido, sem texto.
-   Mantêm a proporção da arte (76x51) para não distorcer. */
-.btn-result.ui-btn {
-  border: none;
-  border-radius: 5px;
-  width: auto;
-  height: 56px;
-  aspect-ratio: 76 / 51;
-  background-color: #16110c;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 100% 100%;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5);
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.btn-result.ui-btn:hover {
-  filter: brightness(1.1);
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5), 0 0 12px rgba(200, 153, 58, 0.25);
-}
-
-.btn-result.ui-play { background-image: url(../assets/ui/icons/Rect-Dark-Default/Play.png); }
-.btn-result.ui-play:hover { background-image: url(../assets/ui/icons/Rect-Dark-Hover/Play.png); }
-
-.btn-result.ui-exit { background-image: url(../assets/ui/icons/Rect-Dark-Default/Exit.png); }
-.btn-result.ui-exit:hover { background-image: url(../assets/ui/icons/Rect-Dark-Hover/Exit.png); }
-
-.btn-result.ui-repeat { background-image: url(../assets/ui/icons/Rect-Dark-Default/Repeat-Right.png); }
-.btn-result.ui-repeat:hover { background-image: url(../assets/ui/icons/Rect-Dark-Hover/Repeat-Right.png); }
-
-.btn-result.ui-levels { background-image: url(../assets/ui/icons/Rect-Dark-Default/Levels.png); }
-.btn-result.ui-levels:hover { background-image: url(../assets/ui/icons/Rect-Dark-Hover/Levels.png); }
-
-.btn-result.ui-star { background-image: url(../assets/ui/icons/Rect-Dark-Default/Star.png); }
-.btn-result.ui-star:hover { background-image: url(../assets/ui/icons/Rect-Dark-Hover/Star.png); }
-
-.btn-result.ui-btn.primary {
-  filter: drop-shadow(0 0 10px rgba(200, 153, 58, 0.45));
-}
-
-.btn-result.ui-btn.primary:hover {
-  filter: drop-shadow(0 0 14px rgba(200, 153, 58, 0.65)) brightness(1.1);
-}
-
-.btn-result.primary:not(.ui-btn) {
-  color: #1a0d00;
-  background:
-    radial-gradient(circle 5px at 10px 10px, var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
-    radial-gradient(circle 5px at calc(100% - 10px) 10px, var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
-    radial-gradient(circle 5px at 10px calc(100% - 10px), var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
-    radial-gradient(circle 5px at calc(100% - 10px) calc(100% - 10px), var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
-    linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
-  border: 1px solid var(--gold-dark);
-  outline: 1px solid var(--gold-2);
-  outline-offset: 2px;
-  box-shadow:
-    0 0 0 1px rgba(200, 153, 58, 0.35),
-    0 var(--btn-depth) 0 var(--gold-dark),
-    0 10px 28px rgba(200, 153, 58, 0.2),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.28);
-  font-family: 'Cinzel', serif;
-  font-size: 14px;
-  letter-spacing: 2px;
-}
-
-/* ========================================
-   DICE OVERLAY
-   ======================================== */
-.dice-overlay {
-  position: absolute;
-  inset: 0;
+.battle-skills {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  padding: 44px 22px 40px;
-  /* Warm dungeon atmosphere matching StartScreen */
-  background:
-    radial-gradient(ellipse 70% 50% at 50% 30%, rgba(200,153,58,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 100% 60% at 50% 100%, rgba(60,20,10,0.25) 0%, transparent 50%),
-    linear-gradient(180deg, #1c1408 0%, #08090d 100%);
-  z-index: 18;
-  animation: overlayFadeIn 0.25s ease;
-}
-
-/* Decorative top corners on dice overlay */
-.dice-overlay::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(200,153,58,0.4) 30%, rgba(200,153,58,0.6) 50%, rgba(200,153,58,0.4) 70%, transparent);
-}
-
-.dice-header {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-/* Emblem — scaled down inside the dice overlay */
-.dice-emblem {
-  width: 72px;
-  height: 72px;
-  margin-bottom: 0;
-}
-.dice-emblem .rune-emblem-icon {
-  font-size: 28px;
-}
-
-.dice-title {
-  font-family: 'Cinzel', serif;
-  font-size: 26px;
-  font-weight: 900;
-  letter-spacing: 4px;
-  color: var(--text);
-  text-transform: uppercase;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.7);
-}
-
-.dice-header .rune-sep {
-  width: 180px;
-}
-
-.dice-subtitle {
-  margin-top: 0;
-  font-size: 12px;
-  color: var(--text-dim);
-  letter-spacing: 1px;
-}
-
-.dice-stage {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  width: 100%;
-}
-
-.dice-holder { position: relative; z-index: 2; }
-
-.dice-shadow {
-  position: relative;
-  z-index: 1;
-  width: 140px;
-  height: 28px;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(0,0,0,0.65) 0%, transparent 70%);
-  filter: blur(5px);
-}
-
-.dice-shadow.animating {
-  animation: shadowPulse 2.4s cubic-bezier(0.25, 0.8, 0.4, 1);
-}
-
-.dice-footer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-}
-
-.luck-slot {
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.luck-label {
-  font-family: 'Cinzel', serif;
-  font-size: 16px;
-  font-weight: 900;
-  letter-spacing: 2px;
-  color: var(--gold-2);
-  background: rgba(0,0,0,0.4);
-  border: 1px solid var(--border);
-  padding: 6px 20px;
-  border-radius: 3px;
-}
-
-.btn-roll {
-  position: relative;
-  padding: 0 52px;
-  height: 52px;
-  font-family: 'Cinzel', serif;
-  font-size: 16px;
-  font-weight: 900;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  border: 1px solid var(--gold-dark);
-  outline: 1px solid var(--gold-2);
-  outline-offset: 2px;
-  border-radius: 3px;
-  cursor: pointer;
-  color: #1a0d00;
-  background:
-    radial-gradient(circle 5px at 10px 10px, var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
-    radial-gradient(circle 5px at calc(100% - 10px) 10px, var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
-    radial-gradient(circle 5px at 10px calc(100% - 10px), var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
-    radial-gradient(circle 5px at calc(100% - 10px) calc(100% - 10px), var(--emerald-glass) 0 3.5px, var(--emerald-bright) 4px 4.5px, transparent 5px),
-    linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
-  box-shadow:
-    0 0 0 1px rgba(200, 153, 58, 0.35),
-    0 var(--btn-depth) 0 var(--gold-dark),
-    0 10px 26px rgba(200, 153, 58, 0.25),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  overflow: hidden;
-}
-
-.btn-roll::after {
-  content: "";
-  position: absolute;
-  top: 0; left: -70%;
-  width: 45%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  animation: btnShimmer 3s ease infinite;
-}
-
-@keyframes btnShimmer {
-  0%        { left: -70%; }
-  40%, 100% { left: 130%; }
-}
-
-.btn-roll.primary { /* same style */ }
-
-/* Botões do dado com arte do kit UI */
-.btn-roll.ui-frame {
-  color: var(--text-bright);
-  border: none;
-  outline: none;
-  background-color: #16110c;
-  background-image: url(../assets/ui/icons/Rect-Dark-Default.png);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 100% 100%;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5);
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.btn-roll.ui-frame:hover {
-  background-image: url(../assets/ui/icons/Rect-Dark-Hover.png);
-  filter: brightness(1.1);
-}
-
-.btn-roll.ui-play {
-  border: none;
-  outline: none;
-  width: auto;
-  height: 56px;
-  aspect-ratio: 76 / 51;
-  background-color: #16110c;
-  background-image: url(../assets/ui/icons/Rect-Dark-Default/Play.png);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 100% 100%;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5), 0 0 14px rgba(200, 153, 58, 0.3);
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.btn-roll.ui-play:hover {
-  background-image: url(../assets/ui/icons/Rect-Dark-Hover/Play.png);
-  filter: brightness(1.1);
-}
-
-.btn-roll.ui-frame::after,
-.btn-roll.ui-play::after {
-  display: none;
-}
-
-.btn-roll:disabled { cursor: default; animation: none; filter: grayscale(0.55) brightness(0.6); }
-.btn-roll:disabled::after { display: none; }
-
-@keyframes shadowPulse {
-  0%   { transform: scale(0.45); opacity: 0.5; }
-  22%  { transform: scale(0.3);  opacity: 0.35; }
-  40%  { transform: scale(0.95); opacity: 0.85; }
-  58%  { transform: scale(0.45); opacity: 0.5; }
-  76%  { transform: scale(0.8);  opacity: 0.78; }
-  90%  { transform: scale(0.58); opacity: 0.6; }
-  100% { transform: scale(1);    opacity: 0.9; }
-}
-
-
-/* ========================================
-   INVENTORY / MOCHILA / ITEMS
-   ======================================== */
-
-/* ---- Pending items chips — Camada 2 (informação de suporte)
-   Box-shadow externo removido: chips são informativos, não L1. */
-.pending-items {
-  position: absolute;
-  top: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
+  flex-wrap: wrap;
   gap: 6px;
-  z-index: 7;
+}
+
+.battle-skills button {
+  flex: 1;
+  min-width: 110px;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+.battle-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.battle-actions button {
+  flex: 1;
+  min-width: 110px;
+}
+
+/* ---- Itens pendentes ---- */
+.pending-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .pending-chip {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 800;
-  color: var(--text-bright);
-  background: rgba(10, 10, 16, 0.85);
-  /* L2: borda de contexto, sem box-shadow externo */
-  border: 1px solid var(--l2-border);
-  animation: chipIn 0.3s ease both;
+  padding: 4px 8px;
+  border: 1px solid var(--border-bright);
+  border-radius: 3px;
+  background: var(--bg-card);
+  font-size: 11px;
+  font-weight: 700;
 }
 
-.pending-chip.branch-furia,
-.pending-chip.branch-dano {
-  color: #ffb09a;
-  border-color: rgba(212, 64, 48, 0.4);
-}
-
-.pending-chip.branch-vida {
-  color: #ff9d8a;
-  border-color: rgba(212, 64, 48, 0.4);
-}
-
-.pending-chip.branch-mana,
-.pending-chip.branch-escudo {
-  color: #8ff5e4;
-  border-color: rgba(45, 212, 191, 0.3);
-}
-
-.pending-chip.branch-estamina {
-  color: #a8d4ff;
-  border-color: rgba(90, 150, 220, 0.35);
+.pending-name {
+  color: var(--text);
 }
 
 .pending-count {
-  min-width: 16px;
-  height: 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  font-size: 9px;
+  padding: 0 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
   font-weight: 900;
-  color: #1a0d00;
-  background: var(--gold-bright);
+  color: var(--gold-bright);
 }
 
-/* ---- Item activation popup ---- */
+/* ---- Popup de item ---- */
 .item-popup {
-  position: absolute;
-  top: 30%;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 18px;
-  border-radius: 6px;
-  color: var(--text-bright);
-  background: rgba(10, 10, 16, 0.94);
-  border: 1px solid var(--gold);
-  box-shadow:
-    0 12px 36px rgba(0, 0, 0, 0.7),
-    0 0 24px rgba(200, 153, 58, 0.35);
-  z-index: 22;
-  animation: itemPopupIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.item-popup.branch-vida,
-.item-popup.branch-furia,
-.item-popup.branch-dano {
-  border-color: rgba(212, 64, 48, 0.6);
-}
-
-.item-popup.branch-mana,
-.item-popup.branch-escudo {
-  border-color: rgba(45, 212, 191, 0.6);
-}
-
-.item-popup.branch-estamina {
-  border-color: rgba(90, 150, 220, 0.6);
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-bright);
+  border-radius: 4px;
+  background: var(--bg-panel);
+  color: var(--gold-bright);
 }
 
 .item-popup-text {
   display: flex;
   flex-direction: column;
-  gap: 1px;
 }
 
 .item-popup-name {
-  font-family: 'Cinzel', serif;
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 1px;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 .item-popup-effect {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text);
+  font-size: 10px;
+  color: var(--text-dim);
 }
 
-@keyframes itemPopupIn {
-  from { opacity: 0; transform: translate(-50%, 12px) scale(0.94); }
-  to   { opacity: 1; transform: translate(-50%, 0) scale(1); }
-}
-
-/* ---- Mochila overlay ---- */
+/* ---- Mochila ---- */
 .bag-overlay {
   position: absolute;
   inset: 0;
+  z-index: 20;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  padding: 22px;
-  background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(5, 4, 8, 0.75) 0%, rgba(0, 0, 0, 0.94) 100%);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  z-index: 30;
-  animation: overlayFadeIn 0.25s ease;
+  background: rgba(4, 5, 10, 0.78);
 }
 
 .bag-panel {
   width: 100%;
-  max-width: 420px;
-  max-height: 82%;
+  max-width: 440px;
+  max-height: 80%;
+  overflow-y: auto;
+  padding: 16px;
+  border-top: 1px solid var(--border-bright);
+  background: var(--bg-panel);
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 20px 16px 16px;
-  border-radius: 4px;
-  background: linear-gradient(180deg, #18140e 0%, #0d0b08 100%);
-  border: 1px solid rgba(200, 153, 58, 0.4);
-  box-shadow:
-    0 0 0 1px rgba(200, 153, 58, 0.08),
-    0 30px 80px rgba(0, 0, 0, 0.8),
-    inset 0 1px 0 rgba(200, 153, 58, 0.1);
-  overflow: hidden;
-  animation: cardSlideIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .bag-head {
@@ -1612,57 +510,40 @@
 }
 
 .bag-title {
-  font-family: 'Cinzel', serif;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 900;
-  letter-spacing: 3px;
-  text-transform: uppercase;
   color: var(--text-bright);
 }
 
-.bag-close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 3px;
-  border: 1px solid var(--border-bright);
-  background: rgba(0, 0, 0, 0.4);
-  color: var(--text);
-  cursor: pointer;
+.bag-head button {
+  padding: 6px;
+  border: none;
+  background: none;
+  color: var(--text-dim);
 }
 
 .bag-crystals-row {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.3);
+  gap: 8px;
 }
 
 .crystal-pips {
   display: flex;
-  gap: 8px;
+  gap: 4px;
 }
 
 .crystal-pips .pip {
-  color: #3a3f4a;
-  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+  opacity: 0.3;
 }
 
 .crystal-pips .pip.full {
-  color: #b5a6ff;
-  filter: drop-shadow(0 0 6px rgba(160, 130, 255, 0.7));
+  opacity: 1;
+  color: var(--teal);
 }
 
 .bag-crystals-note {
-  font-size: 9.5px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  font-size: 10px;
   color: var(--text-dim);
 }
 
@@ -1670,7 +551,6 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  overflow-y: auto;
 }
 
 .bag-item {
@@ -1680,192 +560,261 @@
   padding: 10px;
   border: 1px solid var(--border);
   border-radius: 4px;
-  background: linear-gradient(180deg, #12100a, #0d0b07);
+  background: var(--bg-card);
 }
 
 .bag-item-icon {
   flex-shrink: 0;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  color: var(--gold-2);
-  background: rgba(200, 153, 58, 0.08);
-  border: 1px solid rgba(200, 153, 58, 0.3);
 }
 
 .bag-item-icon img {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   object-fit: contain;
 }
-
-.bag-item-icon.branch-mana     { color: #8fe8e0; border-color: rgba(45, 212, 191, 0.4);  background: rgba(45, 212, 191, 0.07); }
-.bag-item-icon.branch-estamina { color: #a8d4ff; border-color: rgba(90, 150, 220, 0.45); background: rgba(90, 150, 220, 0.08); }
-.bag-item-icon.branch-vida     { color: #ff9d8a; border-color: rgba(212, 64, 48, 0.5);  background: rgba(212, 64, 48, 0.08); }
-.bag-item-icon.branch-furia    { color: #ffb37a; border-color: rgba(240, 117, 31, 0.5); background: rgba(240, 117, 31, 0.08); }
-.bag-item-icon.branch-escudo   { color: #c8b7ff; border-color: rgba(150, 120, 220, 0.45); background: rgba(150, 120, 220, 0.08); }
-.bag-item-icon.branch-dano     { color: #ff9d8a; border-color: rgba(212, 64, 48, 0.5);  background: rgba(212, 64, 48, 0.08); }
 
 .bag-item-info {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 .bag-item-name {
-  font-family: 'Cinzel', serif;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 800;
   color: var(--text-bright);
 }
 
 .bag-qty {
-  font-family: 'Inter', sans-serif;
-  font-size: 10px;
-  font-weight: 800;
-  color: var(--gold-bright);
+  font-size: 11px;
+  color: var(--gold);
 }
 
 .bag-item-desc {
-  font-size: 10px;
-  line-height: 1.3;
+  font-size: 10.5px;
   color: var(--text-dim);
 }
 
 .bag-item-delay {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
-  color: var(--text-dim);
+  color: var(--gold);
+  opacity: 0.75;
 }
 
-.bag-use {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  height: 34px;
-  padding: 0 12px;
-  font-family: 'Cinzel', serif;
-  font-size: 11px;
-  font-weight: 700;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  color: #1a0d00;
-  background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
-  box-shadow:
-    0 3px 0 var(--gold-dark),
-    0 6px 14px rgba(200, 153, 58, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  transition: transform 0.06s ease, box-shadow 0.06s ease;
-}
-
-.bag-use:active {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 var(--gold-dark), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-}
-
-.bag-use:disabled {
-  opacity: 0.4;
-  cursor: default;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
+.bag-item button {
+  padding: 8px 12px;
+  font-size: 12px;
 }
 
 .bag-empty {
+  font-size: 12px;
+  color: var(--text-dim);
   text-align: center;
-  font-size: 11px;
-  color: var(--text-dim);
-  padding: 16px 0;
+  padding: 12px 0;
 }
 
-/* ---- Caixinha de dica (não bloqueante) ---- */
-.hint-box {
+/* ---- Fase do dado (simples) ---- */
+.dice-panel {
   position: absolute;
-  top: 50%;
-  left: 48px;
-  transform: translateY(-50%);
+  inset: 0;
+  z-index: 15;
   display: flex;
-  align-items: center;
-  gap: 8px;
-  max-width: 240px;
-  padding: 8px 10px 8px 8px;
-  border-radius: 10px;
-  background: rgba(10, 12, 16, 0.92);
-  border: 1px solid var(--gold-dim);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
-  z-index: 25;
-  animation: hintIn 0.35s ease;
-}
-
-.hint-check {
-  flex-shrink: 0;
-  width: 22px;
-  height: 22px;
-  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  background: rgba(45, 212, 191, 0.15);
-  border: 1px solid rgba(45, 212, 191, 0.6);
-  color: #8ff5e4;
-  transform: scale(0);
-  opacity: 0;
+  gap: 14px;
+  background: rgba(4, 5, 10, 0.88);
 }
 
-.hint-box.done {
-  animation: hintComplete 0.95s ease forwards;
-}
-
-.hint-box.done .hint-check {
-  animation: checkPop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.4) forwards;
-}
-
-.hint-text {
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 1.35;
-  color: var(--text);
-}
-
-.hint-close {
-  flex-shrink: 0;
+.dice-head {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255, 255, 255, 0.08);
+  gap: 10px;
+  color: var(--gold);
+}
+
+.dice-title {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-bright);
+}
+
+.dice-subtitle {
+  font-size: 12px;
   color: var(--text-dim);
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
 }
 
-.hint-close:hover {
-  background: rgba(255, 255, 255, 0.16);
-  color: var(--text);
+.dice-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 84px;
+  border: 1px solid var(--border-bright);
+  border-radius: 8px;
+  background: var(--bg-card);
+  font-family: 'Cinzel', serif;
+  font-size: 40px;
+  font-weight: 900;
+  color: var(--gold-bright);
 }
 
-@keyframes hintIn {
-  from { opacity: 0; transform: translateY(-50%) scale(0.9); }
-  to   { opacity: 1; transform: translateY(-50%) scale(1); }
+.dice-number,
+.dice-rolling,
+.dice-wait {
+  font-size: inherit;
 }
 
-@keyframes hintComplete {
-  0%   { transform: translateY(-50%) scale(1); opacity: 1; }
-  30%  { transform: translateY(-50%) scale(1.05); opacity: 1; }
-  55%  { transform: translateY(-50%) scale(1); opacity: 1; }
-  100% { transform: translateY(-50%) scale(0.85) translateX(-10px); opacity: 0; }
+.dice-rolling {
+  color: var(--text-dim);
 }
 
-@keyframes checkPop {
-  0%   { transform: scale(0); opacity: 0; }
-  60%  { transform: scale(1.3); opacity: 1; }
-  100% { transform: scale(1); opacity: 1; }
+.dice-wait {
+  color: var(--text-dim);
+}
+
+.luck-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--gold);
+}
+
+.dice-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.dice-actions button {
+  min-width: 140px;
+  padding: 12px 20px;
+  font-size: 14px;
+}
+
+/* ---- Resultados (vitória/derrota) ---- */
+.result-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 5, 10, 0.88);
+}
+
+.result-card {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 18px;
+  border: 1px solid var(--border-bright);
+  border-radius: 6px;
+  background: var(--bg-panel);
+}
+
+.result-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+}
+
+.result-icon.win {
+  color: var(--gold-bright);
+  background: rgba(200, 153, 58, 0.1);
+  border: 1px solid var(--gold-dim);
+}
+
+.result-icon.lose {
+  color: var(--crimson-2);
+  background: rgba(184, 48, 48, 0.1);
+  border: 1px solid rgba(184, 48, 48, 0.4);
+}
+
+.result-title {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.result-title.win {
+  color: var(--gold-bright);
+}
+
+.result-title.lose {
+  color: var(--crimson-2);
+}
+
+.result-subtitle {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.reward-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.reward-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.reward-chip.gold {
+  color: var(--gold-bright);
+  background: rgba(200, 153, 58, 0.1);
+  border: 1px solid var(--gold-dim);
+}
+
+.reward-chip.xp {
+  color: var(--emerald-bright);
+  background: rgba(32, 201, 127, 0.1);
+  border: 1px solid var(--emerald-glass);
+}
+
+.levelup-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--gold);
+  background: rgba(200, 153, 58, 0.08);
+  border: 1px dashed var(--gold-dim);
+}
+
+.result-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.result-actions button {
+  flex: 1;
+  padding: 12px;
+  font-size: 13px;
 }

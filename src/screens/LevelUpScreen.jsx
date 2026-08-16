@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { Plus, ArrowRight, Sparkles } from "lucide-react";
 import { useGame } from "../context/GameContext.jsx";
 import { STATS } from "../constants/stats.js";
-import VictorianCorner from "../components/ornaments/VictorianCorner.jsx";
 import "./LevelUpScreen.css";
 
 export default function LevelUpScreen() {
@@ -11,30 +10,13 @@ export default function LevelUpScreen() {
 
   return (
     <div className="levelup-screen">
-      <VictorianCorner pos="tl" />
-      <VictorianCorner pos="tr" />
-      <VictorianCorner pos="bl" />
-      <VictorianCorner pos="br" />
-      <div className="rune-divider top" />
-      <div className="rune-divider bottom" />
-
       <div className="levelup-content">
         <div className="levelup-emblem">
-          <div className="rune-emblem-ring" />
-          <div className="rune-emblem-ring inner" />
-          <span className="rune-emblem-icon">
-            <Sparkles size={30} />
-          </span>
+          <Sparkles size={28} />
         </div>
 
         <h2 className="levelup-title">Subiu de nível!</h2>
         <span className="levelup-level">Nível {level}</span>
-
-        <div className="rune-sep">
-          <div className="rune-sep-line" />
-          <div className="rune-sep-diamond" />
-          <div className="rune-sep-line right" />
-        </div>
 
         <p className="levelup-subtitle">Distribua seus pontos de status</p>
 

@@ -1,10 +1,3 @@
-/* ======================================
-   LEVEL UP SCREEN — LoR-Inspired Stat Allocation
-   Hierarquia:
-   L1: points-count.active + stat-up button (decisão de alocação)
-   L2: stat-name, stat-desc, stat-level
-   L3: stat-row frame, stat-icon (estrutura visual)
-   ====================================== */
 .levelup-screen {
   flex: 1;
   position: relative;
@@ -16,8 +9,7 @@
   color: var(--text);
   background:
     radial-gradient(ellipse 70% 50% at 50% 30%, rgba(200, 153, 58, 0.07) 0%, transparent 60%),
-    radial-gradient(ellipse 100% 60% at 50% 100%, rgba(60, 20, 10, 0.25) 0%, transparent 50%),
-    linear-gradient(180deg, #1c1408 0%, #08090d 100%);
+    var(--bg-deep);
 }
 
 .levelup-content {
@@ -31,20 +23,43 @@
   padding: 34px 18px 40px;
 }
 
-.levelup-emblem {
-  position: relative;
-  width: 72px;
-  height: 72px;
-  display: flex;
+.levelup-content button {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 12px;
+  gap: 8px;
+  padding: 12px 20px;
+  min-width: 180px;
+  border: 1px solid var(--border-bright);
+  border-radius: 4px;
+  background: var(--bg-card);
+  color: var(--text-bright);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.12s ease, background 0.12s ease;
 }
 
-.levelup-emblem .rune-emblem-icon {
+.levelup-content button:hover:not(:disabled) {
+  background: #1a1f29;
+}
+
+.levelup-content button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.levelup-emblem {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 12px;
+  border-radius: 50%;
+  border: 1px solid var(--gold-dim);
+  background: rgba(200, 153, 58, 0.08);
   color: var(--gold-2);
 }
 
@@ -69,14 +84,11 @@
   margin-top: 2px;
 }
 
-.levelup-content .rune-sep {
-  margin: 14px 0 10px;
-}
-
 .levelup-subtitle {
   font-size: 12px;
   letter-spacing: 1px;
   color: var(--text-dim);
+  margin-top: 8px;
 }
 
 .levelup-points {
@@ -115,7 +127,6 @@
 }
 
 .stat-row {
-  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -124,20 +135,6 @@
   background: linear-gradient(180deg, #18140e 0%, #0d0b08 100%);
   border: 1px solid var(--border-bright);
   box-shadow: inset 0 0 0 1px rgba(200, 206, 222, 0.08);
-}
-
-.stat-row::after {
-  content: "";
-  position: absolute;
-  top: 9px;
-  left: 9px;
-  width: 5px;
-  height: 5px;
-  transform: rotate(45deg);
-  background: var(--emerald-glass);
-  border: 1px solid var(--emerald-bright);
-  box-shadow: 0 0 5px var(--emerald-glass);
-  pointer-events: none;
 }
 
 .stat-icon {
@@ -150,7 +147,6 @@
   border-radius: 3px;
   color: var(--gold);
   background: rgba(200, 153, 58, 0.06);
-  /* L3: ícone é estrutura, não informação */
   border: 1px solid var(--l3-border);
 }
 
@@ -197,74 +193,12 @@
   white-space: nowrap;
 }
 
-.stat-up {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.stat-side button {
   width: 34px;
   height: 34px;
-  border: 1px solid var(--gold-dark);
-  outline: 1px solid var(--gold-2);
-  outline-offset: 1px;
+  padding: 0 !important;
+  min-width: 0 !important;
   border-radius: 3px;
-  cursor: pointer;
-  color: #1a0d00;
-  background:
-    radial-gradient(circle 3px at 7px 7px, var(--emerald-glass) 0 2px, var(--emerald-bright) 2.4px 2.8px, transparent 3px),
-    radial-gradient(circle 3px at calc(100% - 7px) 7px, var(--emerald-glass) 0 2px, var(--emerald-bright) 2.4px 2.8px, transparent 3px),
-    radial-gradient(circle 3px at 7px calc(100% - 7px), var(--emerald-glass) 0 2px, var(--emerald-bright) 2.4px 2.8px, transparent 3px),
-    radial-gradient(circle 3px at calc(100% - 7px) calc(100% - 7px), var(--emerald-glass) 0 2px, var(--emerald-bright) 2.4px 2.8px, transparent 3px),
-    linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-2) 40%, var(--gold) 100%);
-  box-shadow:
-    0 0 0 1px rgba(200, 153, 58, 0.35),
-    0 3px 0 var(--gold-dark),
-    0 6px 14px rgba(200, 153, 58, 0.2),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  transition: transform 0.06s ease, box-shadow 0.06s ease, opacity 0.15s ease;
-}
-
-.stat-up:disabled {
-  cursor: default;
-  filter: grayscale(0.55) brightness(0.6);
-  box-shadow: 0 1px 0 var(--gold-dark);
-}
-
-.stat-up:not(:disabled):active {
-  transform: translateY(2px) scale(1.05, 0.9);
-  box-shadow: 0 1px 0 var(--gold-dark), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-}
-
-.btn-continue {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  width: 100%;
-  max-width: 320px;
-  height: 56px;
-  font-family: 'Cinzel', serif;
-  font-size: 16px;
-  font-weight: 900;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  color: var(--text-bright);
-  background: url(../assets/ui/icons/Rect-Dark-Default.png) no-repeat center / 100% 100%;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.5);
-  transition: transform 0.06s ease, filter 0.12s ease;
-}
-
-.btn-continue:hover:not(:disabled) {
-  background-image: url(../assets/ui/icons/Rect-Dark-Hover.png);
-  filter: brightness(1.1);
-}
-
-.btn-continue:disabled {
-  cursor: default;
-  filter: grayscale(0.55) brightness(0.6);
 }
 
 .levelup-hint {

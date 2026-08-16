@@ -16,17 +16,10 @@ import {
   Play,
   Dices,
 } from "lucide-react";
-import HealthBar from "../components/HealthBar.jsx";
-import ResourceBar from "../components/ResourceBar.jsx";
-import DiceRoll from "../components/DiceRoll.jsx";
-import Coin3D from "../components/Coin3D.jsx";
-import EnemyReaction from "../components/EnemyReaction.jsx";
-import VictorianCorner from "../components/ornaments/VictorianCorner.jsx";
 import { useGame } from "../context/GameContext.jsx";
 import { ITEMS, getItem } from "../constants/items.js";
 import { getElement, getElementalMultiplier } from "../constants/elements.js";
 import { getEnemySkill, pickEnemyItem } from "../constants/enemySkills.js";
-import { REACTION_EMOJI, BUBBLE_SETS } from "../constants/enemyReactions.js";
 import playerSprite from "../assets/sprites/player.svg";
 import "./BattleScreen.css";
 
@@ -52,12 +45,45 @@ const ENEMY_BOSS_SKILL_CHANCE = 0.55;
 const ENEMY_ITEM_CHANCE = 0.45;
 const ENEMY_ITEM_COOLDOWN = 4;
 const ENEMY_ITEM_HP_PCT = 0.35;
-const EMOJI_CHANCE = 0.45;
+const REACTION_CHANCE = 0.45;
 
-const STAMINA_FILL = "linear-gradient(180deg, #6fb1ff, #357abd)";
-const STAMINA_TICK = "#245a8f";
-const MANA_FILL = "linear-gradient(180deg, #4dd0c1, #15858a)";
-const MANA_TICK = "#0f5c60";
+const BAR_COLORS = {
+  hp: "#e74c3c",
+  stamina: "#6fb1ff",
+  mana: "#4dd0c1",
+  fury: "#e8a33d",
+};
+
+const REACTION_LABELS = {
+  stunned: "Congelado",
+  special: "Fúria cheia!",
+  miss: "Errou!",
+  dodge: "Esquivou!",
+  defend: "Defendeu",
+  heal: "Se curou",
+  shield: "Criou escudo",
+  crit: "Golpe crítico",
+  damage: "Levou dano",
+  skip: "Sem ação",
+};
+
+function MiniBar({ label, value, max, color }) {
+  const pct = max > 0 ? Math.min(100, (value / max) * 100) : 0;
+  return (
+    <div className="mini-bar">
+      <span className="mini-bar-label">{label}</span>
+      <div className="mini-bar-track">
+        <div
+          className="mini-bar-fill"
+          style={{ width: pct + "%", background: color }}
+        />
+      </div>
+      <span className="mini-bar-value">
+        {Math.round(value)}/{max}
+      </span>
+    </div>
+  );
+}
 
 function rollDamage(atk, def) {
   const baseDamage = Math.max(1, atk - def);
@@ -554,10 +580,9 @@ export default function BattleScreen() {
       else if (enemyCritDmg > 0) reaction = "crit";
       else if (enemyDmg > 0) reaction = "damage";
       else if (enemyAction.action === "skip") reaction = "skip";
-      if (reaction && BUBBLE_SETS.length > 0 && Math.random() < EMOJI_CHANCE) {
+      if (reaction && Math.random() < REACTION_CHANCE) {
         setEnemyReaction({
-          emoji: REACTION_EMOJI[reaction],
-          bubbleSet: Math.floor(Math.random() * BUBBLE_SETS.length),
+          label: REACTION_LABELS[reaction],
           id: Date.now(),
         });
       }
@@ -926,12 +951,6 @@ export default function BattleScreen() {
 
   return (
     <div className="battle-screen">
-      {/* Corner ornaments — shared victorian frame */}
-      <VictorianCorner pos="tl" />
-      <VictorianCorner pos="tr" />
-      <VictorianCorner pos="bl" />
-      <VictorianCorner pos="br" />
-
       <div className="timer-wrap">
         <div
           className={"timer-fill" + (timePct <= 20 ? " danger" : "")}
@@ -959,6 +978,7 @@ export default function BattleScreen() {
       {(phase === "dice" || phase === "player") && !paused && (
         <button
           type="button"
+          className="pause-btn"
           onClick={() => setPaused(true)}
           aria-label="Pausar batalha"
         >
@@ -994,109 +1014,37 @@ export default function BattleScreen() {
         </div>
       )}
 
-      {/* Vertical bars — enemy (top half, espelhado do player) */}
-      {/* Left enemy: vida (com fury-pips) + estamina sobreposta */}
-      <div className="arena-stack left enemy">
-        <div className="vbar-group">
-          {/* Estamina: menor, fica por trás/abaixo da barra de vida */}
-          <div className="vbar estamina">
-            <ResourceBar
-              value={enemyStamina}
-              max={ENEMY_STAMINA_MAX}
-              fill={STAMINA_FILL}
-              tick={STAMINA_TICK}
-              progress={enemyStaminaProgress}
-              vertical
-              reverse
-            />
-          </div>
-          {/* Vida: por cima, com segmentos de fúria grudados na lateral */}
-          <div className="vbar vida">
-            <HealthBar
-              key={battleId}
-              hp={enemyHp}
-              max={battle.maxHp}
-              currentMax={enemyMaxHpCurrent}
-              hitKey={enemyHit}
-              vertical
-              reverse
-            />
-            {/* Fúria do inimigo: pips finos colados na lateral direita da vida */}
-            <div className="fury-pips right">
-              {Array.from({ length: FURY_MAX }).map((_, i) => (
-                <div
-                  key={i}
-                  className={"fury-pip" + (i < enemyFury ? " on" : "")}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* Right enemy: mana (mesmo destaque que HP) */}
-      <div className="arena-stack right enemy">
-        <div className="vbar mana">
-          <ResourceBar
-            value={enemyManaCurrent}
-            max={battle.mana}
-            fill={MANA_FILL}
-            tick={MANA_TICK}
-            progress={enemyManaProgress}
-            vertical
-            reverse
-          />
-        </div>
-      </div>
-
-      {/* Vertical bars — player (bottom half) */}
-      {/* Left player: vida (com fury-pips) + estamina sobreposta */}
-      <div className="arena-stack left player">
-        <div className="vbar-group">
-          {/* Estamina: menor, fica por trás/abaixo da barra de vida */}
-          <div className="vbar estamina">
-            <ResourceBar
-              value={playerStamina}
-              max={playerStaminaMax}
-              fill={STAMINA_FILL}
-              tick={STAMINA_TICK}
-              progress={staminaProgress}
-              vertical
-            />
-          </div>
-          {/* Vida: por cima, com segmentos de fúria grudados na lateral */}
-          <div className="vbar vida">
-            <HealthBar
-              key={battleId}
-              hp={playerHp}
-              max={playerMaxHp}
-              currentMax={playerMaxHpCurrent}
-              hitKey={playerHit}
-              vertical
-            />
-            {/* Fúria: pips finos colados na lateral direita da vida */}
-            <div className="fury-pips right">
-              {Array.from({ length: FURY_MAX }).map((_, i) => (
-                <div
-                  key={i}
-                  className={"fury-pip" + (i < playerFury ? " on" : "")}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* Right player: mana (mesmo destaque que vida, lado direito) */}
-      <div className="arena-stack right player">
-        <div className="vbar mana">
-          <ResourceBar
-            value={playerManaCurrent}
-            max={playerMana}
-            fill={MANA_FILL}
-            tick={MANA_TICK}
-            progress={manaProgress}
-            vertical
-          />
-        </div>
+      {/* Enemy HUD — vida, estamina, mana e fúria em barras simples */}
+      <div className="battle-hud enemy">
+        <MiniBar
+          label="Vida"
+          value={enemyHp}
+          max={enemyMaxHpCurrent}
+          color={BAR_COLORS.hp}
+        />
+        <MiniBar
+          label="Estamina"
+          value={enemyStamina}
+          max={ENEMY_STAMINA_MAX}
+          color={BAR_COLORS.stamina}
+        />
+        <MiniBar
+          label="Mana"
+          value={enemyManaCurrent}
+          max={battle.mana}
+          color={BAR_COLORS.mana}
+        />
+        <MiniBar
+          label="Fúria"
+          value={enemyFury}
+          max={FURY_MAX}
+          color={BAR_COLORS.fury}
+        />
+        {enemyShield > 0 && (
+          <span className="hud-shield">
+            <Shield size={12} /> Escudo {Math.ceil(enemyShield)}
+          </span>
+        )}
       </div>
 
       <div className={"enemy-wrap" + (enemyMoving ? " attacking" : "")}>
@@ -1136,11 +1084,9 @@ export default function BattleScreen() {
             </div>
           )}
           {enemyReaction && (
-            <EnemyReaction
-              emoji={enemyReaction.emoji}
-              bubbleSet={enemyReaction.bubbleSet}
-              id={enemyReaction.id}
-            />
+            <div className="enemy-reaction" key={enemyReaction.id}>
+              {enemyReaction.label}
+            </div>
           )}
         </div>
         <div className="enemy-name-row">
@@ -1181,6 +1127,39 @@ export default function BattleScreen() {
           {playerCrit && <div className="crit-flash right">Crítico!</div>}
           {playerStunFlash && <div className="stun-flash right">Congelado!</div>}
         </div>
+      </div>
+
+      {/* Player HUD — vida, estamina, mana e fúria em barras simples */}
+      <div className="battle-hud player">
+        <MiniBar
+          label="Vida"
+          value={playerHp}
+          max={playerMaxHpCurrent}
+          color={BAR_COLORS.hp}
+        />
+        <MiniBar
+          label="Estamina"
+          value={playerStamina}
+          max={playerStaminaMax}
+          color={BAR_COLORS.stamina}
+        />
+        <MiniBar
+          label="Mana"
+          value={playerManaCurrent}
+          max={playerMana}
+          color={BAR_COLORS.mana}
+        />
+        <MiniBar
+          label="Fúria"
+          value={playerFury}
+          max={FURY_MAX}
+          color={BAR_COLORS.fury}
+        />
+        {playerShield > 0 && (
+          <span className="hud-shield">
+            <Shield size={12} /> Escudo {Math.ceil(playerShield)}
+          </span>
+        )}
       </div>
 
       <div className="player-wrap">
@@ -1341,44 +1320,25 @@ export default function BattleScreen() {
       )}
 
       {phase === "dice" && (
-        <div className="dice-overlay">
-          <VictorianCorner pos="tl" />
-          <VictorianCorner pos="tr" />
-          <VictorianCorner pos="bl" />
-          <VictorianCorner pos="br" />
-          <div className="rune-divider top" />
-          <div className="rune-divider bottom" />
-
-          <div className="dice-header">
-            <div className="rune-emblem dice-emblem">
-              <div className="rune-emblem-ring" />
-              <div className="rune-emblem-ring inner" />
-              <span className="rune-emblem-icon">
-                <Dices size={38} />
-              </span>
-            </div>
+        <div className="dice-panel">
+          <div className="dice-head">
+            <Dices size={28} />
             <h2 className="dice-title">Role o dado</h2>
-            <div className="rune-sep">
-              <div className="rune-sep-line" />
-              <div className="rune-sep-diamond" />
-              <div className="rune-sep-line right" />
-            </div>
-            <p className="dice-subtitle">
-              A sorte define sua chance de errar e esquivar
-            </p>
           </div>
-
-          <div className="dice-stage">
-            <div className="dice-holder">
-              <DiceRoll value={dieValue} rolling={rolling} />
-            </div>
-            <div className={"dice-shadow" + (rolling ? " animating" : "")} />
+          <p className="dice-subtitle">
+            A sorte define sua chance de errar e esquivar
+          </p>
+          <div className="dice-value">
+            {rolling ? (
+              <span className="dice-rolling">…</span>
+            ) : rolled ? (
+              <span className="dice-number">{dieValue}</span>
+            ) : (
+              <span className="dice-wait">?</span>
+            )}
           </div>
-
-          <div className="dice-footer">
-            <div className="luck-slot">
-              {rolled && <span className="luck-label">Sorte: {playerLuck}</span>}
-            </div>
+          {rolled && <span className="luck-label">Sorte: {playerLuck}</span>}
+          <div className="dice-actions">
             {!rolled ? (
               <button
                 type="button"
@@ -1402,22 +1362,13 @@ export default function BattleScreen() {
 
       {phase === "victory" && (
         <div className="result-overlay">
-          <VictorianCorner pos="tl" metal="gold" gem="quartz" />
-          <VictorianCorner pos="tr" metal="gold" gem="quartz" />
-          <VictorianCorner pos="bl" metal="gold" gem="quartz" />
-          <VictorianCorner pos="br" metal="gold" gem="quartz" />
           <div className="result-card">
-            <div className="result-icon win coin">
-              <Coin3D size={96} />
+            <div className="result-icon win">
+              <Coins size={40} />
             </div>
             <h2 className="result-title win">
               {reward.boss ? "Chefe Derrotado!" : "Vitória!"}
             </h2>
-            <div className="rune-sep">
-              <div className="rune-sep-line" />
-              <div className="rune-sep-diamond" />
-              <div className="rune-sep-line right" />
-            </div>
             <p className="result-subtitle">
               {reward.boss ? `${currentMap.name} concluída` : "Recompensas"}
             </p>
@@ -1487,10 +1438,6 @@ export default function BattleScreen() {
 
       {phase === "defeat" && (
         <div className="result-overlay">
-          <VictorianCorner pos="tl" metal="gold" gem="quartz" />
-          <VictorianCorner pos="tr" metal="gold" gem="quartz" />
-          <VictorianCorner pos="bl" metal="gold" gem="quartz" />
-          <VictorianCorner pos="br" metal="gold" gem="quartz" />
           <div className="result-card">
             <div className="result-icon lose">
               <Skull size={42} />
@@ -1502,11 +1449,6 @@ export default function BattleScreen() {
                 ? "Você desistiu!"
                 : "Derrota!"}
             </h2>
-            <div className="rune-sep">
-              <div className="rune-sep-line" />
-              <div className="rune-sep-diamond" />
-              <div className="rune-sep-line right" />
-            </div>
             <p className="result-subtitle">Recompensas</p>
             <div className="reward-row">
               <div className="reward-chip gold">
