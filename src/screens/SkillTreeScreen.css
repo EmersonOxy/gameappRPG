@@ -1,10 +1,12 @@
+/* SkillTreeScreen — Árvore de Habilidades Flat */
 .skill-tree-view {
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 16px 12px 14px;
+  padding: 16px 12px;
+  background-color: var(--bg-main);
 }
 
 .skill-tree-header {
@@ -16,10 +18,9 @@
 }
 
 .skill-tree-title {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 900;
-  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
 }
 
 .skill-tree-sub {
@@ -34,60 +35,51 @@
   overflow: hidden;
   touch-action: none;
   user-select: none;
-  background: radial-gradient(circle at 50% 50%, #161e38 0%, #090c17 100%);
-  border: 1px solid var(--border-card);
-  border-radius: 16px;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
 }
 
 .node-icon {
   position: relative;
-  width: 46px;
-  height: 46px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #2b395e 0%, #101626 100%);
-  border: 2px solid var(--border-card);
+  background-color: var(--bg-card);
+  border: 2px solid var(--border-subtle);
   color: var(--text-muted);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-  transition: all 0.15s ease;
 }
 
 .skill-node.owned .node-icon {
-  border-color: var(--gold-border);
-  color: #fff;
-  box-shadow: 0 0 12px rgba(255, 200, 59, 0.3);
+  border-color: var(--primary);
+  color: #ffffff;
 }
 
 .skill-node.equipped .node-icon {
-  border-color: var(--gold-primary);
-  color: var(--gold-light);
-  box-shadow: 0 0 16px rgba(255, 200, 59, 0.6);
-  animation: pulseSubtle 2.5s infinite;
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
 }
 
 .skill-node.keystone .node-icon {
-  width: 64px;
-  height: 64px;
-  border-width: 3px;
+  width: 56px;
+  height: 56px;
 }
 
 .node-name {
-  font-size: 9.5px;
-  font-weight: 800;
-  line-height: 1.15;
+  font-size: 10px;
+  font-weight: 600;
   text-align: center;
   color: var(--text-muted);
   max-width: 80px;
 }
 
 .skill-node.equipped .node-name {
-  color: var(--gold-light);
+  color: var(--accent-gold);
 }
 
-/* Modal de Detalhes da Habilidade */
 .skill-modal-overlay {
   position: fixed;
   inset: 0;
@@ -96,8 +88,7 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: rgba(4, 6, 12, 0.85);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.7);
 }
 
 .skill-modal {
@@ -108,17 +99,15 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  padding: 24px 20px;
-  border-radius: 18px;
-  background: linear-gradient(180deg, #1a233d 0%, #0d1222 100%);
-  border: 1.5px solid var(--border-active);
-  box-shadow: var(--shadow-lg), 0 0 30px rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-strong);
 }
 
 .modal-name {
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 900;
-  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
   text-align: center;
 }

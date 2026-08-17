@@ -1,55 +1,45 @@
+/* LevelUpScreen — Evolução de Nível Flat */
 .levelup-screen {
   flex: 1;
-  position: relative;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: radial-gradient(circle at 50% 25%, #1d2745 0%, #0c101e 65%, #05060c 100%);
+  background-color: var(--bg-main);
 }
 
 .levelup-content {
-  position: relative;
-  z-index: 2;
   width: 100%;
   max-width: 440px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px 18px 40px;
+  padding: 24px 16px;
 }
 
 .levelup-emblem {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 68px;
-  height: 68px;
+  width: 60px;
+  height: 60px;
   margin-bottom: 12px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #2b395e 0%, #101626 100%);
-  border: 2px solid var(--gold-primary);
-  color: var(--gold-primary);
-  box-shadow: 0 0 24px rgba(255, 200, 59, 0.4), inset 0 0 12px rgba(0, 0, 0, 0.6);
-  animation: floatElement 3s infinite;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  color: var(--accent-gold);
 }
 
 .levelup-title {
-  font-family: var(--font-display);
-  font-size: 26px;
-  font-weight: 900;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: #fff;
-  text-shadow: 0 0 16px rgba(255, 200, 59, 0.4);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-main);
 }
 
 .levelup-level {
   font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--gold-light);
+  font-weight: 600;
+  color: var(--accent-gold);
   margin-top: 2px;
 }
 
@@ -58,42 +48,36 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin: 16px 0 22px;
+  margin: 16px 0 20px;
 }
 
 .stat-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: var(--bg-card-glass);
-  border: 1px solid var(--border-card);
-  box-shadow: var(--shadow-sm);
-  transition: all 0.15s ease;
-}
-
-.stat-row:hover {
-  border-color: var(--border-active);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
 }
 
 .stat-icon {
   flex-shrink: 0;
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #2b395e 0%, #131b2e 100%);
-  color: var(--gold-primary);
-  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-card);
+  color: var(--accent-gold);
+  border: 1px solid var(--border-subtle);
 }
 
 .stat-name {
   font-size: 14px;
-  font-weight: 800;
-  color: #fff;
+  font-weight: 700;
+  color: var(--text-main);
 }
 
 .stat-desc {

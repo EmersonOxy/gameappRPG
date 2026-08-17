@@ -1,216 +1,128 @@
+/* StartScreen — Design Plano e Minimalista */
 .start-screen {
   flex: 1;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  background: radial-gradient(circle at 50% 35%, #1d2645 0%, #0c1020 60%, #05070e 100%);
-}
-
-/* Brilho de ambiente místico */
-.start-ambient-glow {
-  position: absolute;
-  width: 280px;
-  height: 280px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 200, 59, 0.18) 0%, rgba(46, 134, 222, 0.08) 50%, transparent 70%);
-  top: 18%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  filter: blur(20px);
-  animation: pulseSubtle 4s ease-in-out infinite;
-}
-
-.start-content {
-  position: relative;
-  z-index: 2;
-  display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
   padding: 32px 24px;
+  background-color: var(--bg-main);
+}
+
+.start-container {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  width: 100%;
-  max-width: 380px;
+  gap: 28px;
 }
 
-/* Brasão Central com Relevo */
-.start-emblem-wrap {
+/* Emblema com Ícone Especial */
+.start-badge {
   position: relative;
+  width: 88px;
+  height: 88px;
+  background-color: var(--bg-surface);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 6px;
-  animation: floatElement 3.5s ease-in-out infinite;
+  color: var(--primary);
 }
 
-.start-emblem {
-  position: relative;
-  width: 86px;
-  height: 86px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #2b3a60 0%, #101627 100%);
-  border: 2px solid var(--gold-primary);
-  border-radius: 50%;
-  box-shadow: 0 0 24px rgba(255, 200, 59, 0.35), inset 0 0 16px rgba(0, 0, 0, 0.8);
+.badge-shield {
+  color: var(--primary);
+  opacity: 0.9;
 }
 
-.emblem-shield {
-  color: var(--blue);
-  opacity: 0.6;
+.badge-swords {
   position: absolute;
+  color: var(--accent-gold);
 }
 
-.emblem-swords {
-  color: var(--gold-primary);
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.7));
-  position: relative;
-  z-index: 2;
-}
-
-.emblem-sparkles {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  color: var(--gold-light);
-  animation: pulseSubtle 2s ease-in-out infinite;
-}
-
-/* Logo do Jogo com Tipografia Imponente */
-.game-logo {
+/* Bloco de Títulos */
+.start-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 8px;
 }
 
-.game-overtitle {
-  font-family: var(--font-display);
+.start-tag {
   font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--accent-gold);
+  background-color: rgba(245, 158, 11, 0.12);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+}
+
+.start-title {
+  font-size: 28px;
   font-weight: 800;
-  letter-spacing: 4px;
-  color: var(--gold-light);
-  text-shadow: 0 0 10px rgba(255, 200, 59, 0.4);
+  color: var(--text-main);
+  line-height: 1.2;
+  letter-spacing: -0.5px;
 }
 
-.game-title {
-  font-family: var(--font-display);
-  font-size: 38px;
-  font-weight: 900;
-  letter-spacing: 6px;
-  line-height: 1;
-  background: linear-gradient(180deg, #ffffff 0%, #ffdf79 45%, #e59912 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 16px rgba(255, 200, 59, 0.3));
-}
-
-.title-divider {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 140px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, var(--gold-primary) 50%, transparent 100%);
-  margin: 6px 0;
-  position: relative;
-}
-
-.divider-diamond {
-  position: absolute;
-  color: var(--gold-primary);
-  font-size: 10px;
-  background: #0d1222;
-  padding: 0 4px;
-}
-
-.game-subtitle {
-  font-family: var(--font-body);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 5px;
-  color: var(--teal);
-  text-transform: uppercase;
-  text-shadow: 0 0 8px var(--teal-glow);
-}
-
-.game-tagline {
-  font-size: 13px;
-  font-weight: 500;
+.start-description {
+  font-size: 14px;
+  line-height: 1.5;
   color: var(--text-muted);
-  max-width: 260px;
-  line-height: 1.4;
+  max-width: 300px;
+  margin-top: 4px;
 }
 
-/* Menu de Ação */
-.start-menu {
+/* Botões Planos */
+.start-actions {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  margin-top: 12px;
-  width: 100%;
-  max-width: 290px;
+  gap: 12px;
 }
 
-.btn-continue,
-.btn-new-game {
+.btn-flat-continue {
   width: 100%;
   padding: 14px 20px;
+  background-color: var(--primary);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-md);
   font-size: 15px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  border-radius: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-}
-
-/* Botão Novo Jogo Dourado & Épico */
-.btn-new-game {
-  background: linear-gradient(180deg, #ffc83b 0%, #e68a00 100%);
-  color: #2b1700;
-  border: 1px solid #ffe89e;
-  box-shadow: 0 6px 20px rgba(230, 138, 0, 0.45), 0 4px 0 #8f5200, inset 0 1px 0 #fff;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
-}
-
-.btn-new-game:hover:not(:disabled) {
-  filter: brightness(1.1);
-  box-shadow: 0 8px 24px rgba(255, 200, 59, 0.6), 0 4px 0 #8f5200;
-}
-
-.btn-new-game:active:not(:disabled) {
-  transform: translateY(3px);
-  box-shadow: 0 2px 8px rgba(230, 138, 0, 0.4), 0 1px 0 #8f5200;
-}
-
-/* Botão Continuar Metálico */
-.btn-continue {
-  background: linear-gradient(180deg, #2f3b5c 0%, #192138 100%);
-  color: var(--text-gold);
-  border: 1px solid var(--border-active);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), 0 4px 0 #0d121f, inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.btn-continue:hover:not(:disabled) {
-  filter: brightness(1.15);
-  border-color: var(--gold-light);
-}
-
-.btn-icon {
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
-}
-
-.start-footer-badge {
-  margin-top: 10px;
-  font-size: 11px;
   font-weight: 600;
+}
+
+.btn-flat-continue:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-flat-continue:active {
+  background-color: var(--primary-active);
+}
+
+.btn-flat-new {
+  width: 100%;
+  padding: 14px 20px;
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.btn-flat-new:hover {
+  background-color: var(--bg-surface-hover);
+  border-color: var(--text-muted);
+}
+
+/* Rodapé */
+.start-footer {
+  font-size: 12px;
   color: var(--text-dim);
-  letter-spacing: 0.5px;
+  margin-top: 12px;
 }

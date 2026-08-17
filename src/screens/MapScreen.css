@@ -1,10 +1,12 @@
+/* MapScreen — Lista de Mapas Flat */
 .map-view {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 16px 14px 20px;
+  padding: 16px;
   gap: 14px;
   overflow-y: auto;
+  background-color: var(--bg-main);
 }
 
 .map-header {
@@ -15,10 +17,9 @@
 }
 
 .map-title {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 900;
-  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
 }
 
 .map-sub {
@@ -34,49 +35,38 @@
 
 .map-card {
   display: flex;
-  gap: 14px;
-  align-items: stretch;
+  gap: 12px;
+  align-items: center;
   text-align: left;
   width: 100%;
-  padding: 16px 14px;
-  background: var(--bg-card-glass);
-  border: 1px solid var(--border-card);
-  border-radius: 16px;
+  padding: 14px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
   cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.15s ease;
-}
-
-.map-card:hover:not(.locked) {
-  transform: translateY(-2px);
-  border-color: var(--border-active);
-  box-shadow: var(--shadow-md);
 }
 
 .map-card.boss {
-  border-color: var(--gold-border-strong);
-  box-shadow: 0 0 14px rgba(255, 200, 59, 0.25);
+  border-color: var(--accent-gold);
 }
 
 .map-card.cleared {
-  border-color: var(--green);
+  border-color: var(--success);
 }
 
 .map-card.locked {
   opacity: 0.45;
-  filter: grayscale(0.7);
   cursor: not-allowed;
 }
 
 .map-card-name {
-  font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 800;
-  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
 }
 
 .map-card-level {
   font-size: 11px;
-  font-weight: 800;
-  color: var(--teal);
+  font-weight: 600;
+  color: var(--primary);
 }

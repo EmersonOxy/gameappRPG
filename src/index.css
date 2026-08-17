@@ -1,6 +1,6 @@
 /* ============================================================
-   DESIGN SYSTEM AAA — INSPIRAÇÃO CLASH ROYALE & RUNETERRA
-   Paleta rica, profundidade 3D, bordas douradas e efeitos táteis.
+   DESIGN SYSTEM FLAT & CLEAN — BASE ZERADA
+   Botões planos, contraste equilibrado, visual limpo e moderno.
    ============================================================ */
 
 * {
@@ -10,56 +10,43 @@
 }
 
 :root {
-  /* Cores de Fundo & Superfície */
-  --bg-deep: #070913;
-  --bg-card: #0f1424;
-  --bg-card-glass: rgba(18, 24, 42, 0.82);
-  --bg-card-highlight: rgba(36, 47, 78, 0.65);
-  
-  /* Cores Temáticas & Acentos Dourados */
-  --gold-primary: #ffc83b;
-  --gold-light: #ffe58f;
-  --gold-dark: #b87a0e;
-  --gold-shadow: #694300;
-  --gold-border: rgba(255, 200, 59, 0.45);
-  --gold-border-strong: rgba(255, 200, 59, 0.85);
+  /* Fundo & Superfícies Planas */
+  --bg-main: #0f111a;
+  --bg-surface: #171a26;
+  --bg-surface-hover: #1e2233;
+  --bg-card: #141724;
 
-  /* Elementos & Status */
-  --accent: #ffc83b;
-  --danger: #ff4757;
-  --danger-glow: rgba(255, 71, 87, 0.35);
-  --danger-dark: #a81927;
-  --teal: #00d2d3;
-  --teal-glow: rgba(0, 210, 211, 0.35);
-  --blue: #2e86de;
-  --blue-glow: rgba(46, 134, 222, 0.4);
-  --amber: #ff9f43;
-  --green: #10ac84;
-  --green-glow: rgba(16, 172, 132, 0.35);
-  --purple: #8854d0;
-  --purple-glow: rgba(136, 84, 208, 0.4);
+  /* Cores de Acento Flat */
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-active: #1d4ed8;
+  --primary-text: #ffffff;
+
+  --accent-gold: #f59e0b;
+  --accent-gold-hover: #d97706;
+
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --info: #06b6d4;
 
   /* Textos */
-  --text: #f1f2f6;
-  --text-muted: #a4b0be;
-  --text-dim: #747d8c;
-  --text-gold: #ffeaa7;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
 
-  /* Bordas & Separadores */
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-card: rgba(87, 101, 144, 0.35);
-  --border-active: rgba(255, 200, 59, 0.7);
+  /* Bordas */
+  --border-subtle: #24293d;
+  --border-strong: #333a54;
 
-  /* Sombras & Brilhos */
-  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.7);
-  --shadow-gold-glow: 0 0 16px rgba(255, 200, 59, 0.4);
-  --shadow-inner-bevel: inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 -2px 0 rgba(0, 0, 0, 0.4);
+  /* Raios de borda (Cantos arredondados) */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
 
   /* Tipografia */
-  --font-display: 'Cinzel', serif;
-  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
 html,
@@ -69,114 +56,88 @@ body,
 }
 
 body {
-  font-family: var(--font-body);
-  background: var(--bg-deep);
-  color: var(--text);
+  font-family: var(--font-family);
+  background-color: var(--bg-main);
+  color: var(--text-main);
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   overflow: hidden;
 }
 
-/* Moldura Mobile com textura de fundo e vinheta dramática */
+/* Moldura Mobile Flat e Centralizada */
 .app-frame {
   position: relative;
   width: 100%;
-  max-width: 480px;
+  max-width: 460px;
   height: 100vh;
   height: 100dvh;
   margin: 0 auto;
-  background: radial-gradient(circle at 50% 20%, #161e38 0%, #090c17 65%, #05060c 100%);
+  background-color: var(--bg-main);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.9);
-  border-left: 1px solid rgba(255, 255, 255, 0.05);
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-left: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
 }
 
-/* Efeito de partículas sutis no fundo */
-.app-frame::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: 
-    radial-gradient(circle at 15% 15%, rgba(255, 200, 59, 0.05) 0%, transparent 40%),
-    radial-gradient(circle at 85% 75%, rgba(46, 134, 222, 0.06) 0%, transparent 40%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Botões Padrão com sensação 3D tátil (Estilo Clash/Runeterra) */
+/* Botões Planos Universais (Flat UI) */
 button {
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text);
-  background: linear-gradient(180deg, #2a3550 0%, #171f33 100%);
-  border: 1px solid var(--border-card);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  padding: 10px 16px;
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
   cursor: pointer;
-  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 3px 0 #0d121f;
-  transition: transform 0.08s ease, filter 0.15s ease, box-shadow 0.08s ease;
-  position: relative;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-  letter-spacing: 0.3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
+  outline: none;
 }
 
 button:hover:not(:disabled) {
-  filter: brightness(1.12);
-  border-color: var(--border-active);
+  background-color: var(--bg-surface-hover);
+  border-color: var(--border-strong);
 }
 
 button:active:not(:disabled) {
-  transform: translateY(2px);
-  box-shadow: var(--shadow-sm), inset 0 2px 4px rgba(0, 0, 0, 0.4), 0 1px 0 #0d121f;
+  transform: scale(0.98);
 }
 
 button:disabled {
   opacity: 0.45;
-  filter: grayscale(0.7);
   cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
 }
 
-/* Utilitários Visuais Reutilizáveis */
-.glass-panel {
-  background: var(--bg-card-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-card);
-  border-radius: 14px;
-  box-shadow: var(--shadow-md);
+/* Estilos de Botão Flat Específicos */
+.btn-flat-primary {
+  background-color: var(--primary);
+  color: var(--primary-text);
+  border: 1px solid var(--primary);
 }
 
-.gold-glow {
-  box-shadow: var(--shadow-gold-glow);
+.btn-flat-primary:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
 }
 
-/* Animações Globais */
-@keyframes goldShimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+.btn-flat-primary:active:not(:disabled) {
+  background-color: var(--primary-active);
 }
 
-@keyframes pulseSubtle {
-  0%, 100% { transform: scale(1); filter: brightness(1); }
-  50% { transform: scale(1.025); filter: brightness(1.15); }
+.btn-flat-gold {
+  background-color: var(--accent-gold);
+  color: #000000;
+  border: 1px solid var(--accent-gold);
+  font-weight: 700;
 }
 
-@keyframes floatElement {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-4px); }
-}
-
-@keyframes attackImpact {
-  0% { transform: scale(1); }
-  35% { transform: scale(0.92) rotate(-1.5deg); }
-  65% { transform: scale(1.08) rotate(1.5deg); }
-  100% { transform: scale(1) rotate(0); }
+.btn-flat-gold:hover:not(:disabled) {
+  background-color: var(--accent-gold-hover);
+  border-color: var(--accent-gold-hover);
 }

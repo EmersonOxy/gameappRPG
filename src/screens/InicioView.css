@@ -1,275 +1,153 @@
+/* InicioView — Visão Inicial Flat */
 .inicio-view {
   flex: 1;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  overflow-y: auto;
-  padding: 16px 14px 20px;
   gap: 16px;
+  background-color: var(--bg-main);
 }
 
-/* Banner Heroico Superior */
 .inicio-banner {
-  width: 100%;
-  position: relative;
-  background: linear-gradient(135deg, #222d4a 0%, #131a2e 100%);
-  border: 1px solid var(--border-card);
-  border-radius: 16px;
-  padding: 20px 18px;
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
-  text-align: center;
-}
-
-.banner-glow-orb {
-  position: absolute;
-  top: -20px;
-  right: -20px;
-  width: 120px;
-  height: 120px;
-  background: radial-gradient(circle, rgba(255, 200, 59, 0.25) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
-  filter: blur(10px);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 16px;
 }
 
 .banner-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
-  background: rgba(255, 200, 59, 0.12);
-  border: 1px solid var(--gold-border);
-  border-radius: 20px;
   font-size: 11px;
-  font-weight: 800;
-  color: var(--gold-light);
-  margin-bottom: 8px;
-}
-
-.banner-crown {
-  color: var(--gold-primary);
+  font-weight: 700;
+  color: var(--accent-gold);
+  margin-bottom: 6px;
 }
 
 .inicio-banner-title {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 900;
-  color: #fff;
-  line-height: 1.2;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 4px;
 }
 
 .inicio-banner-sub {
   font-size: 12px;
   color: var(--text-muted);
-  margin-top: 5px;
-  line-height: 1.4;
 }
 
-/* Grade de Atributos com Efeito de Vidro Fosco e Moldura */
 .inicio-stats-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 8px;
-  width: 100%;
 }
 
 .inicio-stat-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 10px 4px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 3px;
-  padding: 10px 4px;
-  background: var(--bg-card-glass);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--border-card);
-  border-radius: 12px;
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.12s ease, border-color 0.12s ease;
-}
-
-.inicio-stat-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--border-active);
+  text-align: center;
+  gap: 4px;
 }
 
 .stat-card-icon-wrap {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 2px;
+  color: var(--text-muted);
 }
-
-.level-icon { background: rgba(255, 200, 59, 0.15); color: var(--gold-primary); }
-.gold-icon  { background: rgba(255, 159, 67, 0.15); color: var(--amber); }
-.xp-icon    { background: rgba(0, 210, 211, 0.15); color: var(--teal); }
-.atk-icon   { background: rgba(255, 71, 87, 0.15); color: var(--danger); }
-.def-icon   { background: rgba(46, 134, 222, 0.15); color: var(--blue); }
 
 .inicio-stat-value {
   font-size: 14px;
-  font-weight: 900;
-  font-variant-numeric: tabular-nums;
-  color: #fff;
+  font-weight: 700;
+  color: var(--text-main);
 }
 
 .inicio-stat-label {
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
+  font-size: 10px;
   color: var(--text-dim);
 }
 
-/* Área Central de Ação */
 .inicio-action-area {
-  flex: 1;
-  width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  padding: 10px 0;
+  gap: 12px;
+  margin-top: auto;
+  padding-bottom: 12px;
 }
 
-/* Badge de Região */
 .region-badge-wrap {
   cursor: pointer;
+  display: flex;
+  justify-content: center;
 }
 
 .region-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  background: linear-gradient(180deg, #1f2a47 0%, #101626 100%);
-  border: 1px solid var(--border-card);
-  border-radius: 30px;
+  gap: 6px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
   font-size: 12px;
-  font-weight: 700;
   color: var(--text-muted);
-  box-shadow: var(--shadow-sm);
-  transition: all 0.15s ease;
-}
-
-.region-badge:hover {
-  border-color: var(--gold-border);
-  color: var(--text-gold);
 }
 
 .region-icon {
-  color: var(--gold-primary);
+  color: var(--primary);
 }
 
 .region-name {
-  color: #fff;
-  font-weight: 800;
+  font-weight: 600;
+  color: var(--text-main);
 }
 
-.region-level {
-  font-size: 10.5px;
-  color: var(--teal);
-}
-
-/* Botão BATALHAR Gigante (Supercell Style) */
 .btn-battle-giant {
   width: 100%;
-  max-width: 320px;
-  height: 84px;
-  padding: 0;
-  border-radius: 18px;
-  background: linear-gradient(180deg, #ffc83b 0%, #ff9500 50%, #d66500 100%);
-  border: 2px solid #ffe894;
-  box-shadow: 
-    0 10px 28px rgba(255, 149, 0, 0.45),
-    0 6px 0 #8f3e00,
-    inset 0 2px 0 rgba(255, 255, 255, 0.7);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: pulseSubtle 3s ease-in-out infinite;
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  padding: 16px;
+  background-color: var(--danger);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-md);
 }
 
 .btn-battle-giant:hover {
-  filter: brightness(1.1);
-  box-shadow: 
-    0 12px 32px rgba(255, 149, 0, 0.6),
-    0 6px 0 #8f3e00;
-}
-
-.btn-battle-giant:active {
-  transform: translateY(4px);
-  box-shadow: 
-    0 4px 12px rgba(255, 149, 0, 0.3),
-    0 2px 0 #8f3e00,
-    inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  background-color: #dc2626;
 }
 
 .battle-btn-inner {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-}
-
-.battle-swords-icon {
-  color: #2b1400;
-  filter: drop-shadow(0 2px 2px rgba(255, 255, 255, 0.4));
+  gap: 12px;
 }
 
 .battle-btn-texts {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  text-align: left;
 }
 
 .battle-btn-title {
-  font-family: var(--font-display);
-  font-size: 26px;
-  font-weight: 900;
-  letter-spacing: 2px;
-  line-height: 1;
-  color: #2b1400;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
 }
 
 .battle-btn-subtitle {
   font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: #693200;
+  opacity: 0.85;
+  font-weight: 500;
 }
 
-/* Botão de Evolução / Pontos de Atributos */
 .btn-levelup-pulse {
-  background: linear-gradient(180deg, #10ac84 0%, #097559 100%);
-  color: #fff;
-  border: 1px solid #55efc4;
-  border-radius: 12px;
-  padding: 12px 20px;
-  font-size: 13.5px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 4px 16px var(--green-glow), 0 3px 0 #044232;
-  animation: pulseSubtle 2.2s infinite;
-}
-
-.btn-levelup-pulse:hover {
-  filter: brightness(1.15);
-}
-
-.sparkle-anim {
-  color: #ffeaa7;
+  width: 100%;
+  background-color: var(--accent-gold);
+  color: #000000;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 700;
 }
