@@ -1,1 +1,114 @@
-/* Tela zerada */
+/* StartScreen — Tela Inicial com Fundo Neutro, Cabeçalho e Rodapé */
+.start-screen {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px 20px;
+  background-color: #12141c;
+  color: #f1f3f7;
+}
+
+/* ---- Cabeçalho ---- */
+.start-header {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: 16px;
+  gap: 8px;
+}
+
+.start-header-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background-color: #1c202d;
+  border: 1px solid #2d3345;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3b82f6;
+  margin-bottom: 6px;
+}
+
+.start-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+}
+
+.start-subtitle {
+  font-size: 13px;
+  color: #8b95a8;
+  font-weight: 500;
+}
+
+/* ---- Conteúdo Principal (Centro) ---- */
+.start-main {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.start-menu {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ---- Botões Planos (Flat UI) ---- */
+.start-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background-color 0.15s ease, transform 0.08s ease;
+}
+
+.start-btn:active {
+  transform: scale(0.98);
+}
+
+.start-btn.btn-primary {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.start-btn.btn-primary:hover {
+  background-color: #2563eb;
+}
+
+.start-btn.btn-secondary {
+  background-color: #1c202d;
+  color: #f1f3f7;
+  border-color: #2d3345;
+}
+
+.start-btn.btn-secondary:hover {
+  background-color: #242a3a;
+}
+
+/* ---- Rodapé ---- */
+.start-footer {
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  color: #647087;
+  padding-bottom: 8px;
+}
