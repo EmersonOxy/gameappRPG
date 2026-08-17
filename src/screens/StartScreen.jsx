@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Swords, Play, RotateCcw, Shield } from "lucide-react";
+import { Swords, Play, RotateCcw, Shield, Sparkles } from "lucide-react";
 import { useGame } from "../context/GameContext.jsx";
 import "./StartScreen.css";
 
@@ -52,9 +52,12 @@ export default function StartScreen() {
         </div>
       </main>
 
-      {/* Rodapé */}
+      {/* Rodapé Visível com Destaque Super Suave */}
       <footer className="start-footer">
-        <span>Versão 1.0 • RPG Tático</span>
+        <div className="footer-pill">
+          <Sparkles size={13} className="footer-icon" />
+          <span className="footer-text">Versão 1.0 • RPG Tático Mobile</span>
+        </div>
       </footer>
     </div>
   );
