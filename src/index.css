@@ -1,7 +1,6 @@
 /* ============================================================
-   ESQUELETO FUNCIONAL — sem decoração, apenas usabilidade.
-   Cores: tema escuro neutro para leitura. Sem gradientes,
-   sombras, glows, fontes especiais ou animações decorativas.
+   DESIGN SYSTEM AAA — INSPIRAÇÃO CLASH ROYALE & RUNETERRA
+   Paleta rica, profundidade 3D, bordas douradas e efeitos táteis.
    ============================================================ */
 
 * {
@@ -11,18 +10,56 @@
 }
 
 :root {
-  --bg: #10131a;
-  --panel: #171b24;
-  --text: #dfe3ea;
-  --text-dim: #8b93a3;
-  --border: #2c3340;
-  --border-strong: #4a5568;
-  --accent: #ffd97a;
-  --danger: #e05050;
-  --teal: #2dd4bf;
-  --blue: #6fb1ff;
-  --amber: #e8a33d;
-  --green: #6eea9c;
+  /* Cores de Fundo & Superfície */
+  --bg-deep: #070913;
+  --bg-card: #0f1424;
+  --bg-card-glass: rgba(18, 24, 42, 0.82);
+  --bg-card-highlight: rgba(36, 47, 78, 0.65);
+  
+  /* Cores Temáticas & Acentos Dourados */
+  --gold-primary: #ffc83b;
+  --gold-light: #ffe58f;
+  --gold-dark: #b87a0e;
+  --gold-shadow: #694300;
+  --gold-border: rgba(255, 200, 59, 0.45);
+  --gold-border-strong: rgba(255, 200, 59, 0.85);
+
+  /* Elementos & Status */
+  --accent: #ffc83b;
+  --danger: #ff4757;
+  --danger-glow: rgba(255, 71, 87, 0.35);
+  --danger-dark: #a81927;
+  --teal: #00d2d3;
+  --teal-glow: rgba(0, 210, 211, 0.35);
+  --blue: #2e86de;
+  --blue-glow: rgba(46, 134, 222, 0.4);
+  --amber: #ff9f43;
+  --green: #10ac84;
+  --green-glow: rgba(16, 172, 132, 0.35);
+  --purple: #8854d0;
+  --purple-glow: rgba(136, 84, 208, 0.4);
+
+  /* Textos */
+  --text: #f1f2f6;
+  --text-muted: #a4b0be;
+  --text-dim: #747d8c;
+  --text-gold: #ffeaa7;
+
+  /* Bordas & Separadores */
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-card: rgba(87, 101, 144, 0.35);
+  --border-active: rgba(255, 200, 59, 0.7);
+
+  /* Sombras & Brilhos */
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.7);
+  --shadow-gold-glow: 0 0 16px rgba(255, 200, 59, 0.4);
+  --shadow-inner-bevel: inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 -2px 0 rgba(0, 0, 0, 0.4);
+
+  /* Tipografia */
+  --font-display: 'Cinzel', serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 html,
@@ -32,14 +69,16 @@ body,
 }
 
 body {
-  font-family: system-ui, 'Segoe UI', sans-serif;
-  background: #04050a;
+  font-family: var(--font-body);
+  background: var(--bg-deep);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+  overflow: hidden;
 }
 
+/* Moldura Mobile com textura de fundo e vinheta dramática */
 .app-frame {
   position: relative;
   width: 100%;
@@ -47,34 +86,97 @@ body {
   height: 100vh;
   height: 100dvh;
   margin: 0 auto;
-  background: var(--bg);
+  background: radial-gradient(circle at 50% 20%, #161e38 0%, #090c17 65%, #05060c 100%);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.9);
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Botões padrão do app — simples e uniformes */
+/* Efeito de partículas sutis no fundo */
+.app-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(255, 200, 59, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 85% 75%, rgba(46, 134, 222, 0.06) 0%, transparent 40%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Botões Padrão com sensação 3D tátil (Estilo Clash/Runeterra) */
 button {
-  font-family: inherit;
+  font-family: var(--font-body);
   font-size: 13px;
+  font-weight: 700;
   color: var(--text);
-  background: var(--panel);
-  border: 1px solid var(--border-strong);
-  border-radius: 4px;
-  padding: 8px 14px;
+  background: linear-gradient(180deg, #2a3550 0%, #171f33 100%);
+  border: 1px solid var(--border-card);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 10px 16px;
   cursor: pointer;
-  transition: border-color 0.1s ease;
+  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 3px 0 #0d121f;
+  transition: transform 0.08s ease, filter 0.15s ease, box-shadow 0.08s ease;
+  position: relative;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  letter-spacing: 0.3px;
 }
 
 button:hover:not(:disabled) {
-  border-color: var(--text-dim);
+  filter: brightness(1.12);
+  border-color: var(--border-active);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: var(--shadow-sm), inset 0 2px 4px rgba(0, 0, 0, 0.4), 0 1px 0 #0d121f;
 }
 
 button:disabled {
   opacity: 0.45;
-  cursor: default;
+  filter: grayscale(0.7);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
-a {
-  color: inherit;
+/* Utilitários Visuais Reutilizáveis */
+.glass-panel {
+  background: var(--bg-card-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-card);
+  border-radius: 14px;
+  box-shadow: var(--shadow-md);
+}
+
+.gold-glow {
+  box-shadow: var(--shadow-gold-glow);
+}
+
+/* Animações Globais */
+@keyframes goldShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulseSubtle {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.025); filter: brightness(1.15); }
+}
+
+@keyframes floatElement {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes attackImpact {
+  0% { transform: scale(1); }
+  35% { transform: scale(0.92) rotate(-1.5deg); }
+  65% { transform: scale(1.08) rotate(1.5deg); }
+  100% { transform: scale(1) rotate(0); }
 }

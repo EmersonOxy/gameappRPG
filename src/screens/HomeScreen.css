@@ -3,86 +3,168 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
+/* Barra Superior com Efeito de Vidro e Borda Inferior Iluminada */
 .top-bar {
-  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, #182035 0%, #101627 100%);
+  border-bottom: 1px solid var(--border-card);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  position: relative;
+  z-index: 10;
 }
 
 .top-bar-main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px;
+  padding: 10px 14px;
 }
 
-.xp-track {
-  height: 4px;
-  background: var(--panel);
-  overflow: hidden;
-}
-
-.xp-fill {
-  height: 100%;
-  background: var(--accent);
-  transition: width 0.5s ease;
-}
-
+/* Informações do Jogador & Avatar */
 .player-info {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
+.player-avatar-badge {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2b395e 0%, #141b2d 100%);
+  border: 1.5px solid var(--border-active);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 3px 6px rgba(0, 0, 0, 0.5);
+}
+
+.player-avatar-icon {
+  color: var(--gold-light);
+}
+
+.level-bubble {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  background: linear-gradient(180deg, #ffc83b 0%, #d67a00 100%);
+  color: #1a0e00;
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  font-weight: 900;
+  padding: 1px 5px;
+  border-radius: 6px;
+  border: 1px solid #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  min-width: 18px;
+  text-align: center;
+}
+
 .player-text {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
 }
 
 .player-name {
-  font-weight: 700;
+  font-weight: 800;
   font-size: 14px;
+  letter-spacing: 0.3px;
+  color: var(--text);
 }
 
-.player-level {
-  font-size: 11px;
-  color: var(--text-dim);
-}
-
-.currency {
+.player-xp-counter {
   display: flex;
-  gap: 6px;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
-.currency-item {
-  font-size: 13px;
-  font-weight: 700;
-  padding: 5px 10px;
-  border: 1px solid var(--border);
+.xp-sparkle {
+  color: var(--teal);
+}
+
+/* Pílula de Ouro com Moeda em Alto Relevo */
+.currency-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(180deg, #1c253d 0%, #0d121f 100%);
+  border: 1px solid var(--gold-border);
+  border-radius: 20px;
+  padding: 4px 12px 4px 6px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.coin-icon-wrap {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ffe066 0%, #e69500 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), inset 0 1px 0 #fff;
+  border: 1px solid #ffd13b;
+}
+
+.coin-icon {
+  color: #3b2000;
+}
+
+.currency-value {
+  font-size: 13.5px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--gold-light);
+  letter-spacing: 0.3px;
+}
+
+/* Barra de XP com efeito de profundidade e brilho */
+.xp-track-container {
+  padding: 0 14px 6px;
+}
+
+.xp-track {
+  height: 6px;
+  background: #090c14;
   border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8);
+  position: relative;
 }
 
+.xp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00b4d8 0%, #00f5d4 100%);
+  border-radius: 3px;
+  transition: width 0.4s ease-out;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 8px rgba(0, 245, 212, 0.5);
+}
+
+.xp-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.6) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: goldShimmer 2.5s infinite;
+}
+
+/* Área de Conteúdo */
 .home-content {
   flex: 1;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-}
-
-.placeholder {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  color: var(--text-dim);
-  padding: 20px;
-  text-align: center;
-}
-
-.placeholder h2 {
-  color: var(--text);
-  font-size: 20px;
+  position: relative;
+  z-index: 1;
 }
